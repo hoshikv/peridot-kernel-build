@@ -1,23 +1,45 @@
-=== gki_pineappledisp.conf (full) ===
-export CONFIG_DRM_MSM=y
-export CONFIG_DRM_MSM_SDE=y
-export CONFIG_SYNC_FILE=y
-export CONFIG_DRM_MSM_DSI=y
-export CONFIG_DRM_MSM_DP=y
-export CONFIG_DRM_MSM_DP_MST=y
-export CONFIG_DSI_PARSER=y
-export CONFIG_QCOM_MDSS_PLL=y
-export CONFIG_DRM_SDE_RSC=y
-export CONFIG_DRM_SDE_WB=y
-export CONFIG_DRM_MSM_REGISTER_LOGGING=y
-export CONFIG_MSM_MMRM=y
-export CONFIG_DISPLAY_BUILD=m
-export CONFIG_HDCP_QSEECOM=y
-export CONFIG_DRM_SDE_VM=y
-export CONFIG_QTI_HW_FENCE=y
-export CONFIG_QCOM_SPEC_SYNC=y
-export CONFIG_QCOM_WCD939X_I2C=y
-export MI_DISPLAY_MODIFY=y
-=== .config relevant ===
+===== securemsm hdcp Kbuild =====
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_smcinvoke.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_main.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp1_ops.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_qseecom.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp1.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_smcinvoke.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_qseecom.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp2p2.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_main.c
+NO Kbuild
+===== hw_fence full Kbuild =====
+# SPDX-License-Identifier: GPL-2.0-only
+
+KDIR := $(TOP)/kernel_platform/msm-kernel
+include $(MSM_HW_FENCE_ROOT)/config/kalamammdrivers.conf
+LINUXINCLUDE += -include $(MSM_HW_FENCE_ROOT)/config/kalamammdriversconf.h \
+		-I$(MSM_HW_FENCE_ROOT)hw_fence/include/
+
+ifdef CONFIG_QTI_HW_FENCE
+obj-m += msm_hw_fence.o
+
+msm_hw_fence-y := src/msm_hw_fence.o \
+		src/hw_fence_drv_priv.o \
+		src/hw_fence_drv_utils.o \
+		src/hw_fence_drv_debug.o \
+		src/hw_fence_drv_ipc.o
+
+ifneq ($(CONFIG_ARCH_KALAMA), y)
+LINUXINCLUDE += -I$(MSM_HW_FENCE_ROOT)/../synx-kernel/msm/synx/ \
+		-I$(MSM_HW_FENCE_ROOT)/../synx-kernel/include/uapi/synx/media/
+msm_hw_fence-y += src/msm_hw_fence_synx_translation.o
+endif
+
+msm_hw_fence-$(CONFIG_DEBUG_FS) += src/hw_fence_ioctl.o
+
+endif
+EXTRA_CFLAGS += -Wformat-extra-args -Wstrict-prototypes -Wformat-insufficient-args \
+		-Wformat-invalid-specifier -Wformat-zero-length -Wnonnull===== conf files =====
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/config:
+kalamammdrivers.conf
+kalamammdriversconf.h
+===== gki conf for pineapple in mm-drivers =====
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:21:23Z run=33317766012
+__RAW__ 2026-08-30T17:22:38Z run=33317766012
