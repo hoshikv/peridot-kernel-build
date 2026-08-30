@@ -1,9 +1,10 @@
-export PATH="$HOME/tc/bin:$PATH"
-D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-L="$D/msm"
-for f in $(find "$L" -name "*.o" | grep -v "\.mod\.o" | grep -v modules.o); do
-  ~/tc/bin/llvm-nm -u "$f" 2>/dev/null | awk '{print $2}'
-done | sort -u > /tmp/undef.txt
-echo "total undefined refs: $(wc -l < /tmp/undef.txt)"
-echo "=== external-module candidates ==="
-grep -iE "hdcp|ext_disp|hw_fence|spec_sync|mmrm|qseecom|sar|sync_fen" /tmp/undef.txt | head -80
+header() { curl -s -o /dev/null -w "%{http_code}" "https://api.github.com/repos/$1"; }
+for repo in "crdroidandroid/android_kernel_xiaomi_sm8635-modules" \
+            "LineageOS/android_kernel_xiaomi_sm8635-modules" \
+            "crdroidandroid/android_kernel_xiaomi_sm8650-modules" \
+            "LineageOS/android_vendor_xiaomi_sm8635-kernel-modules" \
+            "LineageOS/android_kernel_xiaomi_sm8450-modules"; do
+  echo "$repo -> $(header "$repo")"
+done
+echo "=== check LineageOS sm8450-modules qcom tree has hdcp/mmrm/fence ==="
+curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/LineageOS/android_kernel_xiaomi_sm8450-modules/contents/qcom/opensource/display-drivers" | grep -o '"name":"[^"]*"' | head -40
