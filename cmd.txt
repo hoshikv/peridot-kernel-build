@@ -1,4 +1,11 @@
-cd "$GITHUB_WORKSPACE"
-timeout 500 git clone --depth 1 --branch 16.0 --single-branch https://github.com/crdroidandroid/android_kernel_xiaomi_sm8635-modules.git modules 2>&1 | tail -3
-echo "=== autfcr ==="
-find modules -maxdepth 4 -type d | head -60
+cd "$GITHUB_WORKSPACE/modules"
+echo "=== qcom/opensource dirs ==="
+ls qcom/opensource
+echo "=== display-drivers? ==="
+ls qcom/opensource/display-drivers 2>/dev/null | head
+echo "=== mm-drivers subdirs ==="
+ls qcom/opensource/mm-drivers
+echo "=== hw-fence / sync-fence ==="
+find qcom/opensource -maxdepth 2 -iname "*fence*" -o -maxdepth 2 -iname "*mmrm*" | head
+echo "=== securemsm hdcp ==="
+ls qcom/opensource/securemsm-kernel/hdcp 2>/dev/null | head
