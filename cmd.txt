@@ -1,1 +1,1 @@
-cd $GITHUB_WORKSPACE && git clone --depth 1 https://x-access-token:${GH_TOKEN}@github.com/hoshikv/mi_disp_driver2_peridot.git display-drivers 2>&1 | tail -2 && cd display-drivers && git log -1 --format="%H %s" && ls msm | head -20 && df -h / | tail -1
+cd $GITHUB_WORKSPACE/display-drivers && ls && echo "---M" && ls msm 2>/dev/null | head -30 && echo "---cfg" && find . -name "*defconfig*" -o -name "*.bzl" 2>/dev/null | head && echo "---vendor opensource" && ls vendor_opensource* 2>/dev/null
