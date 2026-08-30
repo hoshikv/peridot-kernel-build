@@ -1,11 +1,13 @@
-  HOSTCC  scripts/kconfig/util.o
-  HOSTLD  scripts/kconfig/conf
-#
-# configuration written to .config
-#
+=== modules_prepare ===
+  HOSTCC  arch/arm64/kernel/vdso32/../../../arm/vdso/vdsomunge
+  MUNGE   arch/arm64/kernel/vdso32/vdso.so.dbg
+  VDSOSYM include/generated/vdso32-offsets.h
+  OBJCOPY arch/arm64/kernel/vdso32/vdso.so
+  LDS     scripts/module.lds
 make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-=== arm64 cfg check ===
-CONFIG_ARM64=y
-CONFIG_ARM64_PAGE_SHIFT=12
+=== msm related config ===
+CONFIG_DRM_MSM_HELPER=m
+CONFIG_MI_DUMP_DISPLAY=m
+/dev/root        72G   59G   14G  82% /
 __DONE__ rc=0
-__RAW__ 2026-08-30T15:17:00Z run=33317766012
+__RAW__ 2026-08-30T15:18:20Z run=33317766012
