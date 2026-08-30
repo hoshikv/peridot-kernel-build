@@ -1,17 +1,15 @@
-Makefile:1638: warning: overriding recipe for target 'dt_binding_check'
+#
+# merged configuration written to /home/runner/work/peridot-kernel-build/peridot-kernel-build/out/.config (needs make)
+#
+=== mrproper ===
 Makefile:1322: warning: ignoring old recipe for target 'dt_binding_check'
   CLEAN   .config
-=== clean check ===
-ls: cannot access '.config': No such file or directory
-no .config
 === olddefconfig ===
-*** in /home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel
-***
-make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:676: outputmakefile] Error 1
+make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/kconfig/Makefile:77: olddefconfig] Error 1
+make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:722: olddefconfig] Error 2
 make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
 make: *** [Makefile:256: __sub-make] Error 2
 CONFIG_DRM_MSM_HELPER=m
 CONFIG_MI_DUMP_DISPLAY=m
-/dev/root        72G   59G   14G  82% /
 __DONE__ rc=0
-__RAW__ 2026-08-30T15:12:59Z run=33317766012
+__RAW__ 2026-08-30T15:14:30Z run=33317766012
