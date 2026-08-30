@@ -2,9 +2,8 @@ export PATH="$HOME/tc/bin:$PATH"
 export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
 cd "$GITHUB_WORKSPACE/kernel"
 O="$GITHUB_WORKSPACE/out"
-D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-echo "=== build M= display ==="
-make -C "$GITHUB_WORKSPACE/kernel" O="$O" M="$D" modules 2>&1 | tail -30
-echo "=== results ==="
-find "$D" -name "*.ko" -exec ls -la {} \; 2>/dev/null
+echo "=== make modules (in-tree) ==="
+make -j2 O="$O" modules 2>&1 | tail -25
+echo "=== Module.symvers ==="
+wc -l "$O/Module.symvers" 2>/dev/null
 df -h / | tail -1
