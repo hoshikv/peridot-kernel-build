@@ -1,29 +1,275 @@
--rw-r--r-- 1 runner runner 47259344 Aug 30 17:41 /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko
-=== vermagic & crc ===
-name=%s
-vermagic=6.1.174-g0edbd843260b-dirty SMP preempt mod_unload modversions aarch64
-name=msm_drm
-=== kernel vermagic in O ===
-#define UTS_RELEASE "6.1.174-g0edbd843260b-dirty"
-6.1.174-g0edbd843260b-dirty
-=== reloc / build-id ===
-Displaying notes found in: .note.Linux
-  Owner                Data size 	Description
-  Linux                0x00000001	OPEN
-   description data: 00
-  Linux                0x00000004	func
-   description data: 00 00 00 00
-
-Displaying notes found in: .note.gnu.build-id
-  Owner                Data size 	Description
-  GNU                  0x00000014	NT_GNU_BUILD_ID (unique build ID bitstring)
-    Build ID: 7f8d0b3e34152d29926e43f5aa4d19af8de6e9c5
-
-Displaying notes found in: .note.gnu.property
-  Owner                Data size 	Description
-  GNU                  0x00000010	NT_GNU_PROPERTY_TYPE_0 (property note)
-    Properties:    aarch64 feature: PAC
-
-=== modinfo ===
+########## diff mi_disp/mi_disp_lhbm.c ##########
+--- /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/mi_disp/mi_disp_lhbm.c	2026-08-30 17:14:51.264066322 +0000
++++ /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_lhbm.c	2026-08-30 15:07:50.089936092 +0000
+@@ -4,635 +4,616 @@
+  * Copyright (c) 2020 XiaoMi, Inc. All rights reserved.
+  */
+ 
+-#define pr_fmt(fmt) "mi-disp-lhbm:[%s:%d] " fmt, __func__, __LINE__
++#define pr_fmt(fmt)	"mi-disp-lhbm:[%s:%d] " fmt, __func__, __LINE__
+ #include <linux/kernel.h>
+-#include <linux/kthread.h>
+ #include <linux/mutex.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
+ #include <linux/types.h>
+ #include <linux/wait.h>
++#include <linux/kthread.h>
+ #include <uapi/linux/sched/types.h>
+ 
+-#include "dsi_display.h"
+ #include "sde_trace.h"
++#include "dsi_display.h"
+ 
+ #include "mi_disp_feature.h"
+-#include "mi_disp_lhbm.h"
+ #include "mi_disp_print.h"
++#include "mi_disp_lhbm.h"
+ #include "mi_dsi_display.h"
+ #include "mi_dsi_panel.h"
+ #include "mi_panel_id.h"
+ #include "sde_vm.h"
++#include "mi_panel_id.h"
++
+ 
+ static struct disp_lhbm_fod *g_lhbm_fod[MI_DISP_MAX];
+ 
+ static int mi_disp_lhbm_fod_thread_fn(void *arg);
+ 
+-bool is_local_hbm(int disp_id) {
+-  struct dsi_display *display = NULL;
+-
+-  if (is_support_disp_id(disp_id)) {
+-    if (disp_id == MI_DISP_PRIMARY)
+-      display = mi_get_primary_dsi_display();
+-    else
+-      display = mi_get_secondary_dsi_display();
+-
+-    if (display && display->panel)
+-      return display->panel->mi_cfg.local_hbm_enabled;
+-    else
+-      return false;
+-  } else {
+-    DISP_ERROR("unknown display id\n");
+-    return false;
+-  }
+-}
+-
+-bool mi_disp_lhbm_fod_enabled(struct dsi_panel *panel) {
+-  return panel ? panel->mi_cfg.local_hbm_enabled : false;
+-}
+-
+-int mi_disp_lhbm_fod_thread_create(struct disp_feature *df, int disp_id) {
+-  int ret = 0;
+-  struct dsi_display *display = NULL;
+-  struct disp_lhbm_fod *lhbm_fod = NULL;
+-
+-  if (!df || !is_support_disp_id(disp_id)) {
+-    DISP_ERROR("invalid params\n");
+-    return -EINVAL;
+-  }
+-
+-  if (!df->d_display[disp_id].display ||
+-      df->d_display[disp_id].intf_type != MI_INTF_DSI) {
+-    DISP_ERROR("unsupported display(%s intf)\n",
+-               get_disp_intf_type_name(df->d_display[disp_id].intf_type));
+-    return -EINVAL;
+-  }
+-
+-  display = (struct dsi_display *)df->d_display[disp_id].display;
+-  if (!mi_disp_lhbm_fod_enabled(display->panel)) {
+-    DISP_INFO("%s panel is not local hbm\n", get_disp_id_name(disp_id));
+-    return 0;
+-  }
+-
+-  lhbm_fod = kzalloc(sizeof(struct disp_lhbm_fod), GFP_KERNEL);
+-  if (!lhbm_fod) {
+-    DISP_ERROR("can not allocate buffer for disp_lhbm\n");
+-    return -ENOMEM;
+-  }
+-
+-  df->d_display[disp_id].lhbm_fod_ptr = lhbm_fod;
+-  lhbm_fod->display = display;
+-
+-  INIT_LIST_HEAD(&lhbm_fod->event_list);
+-  spin_lock_init(&lhbm_fod->spinlock);
+-
+-  atomic_set(&lhbm_fod->allow_tx_lhbm, 0);
+-  atomic_set(&lhbm_fod->target_brightness,
+-             LHBM_TARGET_BRIGHTNESS_OFF_FINGER_UP);
+-
+-  init_waitqueue_head(&lhbm_fod->fod_pending_wq);
+-
+-  lhbm_fod->fod_thread = kthread_run(mi_disp_lhbm_fod_thread_fn, lhbm_fod,
+-                                     "disp_lhbm_fod:%d", disp_id);
+-  if (IS_ERR(lhbm_fod->fod_thread)) {
+-    DISP_ERROR("failed to create disp_fod:%d kthread\n", disp_id);
+-    ret = PTR_ERR(lhbm_fod->fod_thread);
+-    lhbm_fod->fod_thread = NULL;
+-    goto error;
+-  }
+-  /* set realtime priority */
+-  sched_set_fifo(lhbm_fod->fod_thread);
++bool is_local_hbm(int disp_id)
++{
++	struct dsi_display *display = NULL;
++
++	if (is_support_disp_id(disp_id)) {
++		if (disp_id == MI_DISP_PRIMARY)
++			display = mi_get_primary_dsi_display();
++		else
++			display = mi_get_secondary_dsi_display();
+########## diff mi_disp/mi_dsi_panel.c ##########
+--- /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/mi_disp/mi_dsi_panel.c	2026-08-30 17:14:51.264757918 +0000
++++ /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.c	2026-08-30 16:52:20.372139970 +0000
+@@ -18,7 +18,7 @@
+ #include "dsi_display.h"
+ #include "dsi_ctrl_hw.h"
+ #include "dsi_parser.h"
+-#include "internals.h"
++#include "../../../../kernel/kernel/irq/internals.h"
+ #include "sde_connector.h"
+ #include "sde_trace.h"
+ #include "mi_dsi_panel.h"
+@@ -33,2035 +33,1887 @@
+ #define to_dsi_display(x) container_of(x, struct dsi_display, host)
+ 
+ void mi_dsi_update_backlight_in_aod(struct dsi_panel *panel,
+-                                    bool restore_backlight);
++			bool restore_backlight);
+ 
+ static u64 g_panel_id[MI_DISP_MAX];
+ 
+-struct dsi_panel *g_panel;
+-
+ typedef int (*mi_display_pwrkey_callback)(int);
+ extern void mi_display_pwrkey_callback_set(mi_display_pwrkey_callback);
+ 
+-static int mi_panel_id_init(struct dsi_panel *panel) {
+-  if (!panel) {
+-    DISP_ERROR("invalid params\n");
+-    return -EINVAL;
+-  }
+-  g_panel = panel;
+-  g_panel_id[mi_get_disp_id(panel->type)] = panel->mi_cfg.mi_panel_id;
+-
+-  return 0;
+-}
+-
+-enum mi_project_panel_id mi_get_panel_id_by_dsi_panel(struct dsi_panel *panel) {
+-  if (!panel) {
+-    DISP_ERROR("invalid params\n");
+-    return PANEL_ID_INVALID;
+-  }
+-
+-  return mi_get_panel_id(panel->mi_cfg.mi_panel_id);
+-}
+-
+-enum mi_project_panel_id mi_get_panel_id_by_disp_id(int disp_id) {
+-  if (!is_support_disp_id(disp_id)) {
+-    DISP_ERROR("Unsupported display id\n");
+-    return PANEL_ID_INVALID;
+-  }
+-
+-  return mi_get_panel_id(g_panel_id[disp_id]);
+-}
+-
+-int mi_dsi_panel_pre_init(struct dsi_panel *panel) {
+-  struct mi_dsi_panel_cfg *mi_cfg = NULL;
+-  int rc = 0;
+-
+-  if (!panel) {
+-    DISP_ERROR("invalid params\n");
+-    return -EINVAL;
+-  }
+-
+-  mi_cfg = &panel->mi_cfg;
+-  mi_cfg->dsi_panel = panel;
+-
+-  rc = panel->utils.read_u64(panel->utils.data, "mi,panel-id",
+-                             &mi_cfg->mi_panel_id);
+-  if (rc) {
+-    mi_cfg->mi_panel_id = 0;
+-    DISP_ERROR("mi,panel-id not specified\n");
+-  } else {
+-    DISP_DEBUG("mi,panel-id is 0x%llx (%s)\n", mi_cfg->mi_panel_id,
+-               mi_get_panel_id_name(mi_cfg->mi_panel_id));
+-  }
+-
+-  rc = mi_panel_id_init(panel);
+-
+-  return rc;
+-}
+-
+-int mi_dsi_panel_init(struct dsi_panel *panel) {
+-  struct mi_dsi_panel_cfg *mi_cfg = NULL;
+-
+-  if (!panel) {
+-    DISP_ERROR("invalid params\n");
+-    return -EINVAL;
+-  }
+-
+-  mi_cfg = &panel->mi_cfg;
+-
+-  mutex_init(&mi_cfg->doze_lock);
+-
+-  mi_cfg->disp_wakelock = wakeup_source_register(NULL, "disp_wakelock");
+-  if (!mi_cfg->disp_wakelock) {
+-    DISP_ERROR("doze_wakelock wake_source register failed");
+-    return -ENOMEM;
+-  }
+-
+-  mi_dsi_panel_parse_config(panel);
+-  atomic_set(&mi_cfg->brightness_clone, 0);
+-  if ((mi_get_panel_id_by_dsi_panel(panel) == N3_PANEL_PA) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == N2_PANEL_PA) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == N1_PANEL_PA) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == N8_PANEL_PA) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == N8_PANEL_SA) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == N18_PANEL_PA) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == N18_PANEL_SA) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == N16T_PANEL_PA) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == N16T_PANEL_PB) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == N16T_PANEL_PC) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == O16U_PANEL_PA) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == O16U_PANEL_PB) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == O82_PANEL_PA) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == O82_PANEL_PB) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == O81_PANEL_PA) ||
+-      (mi_get_panel_id_by_dsi_panel(panel) == O81_PANEL_PB)) {
+-    mi_display_pwrkey_callback_set(mi_display_powerkey_callback);
+-  }
+-  return 0;
+########## diff Kbuild ##########
+--- /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/Kbuild	2026-08-30 17:14:51.255756621 +0000
++++ /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Kbuild	2026-08-30 15:07:50.081762803 +0000
+@@ -36,9 +36,6 @@
+ ifeq ($(CONFIG_ARCH_QTI_VM), y)
+     include $(DISPLAY_ROOT)/config/gki_pineappledisptui.conf
+     LINUX_INC += -include $(DISPLAY_ROOT)/config/gki_pineappledisptuiconf.h
+-else ifeq ($(BOARD_PLATFORM), volcano)
+-    include $(DISPLAY_ROOT)/config/gki_volcanodisp.conf
+-    LINUX_INC += -include $(DISPLAY_ROOT)/config/gki_volcanodispconf.h
+ else
+ 	include $(DISPLAY_ROOT)/config/gki_pineappledisp.conf
+ 	LINUX_INC += -include $(DISPLAY_ROOT)/config/gki_pineappledispconf.h
+@@ -104,8 +101,8 @@
+ 	CDEFINES += -DCONFIG_TARGET_PRODUCT_CHENFENG
+ endif
+ 
+-KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/sm8635-modules/qcom/opensource/display-drivers/hdcp/Module.symvers
+-KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/sm8635-modules/qcom/opensource/display-drivers/msm/Module.symvers
++KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/display-drivers/hdcp/Module.symvers
++KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/display-drivers/msm/Module.symvers
+ 
+ ifeq ($(call cc-option-yn, -Wheader-guard),y)
+ EXTRA_CFLAGS += -Wheader-guard
+@@ -295,3 +292,6 @@
+ 			     mi_disp/mi_sde_encoder.o \
+ 			     mi_disp/mi_sde_connector.o
+ 
++
++CDEFINES += -DBUILD_TIMESTAMP=\"$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')\"
++
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:44:07Z run=33317766012
+__RAW__ 2026-08-30T17:51:12Z run=33317766012
