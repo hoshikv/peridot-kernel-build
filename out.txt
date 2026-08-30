@@ -1,9 +1,10 @@
-=== how is securemsm hdcp built? Android.bp/Makefile? ===
-find: warning: you have specified the global option -maxdepth after the argument -name, but global options are not positional, i.e., -maxdepth affects tests specified before it as well as those specified after it.  Please specify global options before other arguments.
-find: warning: you have specified the global option -maxdepth after the argument -name, but global options are not positional, i.e., -maxdepth affects tests specified before it as well as those specified after it.  Please specify global options before other arguments.
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Kbuild
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Android.mk
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Android.bp
+=== is modules display-drivers identical to import? (key files) ===
+DIFF  msm/mi_disp/mi_disp_lhbm.c
+DIFF  msm/mi_disp/mi_dsi_panel.c
+DIFF  msm/Kbuild
+SAME  msm/sde/sde_fence.c
+=== securemsm hdcp Makefile/Android.mk head ===
+=== securemsm root dirs ===
 Android.bp
 Android.mk
 BUILD.bazel
@@ -25,68 +26,9 @@ smcinvoke
 smmu-proxy
 ssg_kernel_headers.py
 tz_log
-=== mmrm Kbuild ===
-
-include $(MMRM_ROOT)/config/waipiommrm.conf
-LINUXINCLUDE += -include $(MMRM_ROOT)/config/waipiommrmconf.h
-
-ifneq ($(CONFIG_ARCH_QTI_VM), y)
-
-obj-m += driver/
-# obj-m += test/
-
-ifeq ($(CONFIG_MSM_MMRM_VM),y)
-LINUXINCLUDE += -I$(MMRM_ROOT)/vm/common/inc/
-obj-m += vm/be/
-endif
-
-else
-
-LINUXINCLUDE += -I$(MMRM_ROOT)/vm/common/inc/
-
-obj-m += vm/fe/
-#obj-y += vm/fe/vm_test/
-
-endif
-Android.mk
-BUILD.bazel
-Kbuild
-Makefile
-config
-driver
-mmrm_kernel_board.mk
-mmrm_kernel_product.mk
-mmrm_modules.bzl
-mmrm_modules_build.bzl
-target.bzl
-vm
-=== sync_fence Kbuild ===
-# SPDX-License-Identifier: GPL-2.0-only
-
-KDIR := $(TOP)/kernel_platform/msm-kernel
-LINUXINCLUDE    += -I$(SYNC_FENCE_ROOT)sync_fence/include/
-include $(SYNC_FENCE_ROOT)/config/kalamammdrivers.conf
-LINUXINCLUDE += -include $(SYNC_FENCE_ROOT)/config/kalamammdriversconf.h
-
-ifdef CONFIG_QCOM_SPEC_SYNC
-obj-m += sync_fence.o
-
-sync_fence-y := src/qcom_sync_file.o
-
-endif
-EXTRA_CFLAGS += -Wformat-extra-args -Wstrict-prototypes -Wformat-insufficient-args \
-		-Wformat-invalid-specifier -Wformat-zero-length -Wnonnull
-=== ext_display Kbuild ===
-# SPDX-License-Identifier: GPL-2.0-only
-
-include $(MSM_EXT_DISPLAY_ROOT)/config/kalamammdrivers.conf
-LINUXINCLUDE += -include $(MSM_EXT_DISPLAY_ROOT)/config/kalamammdriversconf.h
-
-obj-m += msm_ext_display.o
-
-msm_ext_display-y := src/msm_ext_display.o
-
-EXTRA_CFLAGS += -Wformat-extra-args -Wstrict-prototypes -Wformat-insufficient-args \
-		-Wformat-invalid-specifier -Wformat-zero-length -Wnonnull
+=== check hsl?/sec build ===
+find: warning: you have specified the global option -maxdepth after the argument -name, but global options are not positional, i.e., -maxdepth affects tests specified before it as well as those specified after it.  Please specify global options before other arguments.
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Kbuild
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Makefile
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:26:38Z run=33317766012
+__RAW__ 2026-08-30T17:27:48Z run=33317766012
