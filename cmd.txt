@@ -1,6 +1,3 @@
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
-export PATH="$HOME/tc/bin:$PATH"
-strings "$D/msm_drm.ko" | grep -m1 "^6\.1\.174"
-echo "---"
-strings "$D/msm_drm.ko" | grep -m1 "^vermagic" 
-echo "kernel: $(grep -m1 UTS_RELEASE "$GITHUB_WORKSPACE/out/include/generated/utsrelease.h" 2>/dev/null)"
+ls -la "$D/msm_drm.ko"
+sha256sum "$D/msm_drm.ko"
