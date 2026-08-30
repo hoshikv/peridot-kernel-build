@@ -1,9 +1,9 @@
-export PATH="$HOME/tc/bin:$PATH"
-export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
 cd "$D"
+git config user.email "runner@actions.local"
+git config user.name "runner"
 git add mi_disp/mi_dsi_panel.c
-git commit -m "fix: use out-of-tree kernel internals.h include" 2>&1 | tail -3
+git commit -m "fix: use out-of-tree kernel internals.h include" 2>&1 | tail -2
 git pull --rebase origin main 2>&1 | tail -6
 echo "--- patch check ---"
 sed -n '161,172p' mi_disp/mi_dsi_panel.c
