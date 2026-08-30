@@ -12,6 +12,11 @@ jobs:
           fetch-depth: 1
           token: ${{ secrets.GH_TOKEN }}
 
+      - name: Install tmate
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq tmate
+
       - name: Start tmate + publish SSH info to gist
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
