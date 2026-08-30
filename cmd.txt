@@ -1,13 +1,9 @@
-export PATH="$HOME/tc/bin:$PATH"
-export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
-cd "$GITHUB_WORKSPACE/kernel"
-O="$GITHUB_WORKSPACE/out"
-D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-DMSM="$D/msm"
-echo "=== build M=msm with DISPLAY_ROOT ==="
-make -C "$GITHUB_WORKSPACE/kernel" O="$O" M="$DMSM" \
-  DISPLAY_ROOT="$D" \
-  modules 2>&1 | tail -30
-echo "=== ko ==="
-find "$DMSM" -name "*.ko" -exec ls -la {} \; 2>/dev/null
-df -h / | tail -1
+DMSM="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
+echo "=== internals.h locations ==="
+find "$DMSM" -name "internals.h" 2>/dev/null
+echo "=== include dirs referenced in mi_dsi_panel.c ==="
+head -30 "$DMSM/mi_disp/mi_dsi_panel.c" | grep -n "include" | head
+echo "=== dsi dir listing ==="
+ls "$DMSM/dsi" 2>/dev/null | head -30
+echo "=== sde dir has internals? ==="
+find "$DMSM" -name "*.h" -path "*internals*" 2>/dev/null | head
