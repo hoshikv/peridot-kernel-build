@@ -1,30 +1,14 @@
-README.md
-vendor_opensource_display-drivers-peridot-u-oss
----M
----cfg
-./vendor_opensource_display-drivers-peridot-u-oss/target.bzl
-./vendor_opensource_display-drivers-peridot-u-oss/display_modules.bzl
-./vendor_opensource_display-drivers-peridot-u-oss/display_driver_build.bzl
----vendor opensource
-Android.bp
-Android.mk
-BUILD.bazel
-Documentation
-Kbuild
-Makefile
-Makefile.am
-NOTICE
-bridge-drivers
-config
-display_driver_board.mk
-display_driver_build.bzl
-display_driver_product.mk
-display_kernel_headers.py
-display_modules.bzl
-hdcp
-include
-msm
-rotator
-target.bzl
-__DONE__ rc=0
-__RAW__ 2026-08-30T15:09:14Z run=33317766012
+New value: # CONFIG_LEDS_QPNP_VIBRATOR_LDO is not set
+
+#
+# merged configuration written to .config (needs make)
+#
+=== olddefconfig ===
+***
+make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:676: outputmakefile] Error 1
+make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
+make: *** [Makefile:256: __sub-make] Error 2
+=== grep msm ===
+grep: /home/runner/work/peridot-kernel-build/peridot-kernel-build/out/.config: No such file or directory
+__DONE__ rc=2
+__RAW__ 2026-08-30T15:10:34Z run=33317766012
