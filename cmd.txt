@@ -1,7 +1,7 @@
 M="$GITHUB_WORKSPACE/modules/qcom/opensource/securemsm-kernel"
-echo "=== .ko produced ==="
-find "$M" -name "*.ko" | head
-echo "=== symvers content ==="
-cat "$M/Module.symvers"
-echo "=== undefined UND list in hdcp module if exists ==="
-nm -u "$M/hdcp_qseecom_dlkm.ko" 2>/dev/null | head -20
+echo "=== grep hdcp in Kbuild ==="
+grep -n "hdcp" "$M/Kbuild"
+echo "=== is CONFIG_HDCP_QSEECOM visible to make? ==="
+make -C "$GITHUB_WORKSPACE/kernel" O="$GITHUB_WORKSPACE/out" --no-print-directory CONFIG_HDCP_QSEECOM=y M="$M" SSG_MODULE_ROOT="$M" -pn 2>/dev/null | grep -E "^hdcp_qseecom_dlkm" | head
+echo "=== did hdcp objs compile? find .o under hdcp/ ==="
+find "$M/hdcp" -name "*.o" 2>/dev/null
