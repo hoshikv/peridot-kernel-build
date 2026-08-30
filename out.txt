@@ -1,8 +1,4 @@
-crdroidandroid/android_kernel_xiaomi_sm8635-modules -> 200
-LineageOS/android_kernel_xiaomi_sm8635-modules -> 200
-crdroidandroid/android_kernel_xiaomi_sm8650-modules -> 404
-LineageOS/android_vendor_xiaomi_sm8635-kernel-modules -> 404
-LineageOS/android_kernel_xiaomi_sm8450-modules -> 200
-=== check LineageOS sm8450-modules qcom tree has hdcp/mmrm/fence ===
+=== branches sm8635-modules (crdroid) ===
+=== branches lineage sm8635-modules ===
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:13:43Z run=33317766012
+__RAW__ 2026-08-30T17:14:05Z run=33317766012
