@@ -1,9 +1,9 @@
-DMSM="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
-echo "=== internals.h locations ==="
-find "$DMSM" -name "internals.h" 2>/dev/null
-echo "=== include dirs referenced in mi_dsi_panel.c ==="
-head -30 "$DMSM/mi_disp/mi_dsi_panel.c" | grep -n "include" | head
-echo "=== dsi dir listing ==="
-ls "$DMSM/dsi" 2>/dev/null | head -30
-echo "=== sde dir has internals? ==="
-find "$DMSM" -name "*.h" -path "*internals*" 2>/dev/null | head
+echo "=== all internals.h in workspace ==="
+find "$GITHUB_WORKSPACE" -name "internals.h" 2>/dev/null | head
+echo "=== check if it's in kernel tree ==="
+find "$GITHUB_WORKSPACE/kernel" -name "internals.h" 2>/dev/null | head
+echo "=== what gitlink/HEAD for display ==="
+cd "$GITHUB_WORKSPACE/display-drivers" && git log -1 --oneline
+cd "$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
+echo "=== grep includes of internals.h ==="
+grep -rn "internals.h" "$GITHUB_WORKSPACE/display-drivers" 2>/dev/null | head
