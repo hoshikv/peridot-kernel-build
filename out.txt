@@ -1,4 +1,10 @@
-########## diff mi_disp/mi_disp_lhbm.c ##########
+### num lines each file ###
+   638 /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/mi_disp/mi_disp_lhbm.c
+   619 /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_lhbm.c
+  6504 /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/mi_disp/mi_dsi_panel.c
+  5397 /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.c
+ 13158 total
+### diff mi_disp_lhbm.c ###
 --- /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/mi_disp/mi_disp_lhbm.c	2026-08-30 17:14:51.264066322 +0000
 +++ /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_lhbm.c	2026-08-30 15:07:50.089936092 +0000
 @@ -4,635 +4,616 @@
@@ -79,104 +85,12 @@
 -  display = (struct dsi_display *)df->d_display[disp_id].display;
 -  if (!mi_disp_lhbm_fod_enabled(display->panel)) {
 -    DISP_INFO("%s panel is not local hbm\n", get_disp_id_name(disp_id));
--    return 0;
--  }
--
--  lhbm_fod = kzalloc(sizeof(struct disp_lhbm_fod), GFP_KERNEL);
--  if (!lhbm_fod) {
--    DISP_ERROR("can not allocate buffer for disp_lhbm\n");
--    return -ENOMEM;
--  }
--
--  df->d_display[disp_id].lhbm_fod_ptr = lhbm_fod;
--  lhbm_fod->display = display;
--
--  INIT_LIST_HEAD(&lhbm_fod->event_list);
--  spin_lock_init(&lhbm_fod->spinlock);
--
--  atomic_set(&lhbm_fod->allow_tx_lhbm, 0);
--  atomic_set(&lhbm_fod->target_brightness,
--             LHBM_TARGET_BRIGHTNESS_OFF_FINGER_UP);
--
--  init_waitqueue_head(&lhbm_fod->fod_pending_wq);
--
--  lhbm_fod->fod_thread = kthread_run(mi_disp_lhbm_fod_thread_fn, lhbm_fod,
--                                     "disp_lhbm_fod:%d", disp_id);
--  if (IS_ERR(lhbm_fod->fod_thread)) {
--    DISP_ERROR("failed to create disp_fod:%d kthread\n", disp_id);
--    ret = PTR_ERR(lhbm_fod->fod_thread);
--    lhbm_fod->fod_thread = NULL;
--    goto error;
--  }
--  /* set realtime priority */
--  sched_set_fifo(lhbm_fod->fod_thread);
-+bool is_local_hbm(int disp_id)
-+{
-+	struct dsi_display *display = NULL;
-+
-+	if (is_support_disp_id(disp_id)) {
-+		if (disp_id == MI_DISP_PRIMARY)
-+			display = mi_get_primary_dsi_display();
-+		else
-+			display = mi_get_secondary_dsi_display();
-########## diff mi_disp/mi_dsi_panel.c ##########
---- /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/mi_disp/mi_dsi_panel.c	2026-08-30 17:14:51.264757918 +0000
-+++ /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.c	2026-08-30 16:52:20.372139970 +0000
-@@ -18,7 +18,7 @@
- #include "dsi_display.h"
- #include "dsi_ctrl_hw.h"
- #include "dsi_parser.h"
--#include "internals.h"
-+#include "../../../../kernel/kernel/irq/internals.h"
- #include "sde_connector.h"
- #include "sde_trace.h"
- #include "mi_dsi_panel.h"
-@@ -33,2035 +33,1887 @@
- #define to_dsi_display(x) container_of(x, struct dsi_display, host)
- 
- void mi_dsi_update_backlight_in_aod(struct dsi_panel *panel,
--                                    bool restore_backlight);
-+			bool restore_backlight);
- 
- static u64 g_panel_id[MI_DISP_MAX];
- 
--struct dsi_panel *g_panel;
--
- typedef int (*mi_display_pwrkey_callback)(int);
- extern void mi_display_pwrkey_callback_set(mi_display_pwrkey_callback);
- 
--static int mi_panel_id_init(struct dsi_panel *panel) {
--  if (!panel) {
--    DISP_ERROR("invalid params\n");
--    return -EINVAL;
--  }
--  g_panel = panel;
--  g_panel_id[mi_get_disp_id(panel->type)] = panel->mi_cfg.mi_panel_id;
--
+### rest of mi_dsi_panel.c diff (beyond 120) ###
 -  return 0;
 -}
 -
--enum mi_project_panel_id mi_get_panel_id_by_dsi_panel(struct dsi_panel *panel) {
--  if (!panel) {
--    DISP_ERROR("invalid params\n");
--    return PANEL_ID_INVALID;
--  }
--
--  return mi_get_panel_id(panel->mi_cfg.mi_panel_id);
--}
--
--enum mi_project_panel_id mi_get_panel_id_by_disp_id(int disp_id) {
--  if (!is_support_disp_id(disp_id)) {
--    DISP_ERROR("Unsupported display id\n");
--    return PANEL_ID_INVALID;
--  }
--
--  return mi_get_panel_id(g_panel_id[disp_id]);
--}
--
--int mi_dsi_panel_pre_init(struct dsi_panel *panel) {
+-int mi_dsi_panel_deinit(struct dsi_panel *panel) {
 -  struct mi_dsi_panel_cfg *mi_cfg = NULL;
--  int rc = 0;
 -
 -  if (!panel) {
 -    DISP_ERROR("invalid params\n");
@@ -184,92 +98,274 @@
 -  }
 -
 -  mi_cfg = &panel->mi_cfg;
--  mi_cfg->dsi_panel = panel;
 -
--  rc = panel->utils.read_u64(panel->utils.data, "mi,panel-id",
--                             &mi_cfg->mi_panel_id);
--  if (rc) {
--    mi_cfg->mi_panel_id = 0;
--    DISP_ERROR("mi,panel-id not specified\n");
+-  if (mi_cfg->disp_wakelock) {
+-    wakeup_source_unregister(mi_cfg->disp_wakelock);
+-  }
+-  return 0;
+-}
+-
+-int mi_dsi_acquire_wakelock(struct dsi_panel *panel) {
+-  struct mi_dsi_panel_cfg *mi_cfg = NULL;
+-
+-  if (!panel) {
+-    DISP_ERROR("invalid params\n");
+-    return -EINVAL;
+-  }
+-
+-  mi_cfg = &panel->mi_cfg;
+-
+-  if (mi_cfg->disp_wakelock) {
+-    __pm_stay_awake(mi_cfg->disp_wakelock);
+-  }
+-
+-  return 0;
+-}
+-
+-int mi_dsi_release_wakelock(struct dsi_panel *panel) {
+-  struct mi_dsi_panel_cfg *mi_cfg = NULL;
+-
+-  if (!panel) {
+-    DISP_ERROR("invalid params\n");
+-    return -EINVAL;
+-  }
+-
+-  mi_cfg = &panel->mi_cfg;
+-
+-  if (mi_cfg->disp_wakelock) {
+-    __pm_relax(mi_cfg->disp_wakelock);
+-  }
+-
+-  return 0;
+-}
+-
+-bool is_aod_and_panel_initialized(struct dsi_panel *panel) {
+-  if ((panel->power_mode == SDE_MODE_DPMS_LP1 ||
+-       panel->power_mode == SDE_MODE_DPMS_LP2) &&
+-      dsi_panel_initialized(panel)) {
+-    return true;
 -  } else {
--    DISP_DEBUG("mi,panel-id is 0x%llx (%s)\n", mi_cfg->mi_panel_id,
--               mi_get_panel_id_name(mi_cfg->mi_panel_id));
+-    return false;
 -  }
--
--  rc = mi_panel_id_init(panel);
--
--  return rc;
 -}
 -
--int mi_dsi_panel_init(struct dsi_panel *panel) {
--  struct mi_dsi_panel_cfg *mi_cfg = NULL;
+-int mi_dsi_panel_esd_irq_ctrl(struct dsi_panel *panel, bool enable) {
+-  int ret = 0;
 -
 -  if (!panel) {
 -    DISP_ERROR("invalid params\n");
 -    return -EINVAL;
 -  }
 -
+-  mutex_lock(&panel->panel_lock);
+-  ret = mi_dsi_panel_esd_irq_ctrl_locked(panel, enable);
+-  mutex_unlock(&panel->panel_lock);
+-
+-  return ret;
+-}
+-
+-int mi_dsi_panel_esd_irq_ctrl_locked(struct dsi_panel *panel, bool enable) {
+-  struct mi_dsi_panel_cfg *mi_cfg;
+-  struct irq_desc *desc;
+-
+-  if (!panel || !panel->panel_initialized) {
+-    DISP_ERROR("Panel not ready!\n");
+-    return -EINVAL;
+-  }
+-
 -  mi_cfg = &panel->mi_cfg;
+-  if (gpio_is_valid(mi_cfg->esd_err_irq_gpio)) {
+-    if (mi_cfg->esd_err_irq) {
+-      if (enable) {
+-        if (!mi_cfg->esd_err_enabled) {
+-          desc = irq_to_desc(mi_cfg->esd_err_irq);
+-          if (!irq_settings_is_level(desc))
+-            desc->istate &= ~IRQS_PENDING;
+-          enable_irq_wake(mi_cfg->esd_err_irq);
+-          enable_irq(mi_cfg->esd_err_irq);
+-          mi_cfg->esd_err_enabled = true;
+-          DISP_INFO("[%s] esd irq is enable\n", panel->type);
+-        }
+-      } else {
+-        if (mi_cfg->esd_err_enabled) {
+-          disable_irq_wake(mi_cfg->esd_err_irq);
+-          disable_irq_nosync(mi_cfg->esd_err_irq);
+-          mi_cfg->esd_err_enabled = false;
+-          DISP_INFO("[%s] esd irq is disable\n", panel->type);
+-        }
+-      }
+-    }
+-  } else {
+-    DISP_INFO("[%s] esd irq gpio invalid\n", panel->type);
+-  }
 -
--  mutex_init(&mi_cfg->doze_lock);
+-  if (mi_get_panel_id_by_dsi_panel(panel) == O82_PANEL_PA ||
+-      mi_get_panel_id_by_dsi_panel(panel) == O82_PANEL_PB ||
+-      mi_get_panel_id_by_dsi_panel(panel) == O81_PANEL_PA ||
+-      mi_get_panel_id_by_dsi_panel(panel) == O81_PANEL_PB) {
+-    if (gpio_is_valid(mi_cfg->esd_err_irq_gpio_second)) {
+-      if (mi_cfg->esd_err_irq_second) {
+-        if (enable) {
+-          if (!mi_cfg->esd_err_enabled_second) {
+-            desc = irq_to_desc(mi_cfg->esd_err_irq_second);
+-            if (!irq_settings_is_level(desc))
+-              desc->istate &= ~IRQS_PENDING;
+-            enable_irq_wake(mi_cfg->esd_err_irq_second);
+-            enable_irq(mi_cfg->esd_err_irq_second);
+-            mi_cfg->esd_err_enabled_second = true;
+-            DISP_INFO("[%s] esd irq second is enable\n", panel->type);
+-          }
+-        } else {
+-          if (mi_cfg->esd_err_enabled_second) {
+-            disable_irq_wake(mi_cfg->esd_err_irq_second);
+-            disable_irq_nosync(mi_cfg->esd_err_irq_second);
+-            mi_cfg->esd_err_enabled_second = false;
+-            DISP_INFO("[%s] esd irq second is disable\n", panel->type);
+-          }
+-        }
+-      }
+-    } else {
+-      DISP_INFO("[%s] esd irq second gpio invalid\n", panel->type);
+-    }
+-  }
 -
--  mi_cfg->disp_wakelock = wakeup_source_register(NULL, "disp_wakelock");
--  if (!mi_cfg->disp_wakelock) {
--    DISP_ERROR("doze_wakelock wake_source register failed");
+-  return 0;
+-}
+-
+-static void
+-mi_disp_set_dimming_delayed_work_handler(struct kthread_work *work) {
+-  struct disp_delayed_work *delayed_work =
+-      container_of(work, struct disp_delayed_work, delayed_work.work);
+-  struct dsi_panel *panel = (struct dsi_panel *)(delayed_work->data);
+-  struct disp_feature_ctl ctl;
+-
+-  memset(&ctl, 0, sizeof(struct disp_feature_ctl));
+-  ctl.feature_id = DISP_FEATURE_DIMMING;
+-  ctl.feature_val = FEATURE_ON;
+-
+-  DISP_INFO("[%s] panel set backlight dimming on\n", panel->type);
+-  mi_dsi_acquire_wakelock(panel);
+-  mi_dsi_panel_set_disp_param(panel, &ctl);
+-  mi_dsi_release_wakelock(panel);
+-
+-  kfree(delayed_work);
+-}
+-
+-int mi_dsi_panel_tigger_dimming_delayed_work(struct dsi_panel *panel) {
+-  int disp_id = 0;
+-  struct disp_feature *df = mi_get_disp_feature();
+-  struct disp_display *dd_ptr;
+-  struct disp_delayed_work *delayed_work;
+-
+-  if (!panel) {
+-    DISP_ERROR("invalid params\n");
+-    return -EINVAL;
+-  }
+-
+-  delayed_work = kzalloc(sizeof(*delayed_work), GFP_KERNEL);
+-  if (!delayed_work) {
+-    DISP_ERROR("failed to allocate delayed_work buffer\n");
 -    return -ENOMEM;
 -  }
 -
--  mi_dsi_panel_parse_config(panel);
--  atomic_set(&mi_cfg->brightness_clone, 0);
--  if ((mi_get_panel_id_by_dsi_panel(panel) == N3_PANEL_PA) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == N2_PANEL_PA) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == N1_PANEL_PA) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == N8_PANEL_PA) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == N8_PANEL_SA) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == N18_PANEL_PA) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == N18_PANEL_SA) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == N16T_PANEL_PA) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == N16T_PANEL_PB) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == N16T_PANEL_PC) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == O16U_PANEL_PA) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == O16U_PANEL_PB) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == O82_PANEL_PA) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == O82_PANEL_PB) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == O81_PANEL_PA) ||
--      (mi_get_panel_id_by_dsi_panel(panel) == O81_PANEL_PB)) {
--    mi_display_pwrkey_callback_set(mi_display_powerkey_callback);
+-  disp_id = mi_get_disp_id(panel->type);
+-  dd_ptr = &df->d_display[disp_id];
+-
+-  kthread_init_delayed_work(&delayed_work->delayed_work,
+-                            mi_disp_set_dimming_delayed_work_handler);
+-  delayed_work->dd_ptr = dd_ptr;
+-  delayed_work->wq = &dd_ptr->pending_wq;
+-  delayed_work->data = panel;
+-
+-  return kthread_queue_delayed_work(
+-      dd_ptr->worker, &delayed_work->delayed_work,
+-      msecs_to_jiffies(panel->mi_cfg.panel_on_dimming_delay));
+-}
+-
+-static void
+-mi_disp_timming_switch_delayed_work_handler(struct kthread_work *work) {
+-  struct disp_delayed_work *delayed_work =
+-      container_of(work, struct disp_delayed_work, delayed_work.work);
+-  struct dsi_panel *dsi_panel = (struct dsi_panel *)(delayed_work->data);
+-
+-  mi_dsi_acquire_wakelock(dsi_panel);
+-
+-  dsi_panel_acquire_panel_lock(dsi_panel);
+-  if (dsi_panel->panel_initialized) {
+-    dsi_panel_tx_cmd_set(dsi_panel, DSI_CMD_SET_MI_FRAME_SWITCH_MODE_SEC);
+-    DISP_INFO("DSI_CMD_SET_MI_FRAME_SWITCH_MODE_SEC\n");
+-  } else {
+-    DISP_ERROR("Panel not initialized, don't send "
+-               "DSI_CMD_SET_MI_FRAME_SWITCH_MODE_SEC\n");
 -  }
--  return 0;
-########## diff Kbuild ##########
---- /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/Kbuild	2026-08-30 17:14:51.255756621 +0000
-+++ /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Kbuild	2026-08-30 15:07:50.081762803 +0000
-@@ -36,9 +36,6 @@
- ifeq ($(CONFIG_ARCH_QTI_VM), y)
-     include $(DISPLAY_ROOT)/config/gki_pineappledisptui.conf
-     LINUX_INC += -include $(DISPLAY_ROOT)/config/gki_pineappledisptuiconf.h
--else ifeq ($(BOARD_PLATFORM), volcano)
--    include $(DISPLAY_ROOT)/config/gki_volcanodisp.conf
--    LINUX_INC += -include $(DISPLAY_ROOT)/config/gki_volcanodispconf.h
- else
- 	include $(DISPLAY_ROOT)/config/gki_pineappledisp.conf
- 	LINUX_INC += -include $(DISPLAY_ROOT)/config/gki_pineappledispconf.h
-@@ -104,8 +101,8 @@
- 	CDEFINES += -DCONFIG_TARGET_PRODUCT_CHENFENG
- endif
- 
--KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/sm8635-modules/qcom/opensource/display-drivers/hdcp/Module.symvers
--KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/sm8635-modules/qcom/opensource/display-drivers/msm/Module.symvers
-+KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/display-drivers/hdcp/Module.symvers
-+KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/display-drivers/msm/Module.symvers
- 
- ifeq ($(call cc-option-yn, -Wheader-guard),y)
- EXTRA_CFLAGS += -Wheader-guard
-@@ -295,3 +292,6 @@
- 			     mi_disp/mi_sde_encoder.o \
- 			     mi_disp/mi_sde_connector.o
- 
-+
-+CDEFINES += -DBUILD_TIMESTAMP=\"$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')\"
-+
+-  dsi_panel_release_panel_lock(dsi_panel);
+-
+-  mi_dsi_release_wakelock(dsi_panel);
+-
+-  kfree(delayed_work);
+-}
+-
+-int mi_dsi_panel_tigger_timming_switch_delayed_work(struct dsi_panel *panel) {
+-  int disp_id = 0;
+-  struct disp_feature *df = mi_get_disp_feature();
+-  struct disp_display *dd_ptr;
+-  struct disp_delayed_work *delayed_work;
+-
+-  if (!panel) {
+-    DISP_ERROR("invalid params\n");
+-    return -EINVAL;
+-  }
+-
+-  delayed_work = kzalloc(sizeof(*delayed_work), GFP_KERNEL);
+-  if (!delayed_work) {
+-    DISP_ERROR("failed to allocate delayed_work buffer\n");
+-    return -ENOMEM;
+-  }
+-
+-  disp_id = mi_get_disp_id(panel->type);
+-  dd_ptr = &df->d_display[disp_id];
+-
+-  kthread_init_delayed_work(&delayed_work->delayed_work,
+-                            mi_disp_timming_switch_delayed_work_handler);
+-  delayed_work->dd_ptr = dd_ptr;
+-  delayed_work->wq = &dd_ptr->pending_wq;
+-  delayed_work->data = panel;
+-  return kthread_queue_delayed_work(dd_ptr->worker, &delayed_work->delayed_work,
+-                                    msecs_to_jiffies(20));
+-}
+-
+-int mi_dsi_update_switch_cmd_N3(struct dsi_panel *panel, u32 cmd_update_index,
+-                                u32 index) {
+-  struct dsi_cmd_update_info *info = NULL;
+-  struct dsi_display_mode *cur_mode = NULL;
+-  int i = 0;
+-  u8 dc_6C_cfg = 0;
+-  u8 cmd_update_count = 0;
+-
+-  if (!panel || !panel->cur_mode || !panel->cur_mode->priv_info) {
+-    DISP_ERROR("invalid params\n");
+-    return -EINVAL;
+-  }
+-
+-  cur_mode = panel->cur_mode;
+-
+-  if (panel->mi_cfg.real_dc_state == FEATURE_ON) {
+-    dc_6C_cfg = cur_mode->priv_info->dc_on_6Creg;
+-  } else {
+-    dc_6C_cfg = cur_mode->priv_info->dc_off_6Creg;
+-  }
+-
+-  info = cur_mode->priv_info->cmd_update[cmd_update_index];
+-  cmd_update_count = cur_mode->priv_info->cmd_update_count[cmd_update_index];
+-
+-  for (i = 0; i < cmd_update_count; i++) {
+-    DISP_DEBUG("[%s] update [%s] mipi_address(0x%02X) index(%d) lenght(%d)\n",
+-               panel->type, cmd_set_prop_map[info->type], info->mipi_address,
+-               info->index, info->length);
+-    if (info && info->mipi_address == 0x6C) {
+-      mi_dsi_panel_update_cmd_set(panel, cur_mode, index, info, &dc_6C_cfg,
+-                                  sizeof(dc_6C_cfg));
+-    }
+-    info++;
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:51:12Z run=33317766012
+__RAW__ 2026-08-30T17:52:01Z run=33317766012
