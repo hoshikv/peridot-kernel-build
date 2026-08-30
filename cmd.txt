@@ -1,10 +1,12 @@
 M="$GITHUB_WORKSPACE/modules/qcom/opensource"
-echo "===== securemsm hdcp Kbuild ====="
-find "$M/securemsm-kernel/hdcp" -maxdepth 1 -type f | head
-head -50 "$M/securemsm-kernel/hdcp/Kbuild" 2>/dev/null || echo "NO Kbuild"
-echo "===== hw_fence full Kbuild ====="
-cat "$M/mm-drivers/hw_fence/Kbuild"
-echo "===== conf files ====="
-ls "$M/mm-drivers/hw_fence/config" "$M/mm-drivers/config" 2>/dev/null
-echo "===== gki conf for pineapple in mm-drivers ====="
-find "$M/mm-drivers" -name "*pineappl*" | head
+K="$GITHUB_WORKSPACE/kernel"
+echo "=== how is securemsm hdcp built? Android.bp/Makefile? ==="
+find "$M/securemsm-kernel" -maxdepth 2 -name "Android.bp" -o -maxdepth 2 -name "Android.mk" -o -maxdepth 2 -name "Kbuild" | head
+ls "$M/securemsm-kernel"
+echo "=== mmrm Kbuild ==="
+cat "$M/mmrm-driver/Kbuild" | head -60
+ls "$M/mmrm-driver"
+echo "=== sync_fence Kbuild ==="
+cat "$M/mm-drivers/sync_fence/Kbuild"
+echo "=== ext_display Kbuild ==="
+cat "$M/mm-drivers/msm_ext_display/Kbuild" | head -50
