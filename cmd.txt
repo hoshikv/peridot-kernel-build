@@ -1,9 +1,11 @@
-export PATH="$HOME/tc/bin:$PATH"; export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
-K="$GITHUB_WORKSPACE/kernel"; O="$GITHUB_WORKSPACE/out"
-D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-echo "=== Kbuild hdcp lines ==="
-grep -n "hdcp\|HDCP\|SEC\|sec/" "$D/msm/Kbuild" | head
-echo "=== rebuild WITHOUT HDCP_QSEECOM ==="
-make -C "$K" O="$O" M="$D/msm" DISPLAY_ROOT="$D" OUT="$O" CONFIG_HDCP_QSEECOM= modules 2>&1 | tail -15
-echo "RC=$?"
-ls -la "$D/msm/msm_drm.ko" 2>&1
+K="$GITHUB_WORKSPACE/kernel"
+echo "=== does kernel tree have modules repo hints? ==="
+ls "$K" | grep -i "module\|opensource\|vendor" 
+cat "$K/qcom/opensource/display-drivers" 2>/dev/null && echo "(filelink above)"
+echo "=== submodules in kernel repo ==="
+cat "$K/.gitmodules" 2>/dev/null | head -40
+echo "=== check crdroid modules repo on github ==="
+curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/crdroidandroid/android_kernel_xiaomi_sm8650-modules/branches/16.0" | grep -o "\"name\":\"16.0\"" | head -1
+curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/LineageOS/android_kernel_xiaomi_sm8650-modules/branches/lineage-23.2" | grep -o "\"name\":\"lineage-23.2\"" | head -1
+echo "=== what repo is the kernel? ==="
+git -C "$K" remote -v | head -2
