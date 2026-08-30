@@ -1,10 +1,4 @@
-header() { curl -s -o /dev/null -w "%{http_code}" "https://api.github.com/repos/$1"; }
-for repo in "crdroidandroid/android_kernel_xiaomi_sm8635-modules" \
-            "LineageOS/android_kernel_xiaomi_sm8635-modules" \
-            "crdroidandroid/android_kernel_xiaomi_sm8650-modules" \
-            "LineageOS/android_vendor_xiaomi_sm8635-kernel-modules" \
-            "LineageOS/android_kernel_xiaomi_sm8450-modules"; do
-  echo "$repo -> $(header "$repo")"
-done
-echo "=== check LineageOS sm8450-modules qcom tree has hdcp/mmrm/fence ==="
-curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/LineageOS/android_kernel_xiaomi_sm8450-modules/contents/qcom/opensource/display-drivers" | grep -o '"name":"[^"]*"' | head -40
+echo "=== branches sm8635-modules (crdroid) ==="
+curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/crdroidandroid/android_kernel_xiaomi_sm8635-modules/branches?per_page=100" | grep -o '"name":"[^"]*"' | head -20
+echo "=== branches lineage sm8635-modules ==="
+curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/LineageOS/android_kernel_xiaomi_sm8635-modules/branches?per_page=100" | grep -o '"name":"[^"]*"' | head -20
