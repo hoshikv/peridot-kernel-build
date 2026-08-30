@@ -1,3 +1,9 @@
-D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-echo "=== msm/Kbuild full ==="
-cat "$D/msm/Kbuild" 2>/dev/null
+export PATH="$HOME/tc/bin:$PATH"
+export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
+cd "$GITHUB_WORKSPACE/kernel"
+O="$GITHUB_WORKSPACE/out"
+DMSM="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
+echo "=== build M=msm ==="
+make -C "$GITHUB_WORKSPACE/kernel" O="$O" M="$DMSM" modules 2>&1 | tail -30
+echo "=== ko ==="
+find "$DMSM" -name "*.ko" -exec ls -la {} \; 2>/dev/null
