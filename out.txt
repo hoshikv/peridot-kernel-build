@@ -1,10 +1,47 @@
-=== nm hdcp1 on msm_hdcp.o ===
-=== size of msm_hdcp.o ===
--rw-r--r-- 1 runner runner 178400 Aug 30 16:58 /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/hdcp/msm_hdcp.o
-=== where referenced in sde_hdcp ===
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_1x.c:1588:	hdcp->hdcp1_handle = hdcp1_init();
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_2x.c:342:	return hdcp2_feature_supported(hdcp->hdcp2_ctx);
-=== config HDCP in DISPLAY config ===
-export CONFIG_HDCP_QSEECOM=y
+=== grep hdcp1_init/EXPORT in msm_hdcp.c ===
+57:EXPORT_SYMBOL(msm_hdcp_register_cb);
+87:EXPORT_SYMBOL(msm_hdcp_notify_topology);
+108:EXPORT_SYMBOL(msm_hdcp_cache_repeater_topology);
+=== nm all hdcp ===
+0000000000000010 d __UNIQUE_ID___addressable_msm_hdcp_cache_repeater_topology365
+0000000000000008 d __UNIQUE_ID___addressable_msm_hdcp_notify_topology364
+0000000000000000 d __UNIQUE_ID___addressable_msm_hdcp_register_cb363
+                 U __class_create
+0000000000000030 r __kstrtab_msm_hdcp_cache_repeater_topology
+0000000000000016 r __kstrtab_msm_hdcp_notify_topology
+0000000000000000 r __kstrtab_msm_hdcp_register_cb
+0000000000000051 r __kstrtabns_msm_hdcp_cache_repeater_topology
+000000000000002f r __kstrtabns_msm_hdcp_notify_topology
+0000000000000015 r __kstrtabns_msm_hdcp_register_cb
+0000000000000000 r __ksymtab_msm_hdcp_cache_repeater_topology
+0000000000000000 r __ksymtab_msm_hdcp_notify_topology
+0000000000000000 r __ksymtab_msm_hdcp_register_cb
+0000000000000000 R __mod_of__msm_hdcp_dt_match_device_table
+                 U __platform_driver_register
+                 U __stack_chk_fail
+                 U __this_module
+                 U _printk
+                 U alloc_chrdev_region
+                 U cdev_add
+                 U cdev_del
+                 U cdev_init
+                 U class_destroy
+0000000000000158 d dev_attr_min_level_change
+0000000000000138 d dev_attr_tp
+                 U device_create
+                 U device_destroy
+                 U devm_kmalloc
+                 U kobject_uevent_env
+                 U kstrtoint
+                 U memcpy
+0000000000000508 t min_level_change_store
+0000000000000140 T msm_hdcp_cache_repeater_topology
+00000000000003f4 t msm_hdcp_close
+0000000000000000 d msm_hdcp_driver
+0000000000000190 r msm_hdcp_fops
+00000000000000f8 d msm_hdcp_fs_attr_group
+0000000000000120 d msm_hdcp_fs_attrs
+0000000000000058 T msm_hdcp_notify_topology
+00000000000003e8 t msm_hdcp_open
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:02:14Z run=33317766012
+__RAW__ 2026-08-30T17:03:03Z run=33317766012
