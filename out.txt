@@ -1,37 +1,15 @@
-		if (__cond) {				\
-			err(1, fmt, ## __VA_ARGS__);	\
-		}					\
-	} while(0)
-
-#ifdef USE_PKCS11_ENGINE
-static const char *key_pass;
-#endif
-static BIO *wb;
-static char *cert_dst;
-static int kbuild_verbose;
-
-static void write_cert(X509 *x509)
-{
-	char buf[200];
-
-=====
-		parms.cert_id = cert_src;
-		parms.cert = NULL;
-
-		ENGINE_load_builtin_engines();
-		drain_openssl_errors();
-		e = ENGINE_by_id("pkcs11");
-		ERR(!e, "Load PKCS#11 ENGINE");
-		if (ENGINE_init(e))
-			drain_openssl_errors();
-		else
-			ERR(1, "ENGINE_init");
-		if (key_pass)
-			ERR(!ENGINE_ctrl_cmd_string(e, "PIN", key_pass, 0), "Set PKCS#11 PIN");
-		ENGINE_ctrl_cmd(e, "LOAD_CERT_CTRL", 0, &parms, NULL, 1);
-		ERR(!parms.cert, "Get X.509 from PKCS#11");
-		write_cert(parms.cert);
-#endif
-	} else {
+59:#ifndef OPENSSL_IS_BORINGSSL
+69:#endif
+80:#ifdef USE_PKCS11_ENGINE
+81:static const char *key_pass;
+82:#endif
+111:#ifdef USE_PKCS11_ENGINE
+112:	key_pass = getenv("KBUILD_SIGN_PIN");
+113:#endif
+128:#ifdef OPENSSL_IS_BORINGSSL
+131:#else
+149:		if (key_pass)
+150:			ERR(!ENGINE_ctrl_cmd_string(e, "PIN", key_pass, 0), "Set PKCS#11 PIN");
+154:#endif
 __DONE__ rc=0
-__RAW__ 2026-08-30T15:33:41Z run=33317766012
+__RAW__ 2026-08-30T15:34:24Z run=33317766012
