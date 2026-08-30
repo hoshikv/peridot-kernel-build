@@ -1,1 +1,17 @@
-cd $GITHUB_WORKSPACE/display-drivers && ls && echo "---M" && ls msm 2>/dev/null | head -30 && echo "---cfg" && find . -name "*defconfig*" -o -name "*.bzl" 2>/dev/null | head && echo "---vendor opensource" && ls vendor_opensource* 2>/dev/null
+set -e
+export PATH="$HOME/tc/bin:$PATH"
+export ARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
+export CROSS_COMPILE=aarch64-linux-gnu-
+cd "$GITHUB_WORKSPACE/kernel"
+mkdir -p "$GITHUB_WORKSPACE/out"
+O="$GITHUB_WORKSPACE/out"
+scripts/kconfig/merge_config.sh -m -r \
+  arch/arm64/configs/gki_defconfig \
+  arch/arm64/configs/vendor/pineapple_GKI.config \
+  arch/arm64/configs/vendor/peridot_GKI.config > "$O/merge.log" 2>&1 || true
+tail -5 "$O/merge.log"
+echo "=== olddefconfig ==="
+make O="$O" olddefconfig 2>&1 | tail -4
+echo "=== grep msm ==="
+grep -E "CONFIG_DRM_MSM|CONFIG_DRM_MSM_DSI|MI_DISPLAY" "$O/.config"
+df -h / | tail -1
