@@ -6,45 +6,26 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
-      - name: Checkout (with submodules)
+      - name: Checkout (no submodules)
         uses: actions/checkout@v4
         with:
-          submodules: recursive
-          fetch-depth: 0
+          fetch-depth: 1
           token: ${{ secrets.GH_TOKEN }}
-
-      - name: Install build deps
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq \
-            git bc bison flex libssl-dev libelf-dev python3 \
-            ca-certificates wget file unzip tmate
-          df -h / | tail -1
-
-      - name: Download Android clang prebuilt
-        run: |
-          mkdir -p toolchain
-          curl -L --fail -o toolchain/clang.tar.gz \
-            "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r530567.tar.gz"
-          mkdir -p toolchain/clang-r530567
-          tar -xzf toolchain/clang.tar.gz -C toolchain/clang-r530567
-          rm toolchain/clang.tar.gz
-          toolchain/clang-r530567/bin/clang --version | head -1
 
       - name: Start tmate + publish SSH info to gist
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          nohup tmate -F > "$HOME/tmate.log" 2>&1 &
-          for i in $(seq 1 30); do
-            tmate wait tmate-ready 2>/dev/null && break
+          TMATE_SOCK=/tmp/tmate.sock
+          nohup tmate -S "$TMATE_SOCK" -F > "$HOME/tmate.log" 2>&1 &
+          for i in $(seq 1 45); do
+            tmate -S "$TMATE_SOCK" wait tmate-ready 2>/dev/null && break
             sleep 2
           done
-          sleep 3
-          SSH_LINE="$(tmate display -p '#{tmate_ssh}')"
-          echo "SSH_LINE=[$SSH_LINE]"
+          sleep 4
+          SSH_LINE="$(tmate -S "$TMATE_SOCK" display -p '#{tmate_ssh}')"
           echo "$SSH_LINE" > "$GITHUB_WORKSPACE/tmate-ssh.txt"
-          gh gist create --public --desc "peridot session ssh" \
-            "$GITHUB_WORKSPACE/tmate-ssh.txt" 2>&1 | tee "$GITHUB_WORKSPACE/gist-url.txt"
+          echo "SSH_LINE=[$SSH_LINE]"
+          gh gist create --public --desc "peridot-session-ssh" "$GITHUB_WORKSPACE/tmate-ssh.txt" 2>&1 | tee "$GITHUB_WORKSPACE/gist-url.txt"
           echo "RUN_ID=$GITHUB_RUN_ID"
           sleep 20000
