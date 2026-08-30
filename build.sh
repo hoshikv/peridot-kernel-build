@@ -51,6 +51,9 @@ if [[ ! -f "$OUT/.config" ]]; then
   echo "[*] configure kernel (defconfig linege peridot)"
   make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH defconfig
 fi
+echo "[*] disable -Werror (clang r530567 lebih baru dari source ACK 6.1)"
+"$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d WERROR
+make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH olddefconfig
 
 echo "[*] modules_prepare"
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH modules_prepare
