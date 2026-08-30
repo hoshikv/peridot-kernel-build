@@ -1,16 +1,6 @@
-M="$GITHUB_WORKSPACE/modules"
-echo "=== where is sde_fence_output_hw_fence_dir_write_init defined? ==="
-grep -rln "sde_fence_output_hw_fence_dir_write_init" "$M/qcom/opensource" --include="*.c" --include="*.h" | head
-echo "=== where is sde_encoder_helper_hw_fence_sw_override defined? ==="
-grep -rln "sde_encoder_helper_hw_fence_sw_override" "$M/qcom/opensource" --include="*.c" | head
-echo "=== where is msm_ext_disp_register_intf defined? ==="
-grep -rln "msm_ext_disp_register_intf" "$M/qcom/opensource" --include="*.c" | head
-echo "=== where is spec_sync_wait_bind_array defined? ==="
-grep -rln "spec_sync_wait_bind_array" "$M/qcom/opensource" --include="*.c" | head
-echo "=== where is hdcp1_init defined? ==="
-grep -rln "hdcp1_init" "$M/qcom/opensource" --include="*.c" | head
-echo "=== sde_fence.c exists in import msm tree? ==="
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-find "$D/msm" -name "sde_fence.c" -o -name "sde_fence.h" | head
-echo "=== does import msm Kbuild reference sde_fence.o? ==="
-grep -n "sde_fence\|hw_fence\|ext_disp" "$D/msm/Kbuild" | head
+echo "=== Kbuild: fence/encoder/crtc objects & configs ==="
+grep -nE "sde_fence|sde_encoder|sde_crtc|CONFIG_DRM_SDE|CONFIG_QCOM_WB|CONFIG_DRM_MSM_DP|CONFIG_DRM_MSM_DSI|CONFIG_DRM_MSM_HDMI" "$D/msm/Kbuild" | head -40
+echo "=== total object entries count per source file for mdss? check module symvers of OLD in-tree build has msm_drm? no ==="
+echo "=== check LINUX_INC for include dirs (sde headers) ==="
+grep -n "LINUX_INC\|USERINCLUDE\|LINUXINCLUDE" "$D/msm/Kbuild" | head -20
