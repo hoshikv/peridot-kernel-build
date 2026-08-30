@@ -1,35 +1,46 @@
-=== build M=msm with DISPLAY_ROOT ===
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/dsi/dsi_defs.h:35:11: note: expanded from macro 'DSI_INFO'
-   34 | #define DSI_INFO(fmt, ...)      DRM_DEV_INFO(NULL, "[msm-dsi-info]: "fmt, \
-      |                                                                      ~~~
-   35 |                                                                 ##__VA_ARGS__)
-      |                                                                   ^~~~~~~~~~~
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/include/drm/drm_print.h:448:40: note: expanded from macro 'DRM_DEV_INFO'
-  448 |         drm_dev_printk(dev, KERN_INFO, fmt, ##__VA_ARGS__)
-      |                                        ~~~    ^~~~~~~~~~~
-6 warnings generated.
-  CC [M]  /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_display.o
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_display.c:723:6: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
-  722 |                         DISP_ERROR("read size exceeding the limit %d\n",
-      |                                                                   ~~
-      |                                                                   %lu
-  723 |                                         sizeof(g_dsi_read_info.rx_buf));
-      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_print.h:35:41: note: expanded from macro 'DISP_ERROR'
-   35 |                 mi_disp_printk(KERN_ERR, "[E]" fmt, ##__VA_ARGS__)
-      |                                                ~~~    ^~~~~~~~~~~
-1 warning generated.
-  CC [M]  /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.o
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.c:21:10: fatal error: 'internals.h' file not found
-   21 | #include "internals.h"
-      |          ^~~~~~~~~~~~~
-1 error generated.
-make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build:250: /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.o] Error 1
-make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2139: /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm] Error 2
-make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-make: *** [Makefile:256: __sub-make] Error 2
-make: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
-=== ko ===
-/dev/root        72G   62G   11G  86% /
+=== internals.h locations ===
+=== include dirs referenced in mi_dsi_panel.c ===
+8:#include <linux/delay.h>
+9:#include <linux/slab.h>
+10:#include <linux/gpio.h>
+11:#include <linux/of_gpio.h>
+12:#include <linux/rtc.h>
+13:#include <linux/pm_wakeup.h>
+14:#include <video/mipi_display.h>
+15:#include <drm/mi_disp.h>
+17:#include "dsi_panel.h"
+18:#include "dsi_display.h"
+=== dsi dir listing ===
+dsi_catalog.c
+dsi_catalog.h
+dsi_catalog.o
+dsi_clk.h
+dsi_clk_manager.c
+dsi_clk_manager.o
+dsi_ctrl.c
+dsi_ctrl.h
+dsi_ctrl.o
+dsi_ctrl_hw.h
+dsi_ctrl_hw_2_2.c
+dsi_ctrl_hw_2_2.o
+dsi_ctrl_hw_cmn.c
+dsi_ctrl_hw_cmn.o
+dsi_ctrl_reg.h
+dsi_defs.h
+dsi_display.c
+dsi_display.h
+dsi_display.o
+dsi_display_test.c
+dsi_display_test.h
+dsi_display_test.o
+dsi_drm.c
+dsi_drm.h
+dsi_drm.o
+dsi_hw.h
+dsi_panel.c
+dsi_panel.h
+dsi_panel.o
+dsi_parser.c
+=== sde dir has internals? ===
 __DONE__ rc=0
-__RAW__ 2026-08-30T16:33:03Z run=33317766012
+__RAW__ 2026-08-30T16:38:06Z run=33317766012
