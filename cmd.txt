@@ -1,2 +1,19 @@
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-cat "$D/config/gki_pineappledisp.conf"
+O="$GITHUB_WORKSPACE/out"
+M="$GITHUB_WORKSPACE/modules/qcom/opensource"
+export PATH="$HOME/tc/bin:$PATH"
+export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
+K="$GITHUB_WORKSPACE/kernel"
+KXS="$M/mm-drivers/sync_fence/Module.symvers $M/mm-drivers/hw_fence/Module.symvers $M/mm-drivers/msm_ext_display/Module.symvers $M/mmrm-driver/Module.symvers $M/securemsm-kernel/Module.symvers"
+LOG="$GITHUB_WORKSPACE/msm_drm_link.log"
+make -C "$K" O="$O" M="$D" DISPLAY_ROOT="$D" OUT="$O" KBUILD_EXTRA_SYMBOLS="$KXS" \
+ CONFIG_DRM_MSM=y CONFIG_DRM_MSM_SDE=y CONFIG_SYNC_FILE=y CONFIG_DRM_MSM_DSI=y \
+ CONFIG_DRM_MSM_DP=y CONFIG_DRM_MSM_DP_MST=y CONFIG_DSI_PARSER=y CONFIG_QCOM_MDSS_PLL=y \
+ CONFIG_DRM_SDE_RSC=y CONFIG_DRM_SDE_WB=y CONFIG_DRM_MSM_REGISTER_LOGGING=y \
+ CONFIG_MSM_MMRM=y CONFIG_DISPLAY_BUILD=m CONFIG_HDCP_QSEECOM=y CONFIG_DRM_SDE_VM=y \
+ CONFIG_QTI_HW_FENCE=y CONFIG_QCOM_SPEC_SYNC=y CONFIG_QCOM_WCD939X_I2C=y MI_DISPLAY_MODIFY=y \
+ modules > "$LOG" 2>&1
+echo "rc=$?"
+find "$D" -name "msm_drm.ko" 2>/dev/null
+echo "=== errors ==="
+grep -nE "error:|Error|undefined|Missing|No such" "$LOG" | tail -30
