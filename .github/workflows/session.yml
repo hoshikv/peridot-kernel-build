@@ -1,0 +1,45 @@
+name: Interactive Build Session
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  session:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Install build deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            git bc bison flex libssl-dev libelf-dev python3 \
+            ca-certificates wget file unzip
+          df -h / | tail -1
+
+      - name: Download Android clang prebuilt
+        run: |
+          mkdir -p toolchain
+          curl -L --fail -o toolchain/clang.tar.gz \
+            "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r530567.tar.gz"
+          mkdir -p toolchain/clang-r530567
+          tar -xzf toolchain/clang.tar.gz -C toolchain/clang-r530567
+          rm toolchain/clang.tar.gz
+          toolchain/clang-r530567/bin/clang --version | head -1
+          echo "clang ready"
+
+      - name: Start tmate session (keep runner alive 6h)
+        uses: mxschmitt/action-tmate@v3
+        with:
+          detached: true
+
+      - name: Keep runner alive
+        run: |
+          echo "=== RUNNER KEY: $GITHUB_RUN_ID ==="
+          sleep 20000
