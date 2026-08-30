@@ -1,9 +1,9 @@
+export PATH="$HOME/tc/bin:$PATH"; export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
+K="$GITHUB_WORKSPACE/kernel"; O="$GITHUB_WORKSPACE/out"
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-echo "=== all hdcp-related files in import tree ==="
-find "$D" -iname "*hdcp*" | head -40
-echo "=== does sde_hdcp_1x define its own? ==="
-grep -n "hdcp1_init\|static.*hdcp1_\|EXPORT_SYMBOL.*hdcp1" "$D/msm/sde_hdcp_1x.c" | head
-echo "=== hdcp2_feature_supported def search ==="
-grep -rln "hdcp2_feature_supported" "$D" | head
-echo "=== look for hdcp impl files e.g. hdcp1_main, hdcp2_main ==="
-find "$D" -name "hdcp1*.c" -o -name "hdcp2*.c" -o -name "hdcp_*.c" | head
+echo "=== Kbuild hdcp lines ==="
+grep -n "hdcp\|HDCP\|SEC\|sec/" "$D/msm/Kbuild" | head
+echo "=== rebuild WITHOUT HDCP_QSEECOM ==="
+make -C "$K" O="$O" M="$D/msm" DISPLAY_ROOT="$D" OUT="$O" CONFIG_HDCP_QSEECOM= modules 2>&1 | tail -15
+echo "RC=$?"
+ls -la "$D/msm/msm_drm.ko" 2>&1
