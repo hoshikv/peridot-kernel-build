@@ -1,5 +1,13 @@
-D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
-echo "=== mi_disp_lhbm.c around 280-360 ==="
-sed -n '280,360p' "$D/mi_disp/mi_disp_lhbm.c"
-echo "=== mi_dsi_panel.c around 140-210 ==="
-sed -n '140,210p' "$D/mi_disp/mi_dsi_panel.c"
+D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
+O="$GITHUB_WORKSPACE/out"
+KO="$D/msm/msm_drm.ko"
+ls -la "$KO"
+echo "=== vermagic & crc ==="
+"$HOME/tc/bin/llvm-nm" -g "$KO" 2>/dev/null | grep -E " T | D " | grep -iE "msm_drm|vermagic" | head
+strings "$KO" | grep -E "^vermagic=|^srcversion=|^name=" | head
+echo "=== kernel vermagic in O ==="
+grep -r "UTS_RELEASE\|\"4.19\|vermagic" "$O/include/generated/utsrelease.h" 2>/dev/null; cat "$O/include/config/kernel.release" 2>/dev/null
+echo "=== reloc / build-id ==="
+"$HOME/tc/bin/llvm-readelf" -n "$KO" 2>/dev/null | head -20
+echo "=== modinfo ==="
+cd "$D/msm" && "$K/scripts/modinfo" "$KO" 2>/dev/null | head -15 || /sbin/modinfo "$KO" 2>/dev/null | head -15
