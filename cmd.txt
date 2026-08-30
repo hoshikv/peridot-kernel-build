@@ -1,5 +1,8 @@
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-echo "=== grep hdcp1_init/EXPORT in msm_hdcp.c ==="
-grep -n "hdcp1_init\|hdcp1_start\|hdcp2_feature_supported\|EXPORT_SYMBOL\|CONFIG_QSEECOM\|IS_ENABLED" "$D/hdcp/msm_hdcp.c" | head -30
-echo "=== nm all hdcp ==="
-~/tc/bin/llvm-nm "$D/hdcp/msm_hdcp.o" 2>/dev/null | head -40
+echo "=== find definitions hdcp1_init / hdcp2_feature_supported ==="
+grep -rn "hdcp1_init" "$D" --include="*.c" --include="*.h" | grep -v "sde_hdcp_1x" | head
+grep -rn "int hdcp2_feature_supported\|hdcp2_feature_supported(" "$D" --include="*.c" | grep -v "sde_hdcp_2x" | head
+echo "=== where is sde_hdcp_2x using it, surrounding context ==="
+sed -n '330,360p' "$D/msm/sde_hdcp_2x.c"
+echo "=== check dp dir for hdcp ==="
+ls "$D/msm/dp/" | grep -i hdcp
