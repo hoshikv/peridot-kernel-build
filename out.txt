@@ -1,13 +1,30 @@
-=== build M= display ===
-make: Entering directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
-make[1]: Entering directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-  MODPOST /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/Module.symvers
-WARNING: Module.symvers is missing.
-         Modules may not have dependencies or modversions.
-         You may get many unresolved symbol warnings.
+=== make modules (in-tree) ===
+  CC      kernel/kprobes.o
+  CC      kernel/hung_task.o
+  CC      kernel/watchdog.o
+  CC      kernel/seccomp.o
+  CC      kernel/utsname_sysctl.o
+  CC      kernel/taskstats.o
+  CC      kernel/tsacct.o
+  CC      kernel/tracepoint.o
+  CC      kernel/irq_work.o
+  CC      kernel/cpu_pm.o
+  CC      kernel/scs.o
+  CC      kernel/cfi.o
+  CC      kernel/jump_label.o
+  CC      kernel/context_tracking.o
+  CC      kernel/iomem.o
+  CHK     kernel/kheaders_data.tar.xz
+  GEN     kernel/kheaders_data.tar.xz
+  CC [M]  kernel/msm_sysstats.o
+  GZIP    kernel/config_data.gz
+  CC      kernel/configs.o
+  AR      kernel/built-in.a
+  CC [M]  kernel/kheaders.o
+make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2139: .] Error 2
 make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-make: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
-=== results ===
-/dev/root        72G   59G   14G  82% /
+make: *** [Makefile:256: __sub-make] Error 2
+=== Module.symvers ===
+/dev/root        72G   59G   13G  82% /
 __DONE__ rc=0
-__RAW__ 2026-08-30T15:20:34Z run=33317766012
+__RAW__ 2026-08-30T15:27:44Z run=33317766012
