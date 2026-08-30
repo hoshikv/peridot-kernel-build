@@ -1,8 +1,9 @@
-OK /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/sync_fence/Module.symvers (169B)
-OK /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/hw_fence/Module.symvers (4047B)
-OK /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/msm_ext_display/Module.symvers (734B)
-OK /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mmrm-driver/Module.symvers (1147B)
-OK /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Module.symvers (7978B)
-/dev/root        72G   62G   11G  86% /
+BUILD_RC=0
+-rw-r--r-- 1 runner runner 47260504 Aug 30 18:06 /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko
+  MODPOST /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/Module.symvers
+  CC [M]  /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.mod.o
+  LD [M]  /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko
+make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
+make: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
 __DONE__ rc=0
-__RAW__ 2026-08-30T18:04:15Z run=33317766012
+__RAW__ 2026-08-30T18:06:22Z run=33317766012
