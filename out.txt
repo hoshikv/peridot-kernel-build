@@ -1,6 +1,64 @@
-=== ls-remote crdroid sm8635-modules ===
-228944f7235d21d2ab3aedf00398f31d41495369	refs/heads/16.0
-=== ls-remote lineage sm8635-modules ===
-ed4ad0d1ad00b755af2fe61387dcc5397ad20b8f	refs/heads/lineage-23.2
+Cloning into 'modules'...
+=== autfcr ===
+modules
+modules/.git
+modules/.git/refs
+modules/.git/refs/heads
+modules/.git/refs/tags
+modules/.git/info
+modules/.git/objects
+modules/.git/objects/info
+modules/.git/objects/pack
+modules/.git/hooks
+modules/.git/logs
+modules/.git/logs/refs
+modules/.git/logs/refs/heads
+modules/nxp
+modules/nxp/opensource
+modules/nxp/opensource/driver
+modules/nxp/opensource/driver/config
+modules/nxp/opensource/driver/include
+modules/nxp/opensource/driver/nfc
+modules/qcom
+modules/qcom/opensource
+modules/qcom/opensource/datarmnet-ext
+modules/qcom/opensource/datarmnet-ext/sch
+modules/qcom/opensource/datarmnet-ext/perf
+modules/qcom/opensource/datarmnet-ext/mem
+modules/qcom/opensource/datarmnet-ext/aps
+modules/qcom/opensource/datarmnet-ext/shs
+modules/qcom/opensource/datarmnet-ext/src
+modules/qcom/opensource/datarmnet-ext/perf_tether
+modules/qcom/opensource/datarmnet-ext/wlan
+modules/qcom/opensource/datarmnet-ext/offload
+modules/qcom/opensource/spu-kernel
+modules/qcom/opensource/spu-kernel/drivers
+modules/qcom/opensource/spu-kernel/config
+modules/qcom/opensource/spu-kernel/include
+modules/qcom/opensource/graphics-kernel
+modules/qcom/opensource/graphics-kernel/build
+modules/qcom/opensource/graphics-kernel/config
+modules/qcom/opensource/graphics-kernel/include
+modules/qcom/opensource/fingerprint
+modules/qcom/opensource/securemsm-kernel
+modules/qcom/opensource/securemsm-kernel/qrng
+modules/qcom/opensource/securemsm-kernel/build
+modules/qcom/opensource/securemsm-kernel/smmu-proxy
+modules/qcom/opensource/securemsm-kernel/crypto-qti
+modules/qcom/opensource/securemsm-kernel/smcinvoke
+modules/qcom/opensource/securemsm-kernel/qseecom
+modules/qcom/opensource/securemsm-kernel/tz_log
+modules/qcom/opensource/securemsm-kernel/config
+modules/qcom/opensource/securemsm-kernel/linux
+modules/qcom/opensource/securemsm-kernel/include
+modules/qcom/opensource/securemsm-kernel/hdcp
+modules/qcom/opensource/camera-kernel
+modules/qcom/opensource/camera-kernel/dt-bindings
+modules/qcom/opensource/camera-kernel/drivers
+modules/qcom/opensource/camera-kernel/config
+modules/qcom/opensource/camera-kernel/include
+modules/qcom/opensource/mm-drivers
+modules/qcom/opensource/mm-drivers/sync_fence
+modules/qcom/opensource/mm-drivers/msm_ext_display
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:14:22Z run=33317766012
+__RAW__ 2026-08-30T17:14:54Z run=33317766012
