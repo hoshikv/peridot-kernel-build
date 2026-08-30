@@ -1,7 +1,40 @@
-rc=0
--rw-r--r-- 1 runner runner 4793 Aug 30 17:33 /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Module.symvers
-=== hdcp modules exports (hdcp1/hdcp2) ===
-=== hdcp symvers lines ===
-=== errors ===
+=== .ko produced ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qrng_dlkm.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qseecom_dlkm.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcedev-mod_dlkm.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcrypto-msm_dlkm.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm.ko
+=== symvers content ===
+0xe9be0d52	qce_get_crypto_status	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0x4fde47cc	qce_set_irqs	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0x0e30ff3f	qce_manage_timeout	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0x8a41438e	qce_get_driver_stats	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0xec092a95	qce_clear_driver_stats	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0x4541bcae	qce_pm_table	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0x57f1b6bd	qce_aead_req	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0x110460a4	qce_ablk_cipher_req	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0xccf2c8be	qce_process_sha_req	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0x4f5c6625	qce_f8_req	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0x97b7a490	qce_f8_multi_pkt_req	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0x356ee3f7	qce_f9_req	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0x0d26f8cb	qce_enable_clk	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0x81a61e31	qce_disable_clk	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0xb0182cc8	qce_open	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0x575c81e1	qce_close	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0x46a7cef5	qce_hw_support	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0xd5d0c31d	qce_dump_req	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm	EXPORT_SYMBOL	
+0x5ed87c4c	qcrypto_get_num_engines	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcrypto-msm_dlkm	EXPORT_SYMBOL	
+0x17138353	qcrypto_get_engine_list	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcrypto-msm_dlkm	EXPORT_SYMBOL	
+0x1461e699	qcrypto_cipher_set_device	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcrypto-msm_dlkm	EXPORT_SYMBOL	
+0x9466fa61	qcrypto_cipher_set_device_hw	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcrypto-msm_dlkm	EXPORT_SYMBOL	
+0x94583f79	qcrypto_aead_set_device	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcrypto-msm_dlkm	EXPORT_SYMBOL	
+0x02ee8e11	qcrypto_ahash_set_device	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcrypto-msm_dlkm	EXPORT_SYMBOL	
+0x92e2ae57	qcrypto_cipher_set_flag	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcrypto-msm_dlkm	EXPORT_SYMBOL	
+0x86ffa5c4	qcrypto_aead_set_flag	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcrypto-msm_dlkm	EXPORT_SYMBOL	
+0xdd7c81bb	qcrypto_ahash_set_flag	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcrypto-msm_dlkm	EXPORT_SYMBOL	
+0x3510bf88	qcrypto_cipher_clear_flag	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcrypto-msm_dlkm	EXPORT_SYMBOL	
+0x1ecf3ef5	qcrypto_aead_clear_flag	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcrypto-msm_dlkm	EXPORT_SYMBOL	
+0x8df0f3fb	qcrypto_ahash_clear_flag	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcrypto-msm_dlkm	EXPORT_SYMBOL	
+=== undefined UND list in hdcp module if exists ===
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:33:48Z run=33317766012
+__RAW__ 2026-08-30T17:34:36Z run=33317766012
