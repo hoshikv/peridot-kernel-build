@@ -1,35 +1,23 @@
-=== Kbuild: fence/encoder/crtc objects & configs ===
-149:msm_drm-$(CONFIG_DRM_SDE_VM) += sde/sde_vm_common.o \
-154:msm_drm-$(CONFIG_DRM_MSM_DP) += dp/dp_altmode.o \
-179:msm_drm-$(CONFIG_DRM_MSM_DP_MST) += dp/dp_mst_drm.o
-181:msm_drm-$(CONFIG_DRM_MSM_DP_USBPD_LEGACY) += dp/dp_usbpd.o
-183:msm_drm-$(CONFIG_DRM_MSM_SDE) += sde/sde_crtc.o \
-184:				 sde/sde_encoder.o \
-185:				 sde/sde_encoder_dce.o \
-186:				 sde/sde_encoder_phys_vid.o \
-187:				 sde/sde_encoder_phys_cmd.o \
-228:				 sde/sde_fence.o \
-235:msm_drm-$(CONFIG_DRM_SDE_WB) += sde/sde_wb.o \
-236:				sde/sde_encoder_phys_wb.o
-238:msm_drm-$(CONFIG_DRM_SDE_RSC) += sde_rsc.o \
-242:msm_drm-$(CONFIG_DRM_MSM_DSI) += dsi/dsi_phy.o \
-291:			     mi_disp/mi_sde_crtc.o \
-292:			     mi_disp/mi_sde_encoder.o \
-=== total object entries count per source file for mdss? check module symvers of OLD in-tree build has msm_drm? no ===
-=== check LINUX_INC for include dirs (sde headers) ===
-8:	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_waipiodisptuiconf.h
-11:	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_waipiodispconf.h
-17:	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_neodispconf.h
-22:	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_parrotdispconf.h
-27:	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_pittidispconf.h
-32:	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_niobedispconf.h
-38:    LINUX_INC += -include $(DISPLAY_ROOT)/config/gki_pineappledisptuiconf.h
-41:	LINUX_INC += -include $(DISPLAY_ROOT)/config/gki_pineappledispconf.h
-48:        LINUX_INC += -include $(DISPLAY_ROOT)/config/gki_kalamadisptuiconf.h
-51:	LINUX_INC += -include $(DISPLAY_ROOT)/config/gki_kalamadispconf.h
-57:	LINUX_INC += -include $(DISPLAY_ROOT)/config/augen3dispconf.h
-60:LINUX_INC +=	-I$(KERNEL_SRC)/include/linux \
-63:LINUX_INC +=	-I$(DISPLAY_ROOT) \
-94:ccflags-y += $(LINUX_INC)
+=== gki_pineappledisp.conf (full) ===
+export CONFIG_DRM_MSM=y
+export CONFIG_DRM_MSM_SDE=y
+export CONFIG_SYNC_FILE=y
+export CONFIG_DRM_MSM_DSI=y
+export CONFIG_DRM_MSM_DP=y
+export CONFIG_DRM_MSM_DP_MST=y
+export CONFIG_DSI_PARSER=y
+export CONFIG_QCOM_MDSS_PLL=y
+export CONFIG_DRM_SDE_RSC=y
+export CONFIG_DRM_SDE_WB=y
+export CONFIG_DRM_MSM_REGISTER_LOGGING=y
+export CONFIG_MSM_MMRM=y
+export CONFIG_DISPLAY_BUILD=m
+export CONFIG_HDCP_QSEECOM=y
+export CONFIG_DRM_SDE_VM=y
+export CONFIG_QTI_HW_FENCE=y
+export CONFIG_QCOM_SPEC_SYNC=y
+export CONFIG_QCOM_WCD939X_I2C=y
+export MI_DISPLAY_MODIFY=y
+=== .config relevant ===
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:21:01Z run=33317766012
+__RAW__ 2026-08-30T17:21:23Z run=33317766012
