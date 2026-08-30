@@ -1,63 +1,29 @@
-=== msm/Kbuild (first 40 lines) ===
-# SPDX-License-Identifier: GPL-2.0-only
-
-KDIR := $(TOP)/kernel_platform/msm-kernel
-
-ifeq ($(CONFIG_ARCH_WAIPIO), y)
-ifeq ($(CONFIG_ARCH_QTI_VM), y)
-	include $(DISPLAY_ROOT)/config/gki_waipiodisptui.conf
-	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_waipiodisptuiconf.h
-else
-	include $(DISPLAY_ROOT)/config/gki_waipiodisp.conf
-	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_waipiodispconf.h
-endif
-endif
-
-ifeq ($(CONFIG_ARCH_NEO), y)
-	include $(DISPLAY_ROOT)/config/gki_neodisp.conf
-	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_neodispconf.h
-endif
-
-ifeq ($(CONFIG_ARCH_PARROT), y)
-	include $(DISPLAY_ROOT)/config/gki_parrotdisp.conf
-	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_parrotdispconf.h
-endif
-
-ifeq ($(CONFIG_ARCH_PITTI), y)
-	include $(DISPLAY_ROOT)/config/gki_pittidisp.conf
-	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_pittidispconf.h
-endif
-
-ifeq ($(CONFIG_ARCH_NIOBE), y)
-	include $(DISPLAY_ROOT)/config/gki_niobedisp.conf
-	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_niobedispconf.h
-endif
-
-ifeq ($(CONFIG_ARCH_PINEAPPLE), y)
-ifeq ($(CONFIG_ARCH_QTI_VM), y)
-    include $(DISPLAY_ROOT)/config/gki_pineappledisptui.conf
-    LINUX_INC += -include $(DISPLAY_ROOT)/config/gki_pineappledisptuiconf.h
-else
-	include $(DISPLAY_ROOT)/config/gki_pineappledisp.conf
-=== pineapple in target.bzl ===
-6:def define_pineapple(t, v):
-7-    define_target_variant_modules(
-8-        target = t,
-9-        variant = v,
-10-        registry = display_driver_modules,
-11-        modules = [
-12-            "msm_drm",
-13-        ],
-14-        config_options = [
-15-            "CONFIG_DRM_MSM_SDE",
-16-            "CONFIG_SYNC_FILE",
-17-            "CONFIG_DRM_MSM_DSI",
-18-            "CONFIG_DRM_MSM_DP",
-19-            "CONFIG_DRM_MSM_DP_MST",
-20-            "CONFIG_DSI_PARSER",
-21-            "CONFIG_DRM_SDE_WB",
-22-            "CONFIG_DRM_SDE_RSC",
-23-            "CONFIG_DRM_MSM_REGISTER_LOGGING",
-24-            "CONFIG_QCOM_MDSS_PLL",
+=== ARCH_PINEAPPLE in .config ===
+CONFIG_ARCH_PINEAPPLE=y
+CONFIG_DRM_MSM_HELPER=m
+=== vendor configs contain ARCH_PINEAPPLE? ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/arch/arm64/configs/vendor/pineapple_le.config:2:CONFIG_ARCH_PINEAPPLE=y
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/arch/arm64/configs/vendor/pineapple_tuivm.config:5:CONFIG_ARCH_PINEAPPLE=y
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/arch/arm64/configs/vendor/pineapple_GKI.config:2:CONFIG_ARCH_PINEAPPLE=y
+=== gki pineappledisp.conf content ===
+export CONFIG_DRM_MSM=y
+export CONFIG_DRM_MSM_SDE=y
+export CONFIG_SYNC_FILE=y
+export CONFIG_DRM_MSM_DSI=y
+export CONFIG_DRM_MSM_DP=y
+export CONFIG_DRM_MSM_DP_MST=y
+export CONFIG_DSI_PARSER=y
+export CONFIG_QCOM_MDSS_PLL=y
+export CONFIG_DRM_SDE_RSC=y
+export CONFIG_DRM_SDE_WB=y
+export CONFIG_DRM_MSM_REGISTER_LOGGING=y
+export CONFIG_MSM_MMRM=y
+export CONFIG_DISPLAY_BUILD=m
+export CONFIG_HDCP_QSEECOM=y
+export CONFIG_DRM_SDE_VM=y
+export CONFIG_QTI_HW_FENCE=y
+export CONFIG_QCOM_SPEC_SYNC=y
+export CONFIG_QCOM_WCD939X_I2C=y
+export MI_DISPLAY_MODIFY=y
 __DONE__ rc=0
-__RAW__ 2026-08-30T16:23:21Z run=33317766012
+__RAW__ 2026-08-30T16:24:04Z run=33317766012
