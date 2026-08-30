@@ -1,11 +1,5 @@
 cd "$GITHUB_WORKSPACE/modules"
-echo "=== qcom/opensource dirs ==="
-ls qcom/opensource
-echo "=== display-drivers? ==="
-ls qcom/opensource/display-drivers 2>/dev/null | head
-echo "=== mm-drivers subdirs ==="
-ls qcom/opensource/mm-drivers
-echo "=== hw-fence / sync-fence ==="
-find qcom/opensource -maxdepth 2 -iname "*fence*" -o -maxdepth 2 -iname "*mmrm*" | head
-echo "=== securemsm hdcp ==="
-ls qcom/opensource/securemsm-kernel/hdcp 2>/dev/null | head
+echo "=== qcom/opensource/display-drivers ==="
+ls qcom/opensource/display-drivers
+echo "=== dir depth ==="
+find qcom/opensource/display-drivers -maxdepth 2 -type d | head -30
