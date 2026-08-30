@@ -1,10 +1,9 @@
 M="$GITHUB_WORKSPACE/modules/qcom/opensource"
-echo "=== disk ==="
-df -h / | tail -1
-echo "=== hdcp Kbuild head ==="
-head -30 "$M/display-drivers/hdcp/Kbuild" 2>/dev/null
-echo "=== mmrm Kbuild ==="
+echo "=== display-drivers/hdcp Kbuild ==="
+head -40 "$M/display-drivers/hdcp/Kbuild"
+echo "=== mmrm-driver ls ==="
 ls "$M/mmrm-driver"
-head -20 "$M/mmrm-driver/Kbuild" 2>/dev/null
-echo "=== hw_fence/sync_fence/ext_display Kbuild ==="
-for d in hw_fence sync_fence msm_ext_display; do echo "--$d--"; ls "$M/mm-drivers/$d"; head -15 "$M/mm-drivers/$d/Kbuild" 2>/dev/null; done
+echo "=== mmrm Kbuild head ==="
+head -30 "$M/mmrm-driver/Kbuild" 2>/dev/null
+echo "=== msm/Kbuild top (1-30) ==="
+sed -n "1,30p" "$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Kbuild"
