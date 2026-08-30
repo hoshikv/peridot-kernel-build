@@ -18,7 +18,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq \
             git bc bison flex libssl-dev libelf-dev python3 \
-            ca-certificates wget file unzip
+            ca-certificates wget file unzip tmate
           df -h / | tail -1
 
       - name: Download Android clang prebuilt
@@ -31,27 +31,20 @@ jobs:
           rm toolchain/clang.tar.gz
           toolchain/clang-r530567/bin/clang --version | head -1
 
-      - name: Start tmate + keep alive
+      - name: Start tmate + publish SSH info to gist
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          sudo apt-get install -y -qq tmate
-          tmate -F &
+          nohup tmate -F > "$HOME/tmate.log" 2>&1 &
           for i in $(seq 1 30); do
             tmate wait tmate-ready 2>/dev/null && break
             sleep 2
           done
-          sleep 5
-          {
-            echo "WEB_SESSION=$(tmate display -p '#{tmate_web}')"
-            echo "SSH_CMD=$(tmate display -p '#{tmate_ssh}')"
-          } | tee "$GITHUB_WORKSPACE/tmate-url.txt"
-          wc -c "$GITHUB_WORKSPACE/tmate-url.txt"
-          echo "=== waiting for ssh connection; runner lives while this sleeps ==="
+          sleep 3
+          SSH_LINE="$(tmate display -p '#{tmate_ssh}')"
+          echo "SSH_LINE=[$SSH_LINE]"
+          echo "$SSH_LINE" > "$GITHUB_WORKSPACE/tmate-ssh.txt"
+          gh gist create --public --desc "peridot session ssh" \
+            "$GITHUB_WORKSPACE/tmate-ssh.txt" 2>&1 | tee "$GITHUB_WORKSPACE/gist-url.txt"
           echo "RUN_ID=$GITHUB_RUN_ID"
           sleep 20000
-
-      - name: Upload tmate connection info
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: tmate-url
-          path: tmate-url.txt
