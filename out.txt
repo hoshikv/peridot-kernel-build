@@ -1,7 +1,10 @@
-=== hdcp dir ===
-msm_hdcp.c
-msm_hdcp.o
-=== hdcp Kbuild ===
-=== config HDCP ===
+=== nm hdcp1 on msm_hdcp.o ===
+=== size of msm_hdcp.o ===
+-rw-r--r-- 1 runner runner 178400 Aug 30 16:58 /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/hdcp/msm_hdcp.o
+=== where referenced in sde_hdcp ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_1x.c:1588:	hdcp->hdcp1_handle = hdcp1_init();
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_2x.c:342:	return hdcp2_feature_supported(hdcp->hdcp2_ctx);
+=== config HDCP in DISPLAY config ===
+export CONFIG_HDCP_QSEECOM=y
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:01:26Z run=33317766012
+__RAW__ 2026-08-30T17:02:14Z run=33317766012
