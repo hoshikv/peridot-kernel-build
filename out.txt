@@ -1,18 +1,46 @@
-=== all internals.h in workspace ===
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/i3c/internals.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/sh/intc/internals.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/spi/internals.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/mtd/nand/raw/internals.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/kernel/irq/internals.h
-=== check if it's in kernel tree ===
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/i3c/internals.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/sh/intc/internals.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/spi/internals.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/mtd/nand/raw/internals.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/kernel/irq/internals.h
-=== what gitlink/HEAD for display ===
-fcfc5a1 Import vendor_opensource display-drivers peridot-u-oss (msm_drm.ko build tree)
-=== grep includes of internals.h ===
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.c:21:#include "internals.h"
+=== head of mi_dsi_panel.c ===
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2020, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2020 XiaoMi, Inc. All rights reserved.
+ */
+
+#define pr_fmt(fmt)	"mi-dsi-panel:[%s:%d] " fmt, __func__, __LINE__
+#include <linux/delay.h>
+#include <linux/slab.h>
+#include <linux/gpio.h>
+#include <linux/of_gpio.h>
+#include <linux/rtc.h>
+#include <linux/pm_wakeup.h>
+#include <video/mipi_display.h>
+#include <drm/mi_disp.h>
+
+#include "dsi_panel.h"
+#include "dsi_display.h"
+#include "dsi_ctrl_hw.h"
+#include "dsi_parser.h"
+#include "internals.h"
+#include "sde_connector.h"
+#include "sde_trace.h"
+#include "mi_dsi_panel.h"
+#include "mi_disp_feature.h"
+#include "mi_disp_print.h"
+#include "mi_disp_parser.h"
+#include "mi_dsi_display.h"
+#include "mi_disp_lhbm.h"
+#include "mi_panel_id.h"
+#include "mi_disp_nvt_alpha_data.h"
+
+#define to_dsi_display(x) container_of(x, struct dsi_display, host)
+
+void mi_dsi_update_backlight_in_aod(struct dsi_panel *panel,
+			bool restore_backlight);
+
+static u64 g_panel_id[MI_DISP_MAX];
+
+typedef int (*mi_display_pwrkey_callback)(int);
+=== search headers with similar names ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/rotator/sde_rotator_r3_internal.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/rotator/sde_rotator_r1_internal.h
 __DONE__ rc=0
-__RAW__ 2026-08-30T16:39:00Z run=33317766012
+__RAW__ 2026-08-30T16:39:54Z run=33317766012
