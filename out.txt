@@ -1,112 +1,43 @@
-=== mmrm-driver Makefile / bzl module names ===
-load(":mmrm_modules_build.bzl", "mmrm_driver_modules_entry")
-
-MMRM_DRV_PATH = "driver"
-
-mmrm_driver_modules = mmrm_driver_modules_entry([":mmrm_driver_headers"])
-module_entry = mmrm_driver_modules.register
-
-#--------------- MM-DRIVERS MODULES ------------------
-
-module_entry(
-    name = "msm-mmrm",
-    path = MMRM_DRV_PATH + "/src",
-    config_option = "CONFIG_MSM_MMRM",
-    srcs = [
-        "mmrm_clk_rsrc_mgr.c",
-        "mmrm_clk_rsrc_mgr_sw.c",
-        "mmrm_debug.c",
-        "mmrm_internal.c",
-        "mmrm_res_parse.c",
-        "msm_mmrm.c"
-    ],
-)
-=== mmrm-driver driver/ Kbuild ===
---- /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mmrm-driver/driver/Kbuild
-ifdef CONFIG_MSM_MMRM
-LINUXINCLUDE += -I$(MMRM_ROOT)/driver/src
-
-obj-m += msm-mmrm.o
-msm-mmrm-objs := src/msm_mmrm.o \
-				src/mmrm_internal.o \
-				src/mmrm_res_parse.o \
-				src/mmrm_debug.o \
-				src/mmrm_clk_rsrc_mgr_sw.o \
-				src/mmrm_clk_rsrc_mgr.o
-endif
-=== mmrm-driver vm/be/Kbuild ===
-ifeq ($(CONFIG_MSM_MMRM_VM),y)
-LINUXINCLUDE += -I$(MMRM_ROOT)/vm/be/src -I$(MMRM_ROOT)/driver/src
-
-obj-m += mmrm_vm_be.o
-mmrm_vm_be-objs := src/mmrm_vm_be_main.o \
-		src/mmrm_vm_be_dispatch.o \
-		src/mmrm_vm_be_msgq.o \
-		../common/src/mmrm_vm_debug.o
-endif
-=== waipiommrm.conf ===
+=== synx-kernel present? ===
+Android.bp
+Android.mk
+nxp
+qcom
+Android.bp
+Android.mk
+nxp
+qcom
+audio-kernel
+bt-kernel
+camera-kernel
+dataipa
+datarmnet
+datarmnet-ext
+display-drivers
+dsp-kernel
+eva-kernel
+fingerprint
+graphics-kernel
+mm-drivers
+mm-sys-kernel
+mmrm-driver
+securemsm-kernel
+spu-kernel
+synx-kernel
+touch-drivers
+video-driver
+wlan
+=== kalamammdrivers.conf ===
 # SPDX-License-Identifier: GPL-2.0-only
+# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
 # Copyright (c) 2020, The Linux Foundation. All rights reserved.
-export CONFIG_MSM_MMRM=y
-export CONFIG_MSM_MMRM_VM=n
-=== securemsm top Kbuild ===
-LINUXINCLUDE += -I$(SSG_MODULE_ROOT)/ \
-                -I$(SSG_MODULE_ROOT)/linux/ \
-                -I$(SSG_MODULE_ROOT)/include/linux/ \
-                -I$(SSG_MODULE_ROOT)/include/uapi/ \
-                -I$(SSG_MODULE_ROOT)/include/uapi/linux/
 
-ifneq ($(CONFIG_ARCH_QTI_VM), y)
-    LINUXINCLUDE += -include $(SSG_MODULE_ROOT)/config/sec-kernel_defconfig.h
-    include $(SSG_MODULE_ROOT)/config/sec-kernel_defconfig.conf
-endif
-
-#Enable Qseecom if CONFIG_ARCH_KHAJE OR CONFIG_ARCH_KHAJE or CONFIG_QTI_QUIN_GVM is set to y
-ifneq (, $(filter y, $(CONFIG_QTI_QUIN_GVM) $(CONFIG_ARCH_KHAJE) $(CONFIG_ARCH_SA8155) $(CONFIG_ARCH_BLAIR) $(CONFIG_ARCH_SA6155)))
-    include $(SSG_MODULE_ROOT)/config/sec-kernel_defconfig_qseecom.conf
-    LINUXINCLUDE += -include $(SSG_MODULE_ROOT)/config/sec-kernel_defconfig_qseecom.h
-else
-    LINUXINCLUDE += -include $(SSG_MODULE_ROOT)/config/sec-kernel_defconfig_qseecom_compat.h
-endif
-
-obj-$(CONFIG_QSEECOM) += qseecom_dlkm.o
-qseecom_dlkm-objs := qseecom/qseecom.o
-
-include $(SSG_MODULE_ROOT)/config/sec-kernel_defconfig_smcinvoke.conf
-LINUXINCLUDE += -include $(SSG_MODULE_ROOT)/config/sec-kernel_defconfig_smcinvoke.h
-
-obj-$(CONFIG_QCOM_SMCINVOKE) += smcinvoke_dlkm.o
-smcinvoke_dlkm-objs := smcinvoke/smcinvoke_kernel.o smcinvoke/smcinvoke.o smcinvoke/smci_kernel.o
-
-obj-$(CONFIG_QTI_TZ_LOG) += tz_log_dlkm.o
-tz_log_dlkm-objs := tz_log/tz_log.o
-
-obj-$(CONFIG_CRYPTO_DEV_QCEDEV) += qce50_dlkm.o
-qce50_dlkm-objs := crypto-qti/qce50.o
-
-obj-$(CONFIG_CRYPTO_DEV_QCEDEV) += qcedev-mod_dlkm.o
-qcedev-mod_dlkm-objs := crypto-qti/qcedev.o crypto-qti/qcedev_smmu.o
-
-obj-$(CONFIG_CRYPTO_DEV_QCRYPTO) += qcrypto-msm_dlkm.o
-qcrypto-msm_dlkm-objs := crypto-qti/qcrypto.o
-
-obj-$(CONFIG_HDCP_QSEECOM) += hdcp_qseecom_dlkm.o
-hdcp_qseecom_dlkm-objs := hdcp/hdcp_main.o hdcp/hdcp_smcinvoke.o hdcp/hdcp_qseecom.o
-
-obj-$(CONFIG_HW_RANDOM_MSM_LEGACY) += qrng_dlkm.o
-qrng_dlkm-objs := qrng/msm_rng.o
-
-ifneq (, $(filter y, $(ARCH_QTI_VM) $(CONFIG_ARCH_PINEAPPLE) $(CONFIG_ARCH_SUN) $(CONFIG_ARCH_NIOBE) $(CONFIG_ARCH_ANORAK) $(CONFIG_ARCH_NEO)))
-    include $(SSG_MODULE_ROOT)/config/sec-kernel_defconfig_smmu_proxy.conf
-    LINUXINCLUDE += -include $(SSG_MODULE_ROOT)/config/sec-kernel_defconfig_smmu_proxy.h
-
-    obj-$(CONFIG_QTI_SMMU_PROXY) += smmu_proxy_dlkm.o
-    smmu_proxy_dlkm-objs := smmu-proxy/qti-smmu-proxy-common.o
-    ifneq ($(CONFIG_ARCH_QTI_VM), y)
-    smmu_proxy_dlkm-objs += smmu-proxy/qti-smmu-proxy-pvm.o
-    else
-    smmu_proxy_dlkm-objs += smmu-proxy/qti-smmu-proxy-tvm.o
-    endif
-endif
+export CONFIG_MSM_EXT_DISPLAY=y
+export CONFIG_QCOM_SPEC_SYNC=y
+export CONFIG_QTI_HW_FENCE=y
+=== MMRM config in .config ===
+=== does mmrm have own conf for pineapple? ls config ===
+waipiommrm.conf
+waipiommrmconf.h
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:29:14Z run=33317766012
+__RAW__ 2026-08-30T17:30:13Z run=33317766012
