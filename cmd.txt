@@ -1,10 +1,16 @@
-M="$GITHUB_WORKSPACE/modules/qcom/opensource"
-echo "=== display-drivers/hdcp ls ==="
-ls "$M/display-drivers/hdcp"
-echo "=== hdcp Kbuild ==="
-head -50 "$M/display-drivers/hdcp/Kbuild" 2>/dev/null || echo "NO Kbuild in hdcp"
-echo "=== config conf for companions ==="
-for d in "display-drivers" "mmrm-driver" "mm-drivers/hw_fence" "mm-drivers/sync_fence" "mm-drivers/msm_ext_display"; do
-  echo "-- $d/config --"
-  ls "$M/$d/config" 2>/dev/null | head
-done
+M="$GITHUB_WORKSPACE/modules"
+echo "=== where is sde_fence_output_hw_fence_dir_write_init defined? ==="
+grep -rln "sde_fence_output_hw_fence_dir_write_init" "$M/qcom/opensource" --include="*.c" --include="*.h" | head
+echo "=== where is sde_encoder_helper_hw_fence_sw_override defined? ==="
+grep -rln "sde_encoder_helper_hw_fence_sw_override" "$M/qcom/opensource" --include="*.c" | head
+echo "=== where is msm_ext_disp_register_intf defined? ==="
+grep -rln "msm_ext_disp_register_intf" "$M/qcom/opensource" --include="*.c" | head
+echo "=== where is spec_sync_wait_bind_array defined? ==="
+grep -rln "spec_sync_wait_bind_array" "$M/qcom/opensource" --include="*.c" | head
+echo "=== where is hdcp1_init defined? ==="
+grep -rln "hdcp1_init" "$M/qcom/opensource" --include="*.c" | head
+echo "=== sde_fence.c exists in import msm tree? ==="
+D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
+find "$D/msm" -name "sde_fence.c" -o -name "sde_fence.h" | head
+echo "=== does import msm Kbuild reference sde_fence.o? ==="
+grep -n "sde_fence\|hw_fence\|ext_disp" "$D/msm/Kbuild" | head
