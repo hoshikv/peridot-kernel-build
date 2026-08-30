@@ -13,6 +13,7 @@ CFG_LINEAGE="$KERNEL_DIR/arch/$ARCH/configs/vendor/peridot_GKI.config"
 
 if [[ -n "${CLANG_DIR:-}" ]]; then
   export CC="$CLANG_DIR/bin/clang"
+  export PATH="$CLANG_DIR/bin:$PATH"
 else
   export CC="$(command -v clang)"
 fi
