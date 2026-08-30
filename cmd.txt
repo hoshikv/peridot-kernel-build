@@ -1,2 +1,5 @@
+export PATH="$HOME/tc/bin:$PATH"
+export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
 cd "$GITHUB_WORKSPACE/kernel"
-awk 'NR>=2110 && NR<=2145 {printf "%d: %s\n", NR, $0}' Makefile
+O="$GITHUB_WORKSPACE/out"
+make V=1 -j1 O="$O" modules 2>&1 | tail -25
