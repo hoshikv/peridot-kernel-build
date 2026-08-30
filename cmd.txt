@@ -1,9 +1,10 @@
-export PATH="$HOME/tc/bin:$PATH"; export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
-K="$GITHUB_WORKSPACE/kernel"; O="$GITHUB_WORKSPACE/out"
+export PATH="$HOME/tc/bin:$PATH"
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-echo "=== hdcp dir ==="
-ls "$D/hdcp" 2>/dev/null | head -30
-echo "=== hdcp Kbuild ==="
-head -40 "$D/hdcp/Kbuild" 2>/dev/null
-echo "=== config HDCP ==="
-grep -i "hdcp" "$O/.config" | head
+echo "=== nm hdcp1 on msm_hdcp.o ==="
+~/tc/bin/llvm-nm "$D/hdcp/msm_hdcp.o" 2>&1 | grep -i "hdcp1_init\|hdcp1_start\|hdcp2_open" | head
+echo "=== size of msm_hdcp.o ==="
+ls -la "$D/hdcp/msm_hdcp.o"
+echo "=== where referenced in sde_hdcp ==="
+grep -n "hdcp1_init\|hdcp2_feature_supported" "$D/msm/sde_hdcp_1x.c" "$D/msm/sde_hdcp_2x.c" | head
+echo "=== config HDCP in DISPLAY config ==="
+grep -i "hdcp" "$D/config/gki_pineappledisp.conf" 2>/dev/null || echo "no hdcp in conf"
