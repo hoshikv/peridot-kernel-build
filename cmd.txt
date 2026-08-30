@@ -1,1 +1,1 @@
-cd $GITHUB_WORKSPACE && rm -rf kernel display-drivers && git clone --depth 1 --single-branch --branch 16.0 https://github.com/crdroidandroid/android_kernel_xiaomi_sm8635.git kernel 2>&1 | tail -3 && cd kernel && git log -1 --oneline && ls arch/arm64/configs/vendor/ 2>/dev/null | head && df -h / | tail -1
+cd $GITHUB_WORKSPACE && git clone --depth 1 https://x-access-token:${GH_TOKEN}@github.com/hoshikv/mi_disp_driver2_peridot.git display-drivers 2>&1 | tail -2 && cd display-drivers && git log -1 --format="%H %s" && ls msm | head -20 && df -h / | tail -1
