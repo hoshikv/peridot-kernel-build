@@ -1,5 +1,1 @@
-cd "$GITHUB_WORKSPACE/display-drivers"
-echo "=== git tree of commit fcfc5a1 (mi_disp) ==="
-git ls-tree fcfc5a1 --name-only vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/ 2>/dev/null
-echo "=== same for include dir ==="
-git ls-tree fcfc5a1 --name-only vendor_opensource_display-drivers-peridot-u-oss/msm/ 2>/dev/null | grep -i "\.h$" | head -20
+DMSM="/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"; ls $DMSM; echo '=== sde ==='; ls $DMSM/sde 2>/dev/null | head; echo '=== headers ==='; find $DMSM -name sde_connector.h -o -name sde_trace.h -o -name dsi_panel.h 2>/dev/null | head
