@@ -51,12 +51,19 @@ jobs:
           rm toolchain/clang.tar.gz
           toolchain/clang-r530567/bin/clang --version | head -1
 
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ runner.os }}-kernel
+          max-size: 4G
+
       - name: Build msm_drm.ko
         env:
           KERNEL_DIR: ${{ github.workspace }}/kernel
           DD_DIR: ${{ github.workspace }}/display-drivers
           CLANG_DIR: ${{ github.workspace }}/toolchain/clang-r530567
           JOBS: 4
+          CCACHE_DIR: ${{ github.workspace }}/.ccache
         run: |
           df -h / | tail -1
           ./build.sh
