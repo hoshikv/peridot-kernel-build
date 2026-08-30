@@ -1,4 +1,2 @@
 cd "$GITHUB_WORKSPACE/kernel"
-sed -n '2125,2145p' Makefile
-echo "=== BUILD_SHADOW ==="
-grep -n "build_thing\|KBUILD_EXTMOD\|tools/\|_emodules\|targets :" Makefile 2>/dev/null | sed -n '1,10p'
+awk 'NR>=2110 && NR<=2145 {printf "%d: %s\n", NR, $0}' Makefile
