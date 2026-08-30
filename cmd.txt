@@ -1,12 +1,11 @@
 M="$GITHUB_WORKSPACE/modules/qcom/opensource"
-D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-echo "=== is modules display-drivers identical to import? (key files) ==="
-for f in msm/mi_disp/mi_disp_lhbm.c msm/mi_disp/mi_dsi_panel.c msm/Kbuild msm/sde/sde_fence.c; do
-  if diff -q "$D/$f" "$M/display-drivers/$f" >/dev/null 2>&1; then echo "SAME  $f"; else echo "DIFF  $f"; fi
-done
-echo "=== securemsm hdcp Makefile/Android.mk head ==="
-cat "$M/securemsm-kernel/hdcp/Android.mk" 2>/dev/null | head -40
-echo "=== securemsm root dirs ==="
-ls "$M/securemsm-kernel"
-echo "=== check hsl?/sec build ==="
-find "$M/securemsm-kernel" -maxdepth 1 -name "Kbuild" -o -maxdepth 1 -name "Makefile" | head
+echo "=== mmrm-driver Makefile / bzl module names ==="
+sed -n '1,80p' "$M/mmrm-driver/mmrm_modules.bzl" 2>/dev/null
+echo "=== mmrm-driver driver/ Kbuild ==="
+find "$M/mmrm-driver/driver" -name "Kbuild" -exec sh -c 'echo "--- {}"; head -40 {}' \;
+echo "=== mmrm-driver vm/be/Kbuild ==="
+head -40 "$M/mmrm-driver/vm/be/Kbuild" 2>/dev/null
+echo "=== waipiommrm.conf ==="
+head -20 "$M/mmrm-driver/config/waipiommrm.conf"
+echo "=== securemsm top Kbuild ==="
+head -60 "$M/securemsm-kernel/Kbuild"
