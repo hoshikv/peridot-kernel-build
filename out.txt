@@ -1,46 +1,18 @@
-=== internals.h locations ===
-=== include dirs referenced in mi_dsi_panel.c ===
-8:#include <linux/delay.h>
-9:#include <linux/slab.h>
-10:#include <linux/gpio.h>
-11:#include <linux/of_gpio.h>
-12:#include <linux/rtc.h>
-13:#include <linux/pm_wakeup.h>
-14:#include <video/mipi_display.h>
-15:#include <drm/mi_disp.h>
-17:#include "dsi_panel.h"
-18:#include "dsi_display.h"
-=== dsi dir listing ===
-dsi_catalog.c
-dsi_catalog.h
-dsi_catalog.o
-dsi_clk.h
-dsi_clk_manager.c
-dsi_clk_manager.o
-dsi_ctrl.c
-dsi_ctrl.h
-dsi_ctrl.o
-dsi_ctrl_hw.h
-dsi_ctrl_hw_2_2.c
-dsi_ctrl_hw_2_2.o
-dsi_ctrl_hw_cmn.c
-dsi_ctrl_hw_cmn.o
-dsi_ctrl_reg.h
-dsi_defs.h
-dsi_display.c
-dsi_display.h
-dsi_display.o
-dsi_display_test.c
-dsi_display_test.h
-dsi_display_test.o
-dsi_drm.c
-dsi_drm.h
-dsi_drm.o
-dsi_hw.h
-dsi_panel.c
-dsi_panel.h
-dsi_panel.o
-dsi_parser.c
-=== sde dir has internals? ===
+=== all internals.h in workspace ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/i3c/internals.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/sh/intc/internals.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/spi/internals.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/mtd/nand/raw/internals.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/kernel/irq/internals.h
+=== check if it's in kernel tree ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/i3c/internals.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/sh/intc/internals.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/spi/internals.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/mtd/nand/raw/internals.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/kernel/irq/internals.h
+=== what gitlink/HEAD for display ===
+fcfc5a1 Import vendor_opensource display-drivers peridot-u-oss (msm_drm.ko build tree)
+=== grep includes of internals.h ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.c:21:#include "internals.h"
 __DONE__ rc=0
-__RAW__ 2026-08-30T16:38:06Z run=33317766012
+__RAW__ 2026-08-30T16:39:00Z run=33317766012
