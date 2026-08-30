@@ -1,4 +1,4 @@
-=== crdroidandroid/android_kernel_xiaomi_sm8635-modules ===
-=== LineageOS/android_kernel_xiaomi_sm8635-modules ===
-__DONE__ rc=0
-__RAW__ 2026-08-30T17:08:20Z run=33317766012
+=== search github for sm8635 vendor modules repo ===
+=== check MiCode vendor_opensource_display-drivers full tree default branch ===
+__DONE__ rc=1
+__RAW__ 2026-08-30T17:08:42Z run=33317766012
