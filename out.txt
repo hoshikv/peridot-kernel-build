@@ -1,30 +1,10 @@
-=== make modules (in-tree) ===
-  CC      kernel/kprobes.o
-  CC      kernel/hung_task.o
-  CC      kernel/watchdog.o
-  CC      kernel/seccomp.o
-  CC      kernel/utsname_sysctl.o
-  CC      kernel/taskstats.o
-  CC      kernel/tsacct.o
-  CC      kernel/tracepoint.o
-  CC      kernel/irq_work.o
-  CC      kernel/cpu_pm.o
-  CC      kernel/scs.o
-  CC      kernel/cfi.o
-  CC      kernel/jump_label.o
-  CC      kernel/context_tracking.o
-  CC      kernel/iomem.o
-  CHK     kernel/kheaders_data.tar.xz
-  GEN     kernel/kheaders_data.tar.xz
-  CC [M]  kernel/msm_sysstats.o
-  GZIP    kernel/config_data.gz
-  CC      kernel/configs.o
-  AR      kernel/built-in.a
-  CC [M]  kernel/kheaders.o
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/certs/extract-cert.c:149:7: error: use of undeclared identifier 'key_pass'
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/certs/extract-cert.c:150:42: error: use of undeclared identifier 'key_pass'
+2 errors generated.
+make[3]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.host:114: certs/extract-cert] Error 1
+make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build:503: certs] Error 2
 make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2139: .] Error 2
-make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
 make: *** [Makefile:256: __sub-make] Error 2
-=== Module.symvers ===
-/dev/root        72G   59G   13G  82% /
+=== done ===
 __DONE__ rc=0
-__RAW__ 2026-08-30T15:27:44Z run=33317766012
+__RAW__ 2026-08-30T15:29:43Z run=33317766012
