@@ -1,9 +1,5 @@
-echo "=== all internals.h in workspace ==="
-find "$GITHUB_WORKSPACE" -name "internals.h" 2>/dev/null | head
-echo "=== check if it's in kernel tree ==="
-find "$GITHUB_WORKSPACE/kernel" -name "internals.h" 2>/dev/null | head
-echo "=== what gitlink/HEAD for display ==="
-cd "$GITHUB_WORKSPACE/display-drivers" && git log -1 --oneline
-cd "$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
-echo "=== grep includes of internals.h ==="
-grep -rn "internals.h" "$GITHUB_WORKSPACE/display-drivers" 2>/dev/null | head
+F="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.c"
+echo "=== head of mi_dsi_panel.c ==="
+head -40 "$F"
+echo "=== search headers with similar names ==="
+find "$GITHUB_WORKSPACE/display-drivers" -name "*.h" | grep -i "intern\|internal" | head
