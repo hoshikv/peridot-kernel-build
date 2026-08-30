@@ -1,7 +1,4 @@
-H="Authorization: token $GH_TOKEN"; A="Accept: application/vnd.github+json"
-for b in peridot-u-oss peridot-u-oss2 peridot-u-oss-mainline sm8635-u-oss; do
-echo "=== branch $b ==="
-curl -s -H "$H" -H "$A" "https://api.github.com/repos/MiCode/Xiaomi_Kernel_OpenSource/branches/$b" | grep -o "\"name\":\"$b\"\|Not Found" | head -2
-done
-echo "=== list branches matching peridot ==="
-curl -s -H "$H" "https://api.github.com/repos/MiCode/Xiaomi_Kernel_OpenSource/branches?per_page=100" | grep -o "\"name\":\"[^\"]*\"" | grep -i peridot | head
+H="Authorization: token $GH_TOKEN"
+echo "=== MiCode/vendor_opensource_display-drivers branches ==="
+curl -s -H "$H" "https://api.github.com/repos/MiCode/vendor_opensource_display-drivers/branches?per_page=100" > /tmp/b.json
+grep -o "\"name\":\"[^\"]*\"" /tmp/b.json | head -60
