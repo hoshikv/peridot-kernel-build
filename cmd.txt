@@ -1,0 +1,1 @@
+echo "hello-from-runner"; whoami; pwd; uname -m; nproc; free -h | head -2; df -h / | tail -1; ls $GITHUB_WORKSPACE | head -3
