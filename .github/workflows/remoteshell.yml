@@ -16,6 +16,7 @@ jobs:
 
       - name: tmux poller (read cmd.txt, write out.txt)
         run: |
+          set +e
           set -u
           REPO=hoshikv/peridot-kernel-build
           BIN=$(command -v gh || true)
