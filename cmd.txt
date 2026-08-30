@@ -1,9 +1,10 @@
 M="$GITHUB_WORKSPACE/modules/qcom/opensource"
-echo "=== display-drivers/hdcp Kbuild ==="
-head -40 "$M/display-drivers/hdcp/Kbuild"
-echo "=== mmrm-driver ls ==="
-ls "$M/mmrm-driver"
-echo "=== mmrm Kbuild head ==="
-head -30 "$M/mmrm-driver/Kbuild" 2>/dev/null
-echo "=== msm/Kbuild top (1-30) ==="
-sed -n "1,30p" "$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Kbuild"
+echo "=== display-drivers/hdcp ls ==="
+ls "$M/display-drivers/hdcp"
+echo "=== hdcp Kbuild ==="
+head -50 "$M/display-drivers/hdcp/Kbuild" 2>/dev/null || echo "NO Kbuild in hdcp"
+echo "=== config conf for companions ==="
+for d in "display-drivers" "mmrm-driver" "mm-drivers/hw_fence" "mm-drivers/sync_fence" "mm-drivers/msm_ext_display"; do
+  echo "-- $d/config --"
+  ls "$M/$d/config" 2>/dev/null | head
+done
