@@ -1,6 +1,7 @@
 H="Authorization: token $GH_TOKEN"; A="Accept: application/vnd.github+json"
-echo "=== search repos with peridot-u-oss ==="
-curl -s -H "$H" -H "$A" "https://api.github.com/search/code?q=vendor_opensource_display-drivers-peridot-u-oss" | head -c 500
-echo; echo "=== lineageOS sm8450-modules tree: internals.h? ==="
-curl -s -H "$H" "https://api.github.com/repos/LineageOS/android_kernel_xiaomi_sm8450-modules/git/trees/lineage-23.2?recursive=1" > /tmp/tree.json
-grep -o "\"path\":\"[^\"]*internals[^\"]*\"" /tmp/tree.json | head -20
+for b in peridot-u-oss peridot-u-oss2 peridot-u-oss-mainline sm8635-u-oss; do
+echo "=== branch $b ==="
+curl -s -H "$H" -H "$A" "https://api.github.com/repos/MiCode/Xiaomi_Kernel_OpenSource/branches/$b" | grep -o "\"name\":\"$b\"\|Not Found" | head -2
+done
+echo "=== list branches matching peridot ==="
+curl -s -H "$H" "https://api.github.com/repos/MiCode/Xiaomi_Kernel_OpenSource/branches?per_page=100" | grep -o "\"name\":\"[^\"]*\"" | grep -i peridot | head
