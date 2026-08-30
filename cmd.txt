@@ -1,2 +1,15 @@
 cd "$GITHUB_WORKSPACE/kernel/certs"
-grep -n "#ifdef\|#ifndef\|#endif\|#else\|key_pass\|use_engine" extract-cert.c
+cp extract-cert.c extract-cert.c.bak
+python3 - <<'PY'
+p="extract-cert.c"
+s=open(p).read()
+s=s.replace("#ifdef USE_PKCS11_ENGINE\nstatic const char *key_pass;\n#endif\n","static const char *key_pass;\n")
+s=s.replace("#ifdef USE_PKCS11_ENGINE\n\tkey_pass = getenv(\"KBUILD_SIGN_PIN\");\n#endif\n","\tkey_pass = getenv(\"KBUILD_SIGN_PIN\");\n")
+open(p,"w").write(s)
+PY
+grep -n "#ifdef USE_PKCS11\|key_pass" extract-cert.c
+echo "=== recompile check ==="
+export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
+cd "$GITHUB_WORKSPACE/kernel"
+make -j1 O="$GITHUB_WORKSPACE/out" certs/extract-cert 2>&1 | tail -4
+ls -la "$GITHUB_WORKSPACE/out/certs/extract-cert" 2>&1
