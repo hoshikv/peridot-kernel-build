@@ -1,3 +1,7 @@
+export PATH="$HOME/tc/bin:$PATH"
+which gh 2>/dev/null || echo "no gh"
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
 ls -la "$D/msm_drm.ko"
-sha256sum "$D/msm_drm.ko"
+echo "--- token? ---"
+[ -n "$GITHUB_TOKEN" ] && echo "GITHUB_TOKEN set" || echo "no GITHUB_TOKEN"
+[ -f "$HOME/.config/gh/hosts.yml" ] && echo "gh authed" || echo "gh not authed"
