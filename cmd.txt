@@ -1,7 +1,5 @@
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-echo "=== msm/Kbuild ==="
-head -30 "$D/msm/Kbuild" 2>/dev/null
-echo "=== gki_pineappledisptui.conf ==="
-cat "$D/config/gki_pineappledisptui.conf" 2>/dev/null
-echo "=== target.bzl ==="
-head -60 "$D/target.bzl" 2>/dev/null
+echo "=== msm/Kbuild (first 40 lines) ==="
+head -40 "$D/msm/Kbuild" 2>/dev/null
+echo "=== pineapple in target.bzl ==="
+grep -n -A18 "def define_pineapple" "$D/target.bzl" 2>/dev/null | head -30
