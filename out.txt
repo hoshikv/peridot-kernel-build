@@ -1,12 +1,35 @@
-=== build M=msm ===
-make: Entering directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
-make[1]: Entering directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Kbuild:40: /config/gki_pineappledisp.conf: No such file or directory
-make[2]: *** No rule to make target '/config/gki_pineappledisp.conf'.  Stop.
+=== build M=msm with DISPLAY_ROOT ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/dsi/dsi_defs.h:35:11: note: expanded from macro 'DSI_INFO'
+   34 | #define DSI_INFO(fmt, ...)      DRM_DEV_INFO(NULL, "[msm-dsi-info]: "fmt, \
+      |                                                                      ~~~
+   35 |                                                                 ##__VA_ARGS__)
+      |                                                                   ^~~~~~~~~~~
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/include/drm/drm_print.h:448:40: note: expanded from macro 'DRM_DEV_INFO'
+  448 |         drm_dev_printk(dev, KERN_INFO, fmt, ##__VA_ARGS__)
+      |                                        ~~~    ^~~~~~~~~~~
+6 warnings generated.
+  CC [M]  /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_display.o
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_display.c:723:6: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
+  722 |                         DISP_ERROR("read size exceeding the limit %d\n",
+      |                                                                   ~~
+      |                                                                   %lu
+  723 |                                         sizeof(g_dsi_read_info.rx_buf));
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_print.h:35:41: note: expanded from macro 'DISP_ERROR'
+   35 |                 mi_disp_printk(KERN_ERR, "[E]" fmt, ##__VA_ARGS__)
+      |                                                ~~~    ^~~~~~~~~~~
+1 warning generated.
+  CC [M]  /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.o
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.c:21:10: fatal error: 'internals.h' file not found
+   21 | #include "internals.h"
+      |          ^~~~~~~~~~~~~
+1 error generated.
+make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build:250: /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.o] Error 1
 make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2139: /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm] Error 2
 make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
 make: *** [Makefile:256: __sub-make] Error 2
 make: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
 === ko ===
+/dev/root        72G   62G   11G  86% /
 __DONE__ rc=0
-__RAW__ 2026-08-30T16:26:56Z run=33317766012
+__RAW__ 2026-08-30T16:33:03Z run=33317766012
