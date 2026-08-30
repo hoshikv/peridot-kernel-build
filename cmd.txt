@@ -1,8 +1,7 @@
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-echo "=== config dir ==="
-ls "$D/config" 2>/dev/null
-find "$D/config" -type f -maxdepth 2 2>/dev/null
-echo "=== grep DRM_MSM in D config ==="
-grep -rn "DRM_MSM" "$D/config" 2>/dev/null | head
-echo "=== display_driver_board.mk ==="
-head -40 "$D/display_driver_board.mk" 2>/dev/null
+echo "=== msm/Kbuild ==="
+head -30 "$D/msm/Kbuild" 2>/dev/null
+echo "=== gki_pineappledisptui.conf ==="
+cat "$D/config/gki_pineappledisptui.conf" 2>/dev/null
+echo "=== target.bzl ==="
+head -60 "$D/target.bzl" 2>/dev/null
