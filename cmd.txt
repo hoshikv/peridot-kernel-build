@@ -1,4 +1,12 @@
+export PATH="$HOME/tc/bin:$PATH"
+export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
 cd "$D"
-git rev-parse --is-inside-work-tree 2>/dev/null && git log --oneline -2 2>/dev/null
-echo "---"; ls mi_disp/mi_disp_lhbm.c mi_disp/mi_dsi_panel.c
+git stash list 2>/dev/null | head
+git pull --rebase origin main 2>&1 | tail -5
+echo "--- verify patch applied ---"
+sed -n '161,172p' mi_disp/mi_dsi_panel.c
+echo ">>>>"
+sed -n '308,315p' mi_disp/mi_disp_lhbm.c
+echo "--- internals check ---"
+sed -n '21p' mi_disp/mi_dsi_panel.c
