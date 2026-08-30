@@ -9,6 +9,7 @@ ARCH=arm64
 JOBS="${JOBS:-$(nproc --ignore=2)}"
 
 DISPLAY_ROOT="$DD_DIR/vendor_opensource_display-drivers-peridot-u-oss"
+CFG_LINEAGE="$KERNEL_DIR/arch/$ARCH/configs/vendor/peridot_GKI.config"
 
 if [[ -n "${CLANG_DIR:-}" ]]; then
   export CC="$CLANG_DIR/bin/clang"
@@ -31,17 +32,18 @@ mkdir -p "$OUT"
 [[ -f "$DISPLAY_ROOT/msm/Kbuild" ]] || { echo "display source missing"; exit 1; }
 
 if [[ ! -f "$OUT/.config" ]]; then
-  echo "[*] generate config (defconfig = Lineage peridot GKI)"
+  echo "[*] configure kernel (defconfig linege peridot)"
   make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH defconfig
 fi
-echo "[*] note: CONFIG_DRM_MSM di-check"
-grep -E '^CONFIG_DRM_MSM=' "$OUT/.config" || echo "WARN: CONFIG_DRM_MSM tidak diset di .config"
 
 echo "[*] modules_prepare"
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH modules_prepare
 
-echo "[*] sign tools (if any)"
-make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH scripts 2>/dev/null || true
+echo "[*] build vmlinux + in-tree modules (membuat Module.symvers)"
+if [[ ! -f "$OUT/Module.symvers" ]]; then
+  make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" vmlinux
+  make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" modules
+fi
 
 echo "[*] build msm_drm out-of-tree"
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" \
@@ -50,7 +52,7 @@ make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" \
     modules
 
 echo "[*] locate result"
-find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec ls -la {} \;
-find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec cp {} "$OUT/msm_drm.ko" \; 2>/dev/null || true
+find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec ls -la {} \; 2>/dev/null
+find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec cp {} "$OUT/" 2>/dev/null \; || true
 
 echo "[*] done: $OUT/msm_drm.ko"

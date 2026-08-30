@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 180
     steps:
       - name: Checkout (with submodules)
         uses: actions/checkout@v4
@@ -16,34 +16,50 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Restore build dir
+        id: cache-out
+        uses: actions/cache@v4
+        with:
+          path: out
+          key: peridot-out-${{ hashFiles('display-drivers/**') }}-${{ github.sha }}
+          restore-keys: peridot-out-
+
       - name: Install build deps
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq \
             git bc bison flex libssl-dev libelf-dev python3 \
             ca-certificates wget file unzip
+          df -h / | tail -1
 
-      - name: Download Android clang prebuilt
+      - name: Download Android clang prebuilt (single version tarball)
+        id: clang
+        uses: actions/cache@v4
+        with:
+          path: toolchain/clang-r530567
+          key: clang-r530567
+
+      - name: Fetch clang if not cached
+        if: steps.clang.outputs.cache-hit != 'true'
         run: |
-          git clone --depth 1 --single-branch \
-            https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 \
-            "$GITHUB_WORKSPACE/toolchain/clang" 2>&1 | tail -1 || true
-          ls "$GITHUB_WORKSPACE/toolchain/clang/"
-          CLANG_DIR="$(ls -d $GITHUB_WORKSPACE/toolchain/clang/clang-r* 2>/dev/null | head -1)"
-          if [[ -z "$CLANG_DIR" ]]; then
-            CLANG_DIR="$(ls -d $GITHUB_WORKSPACE/toolchain/clang/*/ 2>/dev/null | head -1)"
-          fi
-          echo "selected clang: $CLANG_DIR"
-          echo "CLANG_DIR=$CLANG_DIR" >> "$GITHUB_ENV"
+          mkdir -p toolchain
+          curl -L --fail -o toolchain/clang.tar.gz \
+            "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r530567.tar.gz"
+          mkdir -p toolchain/clang-r530567
+          tar -xzf toolchain/clang.tar.gz -C toolchain/clang-r530567
+          rm toolchain/clang.tar.gz
+          toolchain/clang-r530567/bin/clang --version | head -1
 
       - name: Build msm_drm.ko
         env:
           KERNEL_DIR: ${{ github.workspace }}/kernel
           DD_DIR: ${{ github.workspace }}/display-drivers
-          CLANG_DIR: ${{ env.CLANG_DIR }}
-          JOBS: 8
+          CLANG_DIR: ${{ github.workspace }}/toolchain/clang-r530567
+          JOBS: 4
         run: |
+          df -h / | tail -1
           ./build.sh
+          df -h / | tail -1
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
