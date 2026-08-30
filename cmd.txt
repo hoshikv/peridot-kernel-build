@@ -1,4 +1,11 @@
-echo "=== search github for sm8635 vendor modules repo ==="
-curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/search/repositories?q=sm8635+modules+xiaomi" | grep -o "\"full_name\":\"[^\"]*\"" | head -10
-echo "=== check MiCode vendor_opensource_display-drivers full tree default branch ==="
-curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/MiCode/vendor_opensource_display-drivers" | grep -o "\"default_branch\":\"[^\"]*\""
+K="$GITHUB_WORKSPACE/kernel"
+echo "=== in-tree: spec_sync ==="
+grep -rln "spec_sync_wait_bind_array\|spec_sync_register" "$K" --include="*.c" --include="*.h" 2>/dev/null | head
+echo "=== in-tree: hw_fence ==="
+grep -rln "msm_hw_fence_update_txq_error\|hw_fence" "$K/drivers" --include="*.c" 2>/dev/null | head
+echo "=== in-tree: msm_ext_disp ==="
+grep -rln "msm_ext_disp_deregister_intf" "$K" --include="*.c" --include="*.h" 2>/dev/null | head
+echo "=== in-tree: hdcp1_init / hdcp2_feature ==="
+grep -rln "hdcp1_init\|hdcp2_open_stream" "$K" --include="*.c" --include="*.h" 2>/dev/null | head
+echo "=== kernel arch ==="
+ls "$K/arch/arm64/../.." | head
