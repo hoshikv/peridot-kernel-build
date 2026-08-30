@@ -2,8 +2,9 @@ export PATH="$HOME/tc/bin:$PATH"
 export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
 cd "$GITHUB_WORKSPACE/kernel"
 O="$GITHUB_WORKSPACE/out"
-echo "=== modules_prepare ==="
-make O="$O" modules_prepare 2>&1 | tail -6
-echo "=== msm related config ==="
-grep -E "^CONFIG_DRM_MSM|^CONFIG_DRM_MSM_DSI|MI_DISPLAY|MI_DUMP" "$O/.config"
+D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
+echo "=== build M= display ==="
+make -C "$GITHUB_WORKSPACE/kernel" O="$O" M="$D" modules 2>&1 | tail -30
+echo "=== results ==="
+find "$D" -name "*.ko" -exec ls -la {} \; 2>/dev/null
 df -h / | tail -1
