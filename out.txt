@@ -1,71 +1,24 @@
-=== display-drivers/hdcp Kbuild ===
-head: cannot open '/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/hdcp/Kbuild' for reading: No such file or directory
-=== mmrm-driver ls ===
-Android.mk
-BUILD.bazel
-Kbuild
-Makefile
-config
-driver
-mmrm_kernel_board.mk
-mmrm_kernel_product.mk
-mmrm_modules.bzl
-mmrm_modules_build.bzl
-target.bzl
-vm
-=== mmrm Kbuild head ===
-
-include $(MMRM_ROOT)/config/waipiommrm.conf
-LINUXINCLUDE += -include $(MMRM_ROOT)/config/waipiommrmconf.h
-
-ifneq ($(CONFIG_ARCH_QTI_VM), y)
-
-obj-m += driver/
-# obj-m += test/
-
-ifeq ($(CONFIG_MSM_MMRM_VM),y)
-LINUXINCLUDE += -I$(MMRM_ROOT)/vm/common/inc/
-obj-m += vm/be/
-endif
-
-else
-
-LINUXINCLUDE += -I$(MMRM_ROOT)/vm/common/inc/
-
-obj-m += vm/fe/
-#obj-y += vm/fe/vm_test/
-
-endif
-=== msm/Kbuild top (1-30) ===
-# SPDX-License-Identifier: GPL-2.0-only
-
-KDIR := $(TOP)/kernel_platform/msm-kernel
-
-ifeq ($(CONFIG_ARCH_WAIPIO), y)
-ifeq ($(CONFIG_ARCH_QTI_VM), y)
-	include $(DISPLAY_ROOT)/config/gki_waipiodisptui.conf
-	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_waipiodisptuiconf.h
-else
-	include $(DISPLAY_ROOT)/config/gki_waipiodisp.conf
-	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_waipiodispconf.h
-endif
-endif
-
-ifeq ($(CONFIG_ARCH_NEO), y)
-	include $(DISPLAY_ROOT)/config/gki_neodisp.conf
-	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_neodispconf.h
-endif
-
-ifeq ($(CONFIG_ARCH_PARROT), y)
-	include $(DISPLAY_ROOT)/config/gki_parrotdisp.conf
-	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_parrotdispconf.h
-endif
-
-ifeq ($(CONFIG_ARCH_PITTI), y)
-	include $(DISPLAY_ROOT)/config/gki_pittidisp.conf
-	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_pittidispconf.h
-endif
-
-ifeq ($(CONFIG_ARCH_NIOBE), y)
+=== display-drivers/hdcp ls ===
+msm_hdcp.c
+=== hdcp Kbuild ===
+NO Kbuild in hdcp
+=== config conf for companions ===
+-- display-drivers/config --
+augen3disp.conf
+augen3dispconf.h
+bengaldisp.conf
+bengaldispconf.h
+gki_holidisp.conf
+gki_holidispconf.h
+gki_kalamadisp.conf
+gki_kalamadispconf.h
+gki_kalamadisptui.conf
+gki_kalamadisptuiconf.h
+-- mmrm-driver/config --
+waipiommrm.conf
+waipiommrmconf.h
+-- mm-drivers/hw_fence/config --
+-- mm-drivers/sync_fence/config --
+-- mm-drivers/msm_ext_display/config --
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:18:24Z run=33317766012
+__RAW__ 2026-08-30T17:19:02Z run=33317766012
