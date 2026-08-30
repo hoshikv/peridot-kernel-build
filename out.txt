@@ -1,9 +1,5 @@
-rc=2
-ls: cannot access '/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Module.symvers': No such file or directory
-=== exports from hdcp module ===
-=== errors tail ===
-17:make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.modpost:187: /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Module.symvers] Error 1
-18:make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2091: modpost] Error 2
-20:make: *** [Makefile:256: __sub-make] Error 2
+=== modpost errors ===
+ERROR: modpost: "get_client_env_object" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/smmu_proxy_dlkm.ko] undefined!
+=== which .ko produced ===
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:32:48Z run=33317766012
+__RAW__ 2026-08-30T17:33:15Z run=33317766012
