@@ -1,38 +1,27 @@
-2110: 		$(foreach x, o mod, $(patsubst %.ko, %.$x, $(single-ko)))
-2111: 
-2112: $(single-ko): single_modules
-2113: 	@:
-2114: $(single-no-ko): $(build-dir)
-2115: 	@:
-2116: 
-2117: # Remove MODORDER when done because it is not the real one.
-2118: PHONY += single_modules
-2119: single_modules: $(single-no-ko) modules_prepare
-2120: 	$(Q){ $(foreach m, $(single-ko), echo $(extmod_prefix)$m;) } > $(MODORDER)
-2121: 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modpost
-2122: ifneq ($(KBUILD_MODPOST_NOFINAL),1)
-2123: 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modfinal
-2124: endif
-2125: 	$(Q)rm -f $(MODORDER)
-2126: 
-2127: single-goals := $(addprefix $(build-dir)/, $(single-no-ko))
-2128: 
-2129: KBUILD_MODULES := 1
-2130: 
-2131: endif
-2132: 
-2133: # Preset locale variables to speed up the build process. Limit locale
-2134: # tweaks to this spot to avoid wrong language settings when running
-2135: # make menuconfig etc.
-2136: # Error messages still appears in the original language
-2137: PHONY += $(build-dir)
-2138: $(build-dir): prepare
-2139: 	$(Q)$(MAKE) $(build)=$@ $(if $(KBUILD_MIXED_TREE),,need-builtin=1) need-modorder=1 $(single-goals)
-2140: 
-2141: clean-dirs := $(addprefix _clean_, $(clean-dirs))
-2142: PHONY += $(clean-dirs) clean
-2143: $(clean-dirs):
-2144: 	$(Q)$(MAKE) $(clean)=$(patsubst _clean_%,%,$@)
-2145: 
+	    /home/runner/work/peridot-kernel-build/peridot-kernel-build/out/tools/bpf/resolve_btfids/libsubcmd/libsubcmd.a install_headers
+make[4]: 'install_headers' is up to date.
+make -f /home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/tools/build/Makefile.build dir=. obj=resolve_btfids
+make -f /home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build obj=arch/arm64/kernel/vdso \
+include/generated/vdso-offsets.h arch/arm64/kernel/vdso/vdso.so
+make -f /home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build obj=arch/arm64/kernel/vdso32 \
+include/generated/vdso32-offsets.h arch/arm64/kernel/vdso32/vdso.so
+make -f /home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build obj=. need-builtin=1 need-modorder=1 
+make -f /home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build obj=certs \
+need-builtin=1 \
+need-modorder=1 \
+
+  clang -Wp,-MMD,certs/.extract-cert.d -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer -std=gnu11     -I ./certs   -o certs/extract-cert /home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/certs/extract-cert.c   -lcrypto 
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/certs/extract-cert.c:149:7: error: use of undeclared identifier 'key_pass'
+  149 |                 if (key_pass)
+      |                     ^
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/certs/extract-cert.c:150:42: error: use of undeclared identifier 'key_pass'
+  150 |                         ERR(!ENGINE_ctrl_cmd_string(e, "PIN", key_pass, 0), "Set PKCS#11 PIN");
+      |                                                               ^
+2 errors generated.
+make[3]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.host:114: certs/extract-cert] Error 1
+make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build:503: certs] Error 2
+make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2139: .] Error 2
+make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
+make: *** [Makefile:256: __sub-make] Error 2
 __DONE__ rc=0
-__RAW__ 2026-08-30T15:30:59Z run=33317766012
+__RAW__ 2026-08-30T15:31:53Z run=33317766012
