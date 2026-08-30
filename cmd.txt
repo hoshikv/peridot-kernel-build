@@ -1,3 +1,4 @@
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
-echo "--- runner mi_dsi_panel.c line 18-24 ---"
-sed -n '18,24p' "$D/mi_disp/mi_dsi_panel.c"
+cd "$D"
+git rev-parse --is-inside-work-tree 2>/dev/null && git log --oneline -2 2>/dev/null
+echo "---"; ls mi_disp/mi_disp_lhbm.c mi_disp/mi_dsi_panel.c
