@@ -1,46 +1,54 @@
-=== head of mi_dsi_panel.c ===
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2020 XiaoMi, Inc. All rights reserved.
- */
-
-#define pr_fmt(fmt)	"mi-dsi-panel:[%s:%d] " fmt, __func__, __LINE__
-#include <linux/delay.h>
-#include <linux/slab.h>
-#include <linux/gpio.h>
-#include <linux/of_gpio.h>
-#include <linux/rtc.h>
-#include <linux/pm_wakeup.h>
-#include <video/mipi_display.h>
-#include <drm/mi_disp.h>
-
-#include "dsi_panel.h"
-#include "dsi_display.h"
-#include "dsi_ctrl_hw.h"
-#include "dsi_parser.h"
-#include "internals.h"
-#include "sde_connector.h"
-#include "sde_trace.h"
-#include "mi_dsi_panel.h"
-#include "mi_disp_feature.h"
-#include "mi_disp_print.h"
-#include "mi_disp_parser.h"
-#include "mi_dsi_display.h"
-#include "mi_disp_lhbm.h"
-#include "mi_panel_id.h"
-#include "mi_disp_nvt_alpha_data.h"
-
-#define to_dsi_display(x) container_of(x, struct dsi_display, host)
-
-void mi_dsi_update_backlight_in_aod(struct dsi_panel *panel,
-			bool restore_backlight);
-
-static u64 g_panel_id[MI_DISP_MAX];
-
-typedef int (*mi_display_pwrkey_callback)(int);
-=== search headers with similar names ===
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/rotator/sde_rotator_r3_internal.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/rotator/sde_rotator_r1_internal.h
+=== git tree of commit fcfc5a1 (mi_disp) ===
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_config.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_core.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_core.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_debugfs.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_debugfs.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_feature.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_feature.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_file.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_file.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_flatmode.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_flatmode.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_lhbm.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_lhbm.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_log.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_log.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_nvt_alpha_data.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_parser.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_parser.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_print.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_print.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_procfs.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_procfs.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_sysfs.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_disp_sysfs.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_display.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_display.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_panel_id.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_sde_connector.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_sde_connector.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_sde_crtc.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_sde_crtc.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_sde_encoder.c
+vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_sde_encoder.h
+=== same for include dir ===
+vendor_opensource_display-drivers-peridot-u-oss/msm/msm_cooling_device.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drv.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/msm_gem.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/msm_kms.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/msm_mmu.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/msm_prop.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/sde_dbg.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/sde_dsc_helper.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/sde_edid_parser.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_2x.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/sde_power_handle.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/sde_rsc_hw.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/sde_rsc_priv.h
+vendor_opensource_display-drivers-peridot-u-oss/msm/sde_vdc_helper.h
 __DONE__ rc=0
-__RAW__ 2026-08-30T16:39:54Z run=33317766012
+__RAW__ 2026-08-30T16:41:04Z run=33317766012
