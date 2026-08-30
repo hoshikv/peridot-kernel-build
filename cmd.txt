@@ -1,8 +1,9 @@
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-echo "=== find definitions hdcp1_init / hdcp2_feature_supported ==="
-grep -rn "hdcp1_init" "$D" --include="*.c" --include="*.h" | grep -v "sde_hdcp_1x" | head
-grep -rn "int hdcp2_feature_supported\|hdcp2_feature_supported(" "$D" --include="*.c" | grep -v "sde_hdcp_2x" | head
-echo "=== where is sde_hdcp_2x using it, surrounding context ==="
-sed -n '330,360p' "$D/msm/sde_hdcp_2x.c"
-echo "=== check dp dir for hdcp ==="
-ls "$D/msm/dp/" | grep -i hdcp
+echo "=== all hdcp-related files in import tree ==="
+find "$D" -iname "*hdcp*" | head -40
+echo "=== does sde_hdcp_1x define its own? ==="
+grep -n "hdcp1_init\|static.*hdcp1_\|EXPORT_SYMBOL.*hdcp1" "$D/msm/sde_hdcp_1x.c" | head
+echo "=== hdcp2_feature_supported def search ==="
+grep -rln "hdcp2_feature_supported" "$D" | head
+echo "=== look for hdcp impl files e.g. hdcp1_main, hdcp2_main ==="
+find "$D" -name "hdcp1*.c" -o -name "hdcp2*.c" -o -name "hdcp_*.c" | head
