@@ -1,63 +1,9 @@
-=== securemsm hdcp section ===
-In file included from /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/include/uapi/linux/qseecom_api.h:14:
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/include/uapi/linux/qseecom.h:10:9: warning: Warning: This header file will be deprecated in future [-W#pragma-messages]
-   10 | #pragma message("Warning: This header file will be deprecated in future")
-      |         ^
-2 warnings generated.
-  LD [M]  /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qseecom_dlkm.o
-  CC [M]  /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/smcinvoke/smcinvoke_kernel.o
-In file included from /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/smcinvoke/smcinvoke_kernel.c:22:
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/include/uapi/linux/qseecom_api.h:10:9: warning: Warning: This header file will be deprecated in future [-W#pragma-messages]
-   10 | #pragma message("Warning: This header file will be deprecated in future")
-      |         ^
-In file included from /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/smcinvoke/smcinvoke_kernel.c:22:
-In file included from /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/include/uapi/linux/qseecom_api.h:14:
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/include/uapi/linux/qseecom.h:10:9: warning: Warning: This header file will be deprecated in future [-W#pragma-messages]
-   10 | #pragma message("Warning: This header file will be deprecated in future")
-      |         ^
-2 warnings generated.
-In file included from /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/smcinvoke/smcinvoke_kernel.c:22:
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/include/uapi/linux/qseecom_api.h:10:9: warning: Warning: This header file will be deprecated in future [-W#pragma-messages]
-   10 | #pragma message("Warning: This header file will be deprecated in future")
-      |         ^
-In file included from /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/smcinvoke/smcinvoke_kernel.c:22:
-In file included from /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/include/uapi/linux/qseecom_api.h:14:
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/include/uapi/linux/qseecom.h:10:9: warning: Warning: This header file will be deprecated in future [-W#pragma-messages]
-   10 | #pragma message("Warning: This header file will be deprecated in future")
-      |         ^
-2 warnings generated.
-  CC [M]  /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/smcinvoke/smcinvoke.o
-In file included from /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/smcinvoke/smcinvoke.c:51:
-In file included from /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/linux/misc/qseecomi.h:11:
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/linux/misc/../../include/uapi/linux/qseecom.h:10:9: warning: Warning: This header file will be deprecated in future [-W#pragma-messages]
-   10 | #pragma message("Warning: This header file will be deprecated in future")
-      |         ^
-In file included from /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/smcinvoke/smcinvoke.c:54:
-In file included from /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/smcinvoke/trace_smcinvoke.h:502:
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/include/trace/define_trace.h:95:10: fatal error: '../../../../sm8635-modules/qcom/opensource/securemsm-kernel/smcinvoke/trace_smcinvoke.h' file not found
-   95 | #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
-      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/include/trace/define_trace.h:90:32: note: expanded from macro 'TRACE_INCLUDE'
-   90 | # define TRACE_INCLUDE(system) __TRACE_INCLUDE(system)
-      |                                ^~~~~~~~~~~~~~~~~~~~~~~
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/include/trace/define_trace.h:87:34: note: expanded from macro '__TRACE_INCLUDE'
-   87 | # define __TRACE_INCLUDE(system) __stringify(TRACE_INCLUDE_PATH/system.h)
-      |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/include/linux/stringify.h:10:27: note: expanded from macro '__stringify'
-   10 | #define __stringify(x...)       __stringify_1(x)
-      |                                 ^~~~~~~~~~~~~~~~
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/include/linux/stringify.h:9:29: note: expanded from macro '__stringify_1'
-    9 | #define __stringify_1(x...)     #x
-      |                                 ^~
-<scratch space>:56:1: note: expanded from here
-   56 | "../../../../sm8635-modules/qcom/opensource/securemsm-kernel/smcinvoke/trace_smcinvoke.h"
-      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1 warning and 1 error generated.
-make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build:250: /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/smcinvoke/smcinvoke.o] Error 1
-make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2139: /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel] Error 2
-make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-make: *** [Makefile:256: __sub-make] Error 2
-make: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
-FAIL hdcp rc=2
+rc=2
+ls: cannot access '/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Module.symvers': No such file or directory
+=== exports from hdcp module ===
+=== errors tail ===
+17:make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.modpost:187: /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Module.symvers] Error 1
+18:make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2091: modpost] Error 2
+20:make: *** [Makefile:256: __sub-make] Error 2
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:32:05Z run=33317766012
+__RAW__ 2026-08-30T17:32:48Z run=33317766012
