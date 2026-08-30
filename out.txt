@@ -1,7 +1,3 @@
-=== branch peridot-u-oss ===
-=== branch peridot-u-oss2 ===
-=== branch peridot-u-oss-mainline ===
-=== branch sm8635-u-oss ===
-=== list branches matching peridot ===
+=== MiCode/vendor_opensource_display-drivers branches ===
 __DONE__ rc=0
-__RAW__ 2026-08-30T16:48:55Z run=33317766012
+__RAW__ 2026-08-30T16:50:32Z run=33317766012
