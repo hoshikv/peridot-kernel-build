@@ -1,4 +1,2 @@
 cd "$GITHUB_WORKSPACE/kernel/certs"
-sed -n '75,90p' extract-cert.c
-echo "====="
-sed -n '138,155p' extract-cert.c
+grep -n "#ifdef\|#ifndef\|#endif\|#else\|key_pass\|use_engine" extract-cert.c
