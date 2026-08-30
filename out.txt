@@ -1,24 +1,7 @@
-=== placeholders ===
--rw-r--r-- 1 runner runner 0 Aug 30 16:56 /home/runner/work/peridot-kernel-build/peridot-kernel-build/out/obj/vendor/qcom/opensource/display-drivers/hdcp/Module.symvers
--rw-r--r-- 1 runner runner 0 Aug 30 16:56 /home/runner/work/peridot-kernel-build/peridot-kernel-build/out/obj/vendor/qcom/opensource/display-drivers/msm/Module.symvers
-=== config checks ===
-=== rebuild ===
-ERROR: modpost: "hdcp1_init" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "hdcp1_start" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "hdcp1_feature_supported" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "hdcp1_set_enc" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "hdcp1_ops_notify" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "hdcp1_stop" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "hdcp2_feature_supported" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "hdcp2_open_stream" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "hdcp2_close_stream" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-WARNING: modpost: suppressed 20 unresolved symbol warnings because there were too many)
-make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.modpost:187: /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Module.symvers] Error 1
-make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2091: modpost] Error 2
-make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-make: *** [Makefile:256: __sub-make] Error 2
-make: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
-RC=0
-ls: cannot access '/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko': No such file or directory
-__DONE__ rc=2
-__RAW__ 2026-08-30T17:00:26Z run=33317766012
+=== hdcp dir ===
+msm_hdcp.c
+msm_hdcp.o
+=== hdcp Kbuild ===
+=== config HDCP ===
+__DONE__ rc=0
+__RAW__ 2026-08-30T17:01:26Z run=33317766012
