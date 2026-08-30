@@ -1,29 +1,26 @@
-=== all hdcp-related files in import tree ===
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_2x.o
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_1x.o
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/dp/dp_hdcp2p2.o
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/dp/.dp_hdcp2p2.o.cmd
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/dp/dp_hdcp2p2.c
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_1x.c
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_2x.c
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_2x.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/.sde_hdcp_2x.o.cmd
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/.sde_hdcp_1x.o.cmd
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/include/linux/msm_hdcp.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/include/uapi/display/hdcp
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/include/uapi/display/hdcp/msm_hdmi_hdcp_mgr.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/hdcp
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/hdcp/.msm_hdcp.o.d
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/hdcp/msm_hdcp.o
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/hdcp/.msm_hdcp.o.cmd
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/hdcp/msm_hdcp.c
-=== does sde_hdcp_1x define its own? ===
-1588:	hdcp->hdcp1_handle = hdcp1_init();
-=== hdcp2_feature_supported def search ===
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_2x.o
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_2x.c
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.o
-=== look for hdcp impl files e.g. hdcp1_main, hdcp2_main ===
-__DONE__ rc=0
-__RAW__ 2026-08-30T17:04:35Z run=33317766012
+=== Kbuild hdcp lines ===
+104:KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/display-drivers/hdcp/Module.symvers
+122:msm_drm-$(CONFIG_HDCP_QSEECOM) := ../hdcp/msm_hdcp.o \
+123:				  dp/dp_hdcp2p2.o \
+124:				  sde_hdcp_1x.o \
+125:				  sde_hdcp_2x.o
+=== rebuild WITHOUT HDCP_QSEECOM ===
+ERROR: modpost: "msm_ext_disp_deregister_intf" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "sde_hdcp_1x_init" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "sde_hdcp_1x_get" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "sde_dp_hdcp2p2_init" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "sde_hdcp_1x_deinit" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "sde_dp_hdcp2p2_get" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "sde_dp_hdcp2p2_deinit" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "spec_sync_wait_bind_array" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "msm_hw_fence_update_txq_error" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+WARNING: modpost: suppressed 14 unresolved symbol warnings because there were too many)
+make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.modpost:187: /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Module.symvers] Error 1
+make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2091: modpost] Error 2
+make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
+make: *** [Makefile:256: __sub-make] Error 2
+make: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
+RC=0
+ls: cannot access '/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko': No such file or directory
+__DONE__ rc=2
+__RAW__ 2026-08-30T17:06:54Z run=33317766012
