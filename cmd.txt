@@ -1,1 +1,1 @@
-echo "hello-from-runner"; whoami; pwd; uname -m; nproc; free -h | head -2; df -h / | tail -1; ls $GITHUB_WORKSPACE | head -3
+sudo apt-get clean -y 2>/dev/null; sudo rm -rf /opt/hostedtoolcache/* 2>/dev/null; rm -rf "$HOME/.cache" 2>/dev/null; df -h / | tail -1; du -sh /home/runner/work 2>/dev/null; ls /opt 2>/dev/null
