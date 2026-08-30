@@ -2,7 +2,11 @@ export PATH="$HOME/tc/bin:$PATH"
 export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
 cd "$GITHUB_WORKSPACE/kernel"
 O="$GITHUB_WORKSPACE/out"
-make -j2 O="$O" modules 2>&1 | tail -20
-echo "=== symvers ==="
-wc -l "$O/Module.symvers" 2>/dev/null
+D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
+echo "=== out-of-tree msm build ==="
+make -C "$GITHUB_WORKSPACE/kernel" O="$O" M="$D" \
+  KBUILD_EXTRA_SYMBOLS="$O/Module.symvers" \
+  modules 2>&1 | tail -40
+echo "=== ko files ==="
+find "$D" -name "*.ko" -exec ls -la {} \; 2>/dev/null
 df -h / | tail -1
