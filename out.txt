@@ -1,7 +1,6 @@
-=== disk ===
-/dev/root        72G   62G   11G  86% /
-=== hdcp Kbuild head ===
-=== mmrm Kbuild ===
+=== display-drivers/hdcp Kbuild ===
+head: cannot open '/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/hdcp/Kbuild' for reading: No such file or directory
+=== mmrm-driver ls ===
 Android.mk
 BUILD.bazel
 Kbuild
@@ -14,6 +13,7 @@ mmrm_modules.bzl
 mmrm_modules_build.bzl
 target.bzl
 vm
+=== mmrm Kbuild head ===
 
 include $(MMRM_ROOT)/config/waipiommrm.conf
 LINUXINCLUDE += -include $(MMRM_ROOT)/config/waipiommrmconf.h
@@ -34,76 +34,38 @@ LINUXINCLUDE += -I$(MMRM_ROOT)/vm/common/inc/
 
 obj-m += vm/fe/
 #obj-y += vm/fe/vm_test/
-=== hw_fence/sync_fence/ext_display Kbuild ===
---hw_fence--
-Android.mk
-BUILD.bazel
-Kbuild
-Kconfig
-Makefile
-defconfig
-define_hw_fence.bzl
-include
-src
-# SPDX-License-Identifier: GPL-2.0-only
-
-KDIR := $(TOP)/kernel_platform/msm-kernel
-include $(MSM_HW_FENCE_ROOT)/config/kalamammdrivers.conf
-LINUXINCLUDE += -include $(MSM_HW_FENCE_ROOT)/config/kalamammdriversconf.h \
-		-I$(MSM_HW_FENCE_ROOT)hw_fence/include/
-
-ifdef CONFIG_QTI_HW_FENCE
-obj-m += msm_hw_fence.o
-
-msm_hw_fence-y := src/msm_hw_fence.o \
-		src/hw_fence_drv_priv.o \
-		src/hw_fence_drv_utils.o \
-		src/hw_fence_drv_debug.o \
-		src/hw_fence_drv_ipc.o
---sync_fence--
-Android.mk
-BUILD.bazel
-Kbuild
-Kconfig
-Makefile
-defconfig
-define_sync_fence.bzl
-include
-src
-# SPDX-License-Identifier: GPL-2.0-only
-
-KDIR := $(TOP)/kernel_platform/msm-kernel
-LINUXINCLUDE    += -I$(SYNC_FENCE_ROOT)sync_fence/include/
-include $(SYNC_FENCE_ROOT)/config/kalamammdrivers.conf
-LINUXINCLUDE += -include $(SYNC_FENCE_ROOT)/config/kalamammdriversconf.h
-
-ifdef CONFIG_QCOM_SPEC_SYNC
-obj-m += sync_fence.o
-
-sync_fence-y := src/qcom_sync_file.o
 
 endif
-EXTRA_CFLAGS += -Wformat-extra-args -Wstrict-prototypes -Wformat-insufficient-args \
-		-Wformat-invalid-specifier -Wformat-zero-length -Wnonnull
---msm_ext_display--
-Android.mk
-BUILD.bazel
-Kbuild
-Kconfig
-Makefile
-defconfig
-define_msm_ext_display.bzl
-src
+=== msm/Kbuild top (1-30) ===
 # SPDX-License-Identifier: GPL-2.0-only
 
-include $(MSM_EXT_DISPLAY_ROOT)/config/kalamammdrivers.conf
-LINUXINCLUDE += -include $(MSM_EXT_DISPLAY_ROOT)/config/kalamammdriversconf.h
+KDIR := $(TOP)/kernel_platform/msm-kernel
 
-obj-m += msm_ext_display.o
+ifeq ($(CONFIG_ARCH_WAIPIO), y)
+ifeq ($(CONFIG_ARCH_QTI_VM), y)
+	include $(DISPLAY_ROOT)/config/gki_waipiodisptui.conf
+	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_waipiodisptuiconf.h
+else
+	include $(DISPLAY_ROOT)/config/gki_waipiodisp.conf
+	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_waipiodispconf.h
+endif
+endif
 
-msm_ext_display-y := src/msm_ext_display.o
+ifeq ($(CONFIG_ARCH_NEO), y)
+	include $(DISPLAY_ROOT)/config/gki_neodisp.conf
+	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_neodispconf.h
+endif
 
-EXTRA_CFLAGS += -Wformat-extra-args -Wstrict-prototypes -Wformat-insufficient-args \
-		-Wformat-invalid-specifier -Wformat-zero-length -Wnonnull
+ifeq ($(CONFIG_ARCH_PARROT), y)
+	include $(DISPLAY_ROOT)/config/gki_parrotdisp.conf
+	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_parrotdispconf.h
+endif
+
+ifeq ($(CONFIG_ARCH_PITTI), y)
+	include $(DISPLAY_ROOT)/config/gki_pittidisp.conf
+	LINUX_INC +=	-include $(DISPLAY_ROOT)/config/gki_pittidispconf.h
+endif
+
+ifeq ($(CONFIG_ARCH_NIOBE), y)
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:16:43Z run=33317766012
+__RAW__ 2026-08-30T17:18:24Z run=33317766012
