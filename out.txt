@@ -1,25 +1,4 @@
-=== qcom/opensource dirs ===
-audio-kernel
-bt-kernel
-camera-kernel
-dataipa
-datarmnet
-datarmnet-ext
-display-drivers
-dsp-kernel
-eva-kernel
-fingerprint
-graphics-kernel
-mm-drivers
-mm-sys-kernel
-mmrm-driver
-securemsm-kernel
-spu-kernel
-synx-kernel
-touch-drivers
-video-driver
-wlan
-=== display-drivers? ===
+=== qcom/opensource/display-drivers ===
 Android.bp
 Android.mk
 BUILD.bazel
@@ -30,35 +9,31 @@ Makefile.am
 NOTICE
 bridge-drivers
 config
-=== mm-drivers subdirs ===
-Android.bp
-Android.mk
-BUILD.bazel
-config
-hw_fence
-mm_driver_board.mk
-mm_driver_product.mk
-mm_drivers_kernel_headers.py
-msm_ext_display
-sync_fence
-=== hw-fence / sync-fence ===
-find: warning: you have specified the global option -maxdepth after the argument -iname, but global options are not positional, i.e., -maxdepth affects tests specified before it as well as those specified after it.  Please specify global options before other arguments.
-qcom/opensource/mm-drivers/sync_fence
-qcom/opensource/mm-drivers/hw_fence
-qcom/opensource/mmrm-driver
-qcom/opensource/mmrm-driver/mmrm_kernel_product.mk
-qcom/opensource/mmrm-driver/mmrm_kernel_board.mk
-qcom/opensource/mmrm-driver/mmrm_modules_build.bzl
-qcom/opensource/mmrm-driver/mmrm_modules.bzl
-=== securemsm hdcp ===
-hdcp1.h
-hdcp1_ops.h
-hdcp2p2.h
-hdcp_main.c
-hdcp_main.h
-hdcp_qseecom.c
-hdcp_qseecom.h
-hdcp_smcinvoke.c
-hdcp_smcinvoke.h
+display_driver_board.mk
+display_driver_build.bzl
+display_driver_product.mk
+display_kernel_headers.py
+display_modules.bzl
+hdcp
+include
+msm
+rotator
+target.bzl
+=== dir depth ===
+qcom/opensource/display-drivers
+qcom/opensource/display-drivers/bridge-drivers
+qcom/opensource/display-drivers/config
+qcom/opensource/display-drivers/Documentation
+qcom/opensource/display-drivers/Documentation/devicetree
+qcom/opensource/display-drivers/msm
+qcom/opensource/display-drivers/msm/dp
+qcom/opensource/display-drivers/msm/sde
+qcom/opensource/display-drivers/msm/dsi
+qcom/opensource/display-drivers/msm/mi_disp
+qcom/opensource/display-drivers/include
+qcom/opensource/display-drivers/include/linux
+qcom/opensource/display-drivers/include/uapi
+qcom/opensource/display-drivers/hdcp
+qcom/opensource/display-drivers/rotator
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:15:27Z run=33317766012
+__RAW__ 2026-08-30T17:15:54Z run=33317766012
