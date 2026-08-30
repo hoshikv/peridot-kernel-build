@@ -1,15 +1,3 @@
 cd "$GITHUB_WORKSPACE/kernel"
 O="$GITHUB_WORKSPACE/out"
-rm -rf "$O"
-mkdir -p "$O"
-# 1) merge langsung ke out, source tetap bersih
-scripts/kconfig/merge_config.sh -O "$O" -m -r \
-  arch/arm64/configs/gki_defconfig \
-  arch/arm64/configs/vendor/pineapple_GKI.config \
-  arch/arm64/configs/vendor/peridot_GKI.config > "$O/merge.log" 2>&1
-tail -3 "$O/merge.log"
-echo "=== mrproper ==="
-make mrproper 2>&1 | tail -2
-echo "=== olddefconfig ==="
-make O="$O" olddefconfig 2>&1 | tail -4
-grep -E "CONFIG_DRM_MSM|MI_DISPLAY|CONFIG_MI_DUMP" "$O/.config" | head
+make O="$O" olddefconfig 2>&1 | tail -35
