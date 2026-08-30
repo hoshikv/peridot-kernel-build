@@ -1,5 +1,7 @@
-D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-echo "=== msm/Kbuild (first 40 lines) ==="
-head -40 "$D/msm/Kbuild" 2>/dev/null
-echo "=== pineapple in target.bzl ==="
-grep -n -A18 "def define_pineapple" "$D/target.bzl" 2>/dev/null | head -30
+O="$GITHUB_WORKSPACE/out"
+echo "=== ARCH_PINEAPPLE in .config ==="
+grep -E "^CONFIG_ARCH_PINEAPPLE|^CONFIG_DRM_MSM" "$O/.config"
+echo "=== vendor configs contain ARCH_PINEAPPLE? ==="
+grep -rn "ARCH_PINEAPPLE" "$GITHUB_WORKSPACE/kernel/arch/arm64/configs/vendor/" 2>/dev/null | head
+echo "=== gki pineappledisp.conf content ==="
+cat "$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_pineappledisp.conf"
