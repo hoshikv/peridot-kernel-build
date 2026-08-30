@@ -1,4 +1,4 @@
-echo "=== branches sm8635-modules (crdroid) ==="
-curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/crdroidandroid/android_kernel_xiaomi_sm8635-modules/branches?per_page=100" | grep -o '"name":"[^"]*"' | head -20
-echo "=== branches lineage sm8635-modules ==="
-curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/LineageOS/android_kernel_xiaomi_sm8635-modules/branches?per_page=100" | grep -o '"name":"[^"]*"' | head -20
+echo "=== ls-remote crdroid sm8635-modules ==="
+git ls-remote --heads https://github.com/crdroidandroid/android_kernel_xiaomi_sm8635-modules.git 2>&1 | head -10
+echo "=== ls-remote lineage sm8635-modules ==="
+git ls-remote --heads https://github.com/LineageOS/android_kernel_xiaomi_sm8635-modules.git 2>&1 | head -10
