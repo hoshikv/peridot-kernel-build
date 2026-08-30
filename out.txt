@@ -1,8 +1,29 @@
-=== test relative paths ===
-OK: ../../../../kernel/kernel/irq/internals.h
-no: ../../../kernel/kernel/irq/internals.h
-no: ../../../../kernel/irq/internals.h
-=== old line ===
-#include "internals.h"
+=== new line 21 ===
+#include "../../../../kernel/kernel/irq/internals.h"
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_sde_encoder.c:131:4: warning: format specifies type 'int' but the argument has type 'u64' (aka 'unsigned long long') [-Wformat]
+  129 |         return scnprintf(buf, size, "fps: %d.%d vsync_period_ns:%lld"
+      |                                           ~~
+      |                                           %llu
+  130 |                         " panel_mode:%s panel_type:%s\n",
+  131 |                         calc_vsync->measured_fps_x1000 / 1000,
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_sde_encoder.c:132:4: warning: format specifies type 'int' but the argument has type 'u64' (aka 'unsigned long long') [-Wformat]
+  129 |         return scnprintf(buf, size, "fps: %d.%d vsync_period_ns:%lld"
+      |                                              ~~
+      |                                              %llu
+  130 |                         " panel_mode:%s panel_type:%s\n",
+  131 |                         calc_vsync->measured_fps_x1000 / 1000,
+  132 |                         calc_vsync->measured_fps_x1000 % 1000,
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+4 warnings generated.
+  CC [M]  /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_sde_connector.o
+  LD [M]  /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.o
+  MODPOST /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Module.symvers
+/obj/vendor/qcom/opensource/display-drivers/hdcp/Module.symvers: No such file or directory
+make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.modpost:187: /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Module.symvers] Error 1
+make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2091: modpost] Error 2
+make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
+make: *** [Makefile:256: __sub-make] Error 2
+make: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
 __DONE__ rc=0
-__RAW__ 2026-08-30T16:51:47Z run=33317766012
+__RAW__ 2026-08-30T16:53:55Z run=33317766012
