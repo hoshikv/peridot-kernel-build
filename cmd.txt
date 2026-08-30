@@ -1,7 +1,18 @@
-M="$GITHUB_WORKSPACE/modules/qcom/opensource/securemsm-kernel"
-echo "=== grep hdcp in Kbuild ==="
-grep -n "hdcp" "$M/Kbuild"
-echo "=== is CONFIG_HDCP_QSEECOM visible to make? ==="
-make -C "$GITHUB_WORKSPACE/kernel" O="$GITHUB_WORKSPACE/out" --no-print-directory CONFIG_HDCP_QSEECOM=y M="$M" SSG_MODULE_ROOT="$M" -pn 2>/dev/null | grep -E "^hdcp_qseecom_dlkm" | head
-echo "=== did hdcp objs compile? find .o under hdcp/ ==="
-find "$M/hdcp" -name "*.o" 2>/dev/null
+export PATH="$HOME/tc/bin:$PATH"
+export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
+K="$GITHUB_WORKSPACE/kernel"
+O="$GITHUB_WORKSPACE/out"
+WS="$GITHUB_WORKSPACE"
+M="$WS/modules/qcom/opensource/securemsm-kernel"
+ln -sfn "$WS/modules" "$WS/sm8635-modules"
+LOG="$WS/sec_hdcp2.log"
+rm -f "$M/Module.symvers"
+make -C "$K" O="$O" M="$M" SSG_MODULE_ROOT="$M" CONFIG_QCOM_SMCINVOKE=m CONFIG_HDCP_QSEECOM=m CONFIG_QTI_TZ_LOG=m modules > "$LOG" 2>&1
+echo "rc=$?"
+find "$M" -name "*.ko" | head -20
+echo "=== hdcp module exports ==="
+grep -E "hdcp" "$M/Module.symvers" | head -30
+echo "=== unresolved in hdcp module ==="
+llvm-nm "$M/hdcp_qseecom_dlkm.ko" 2>/dev/null | grep " U " | head -20
+echo "=== errors tail ==="
+grep -nE "error:|Error|undefined" "$LOG" | tail -10
