@@ -2,8 +2,5 @@ export PATH="$HOME/tc/bin:$PATH"
 export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
 cd "$GITHUB_WORKSPACE/kernel"
 O="$GITHUB_WORKSPACE/out"
-echo "=== make modules (in-tree) ==="
-make -j2 O="$O" modules 2>&1 | tail -25
-echo "=== Module.symvers ==="
-wc -l "$O/Module.symvers" 2>/dev/null
-df -h / | tail -1
+make -j2 O="$O" modules 2>&1 | grep -iE "error|Error|unknown|undefined|No rule|nothing to be done" | head -40
+echo "=== done ==="
