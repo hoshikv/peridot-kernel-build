@@ -1,12 +1,12 @@
 M="$GITHUB_WORKSPACE/modules/qcom/opensource"
-K="$GITHUB_WORKSPACE/kernel"
-echo "=== how is securemsm hdcp built? Android.bp/Makefile? ==="
-find "$M/securemsm-kernel" -maxdepth 2 -name "Android.bp" -o -maxdepth 2 -name "Android.mk" -o -maxdepth 2 -name "Kbuild" | head
+D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
+echo "=== is modules display-drivers identical to import? (key files) ==="
+for f in msm/mi_disp/mi_disp_lhbm.c msm/mi_disp/mi_dsi_panel.c msm/Kbuild msm/sde/sde_fence.c; do
+  if diff -q "$D/$f" "$M/display-drivers/$f" >/dev/null 2>&1; then echo "SAME  $f"; else echo "DIFF  $f"; fi
+done
+echo "=== securemsm hdcp Makefile/Android.mk head ==="
+cat "$M/securemsm-kernel/hdcp/Android.mk" 2>/dev/null | head -40
+echo "=== securemsm root dirs ==="
 ls "$M/securemsm-kernel"
-echo "=== mmrm Kbuild ==="
-cat "$M/mmrm-driver/Kbuild" | head -60
-ls "$M/mmrm-driver"
-echo "=== sync_fence Kbuild ==="
-cat "$M/mm-drivers/sync_fence/Kbuild"
-echo "=== ext_display Kbuild ==="
-cat "$M/mm-drivers/msm_ext_display/Kbuild" | head -50
+echo "=== check hsl?/sec build ==="
+find "$M/securemsm-kernel" -maxdepth 1 -name "Kbuild" -o -maxdepth 1 -name "Makefile" | head
