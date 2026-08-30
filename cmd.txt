@@ -1,11 +1,2 @@
-K="$GITHUB_WORKSPACE/kernel"
-echo "=== in-tree: spec_sync ==="
-grep -rln "spec_sync_wait_bind_array\|spec_sync_register" "$K" --include="*.c" --include="*.h" 2>/dev/null | head
-echo "=== in-tree: hw_fence ==="
-grep -rln "msm_hw_fence_update_txq_error\|hw_fence" "$K/drivers" --include="*.c" 2>/dev/null | head
-echo "=== in-tree: msm_ext_disp ==="
-grep -rln "msm_ext_disp_deregister_intf" "$K" --include="*.c" --include="*.h" 2>/dev/null | head
-echo "=== in-tree: hdcp1_init / hdcp2_feature ==="
-grep -rln "hdcp1_init\|hdcp2_open_stream" "$K" --include="*.c" --include="*.h" 2>/dev/null | head
-echo "=== kernel arch ==="
-ls "$K/arch/arm64/../.." | head
+D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
+sed -n "1,140p" "$D/msm/Kbuild"
