@@ -1,0 +1,53 @@
+name: Build msm_drm.ko
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Install build deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            git bc bison flex libssl-dev libelf-dev python3 \
+            ca-certificates wget file unzip
+
+      - name: Download Android clang prebuilt
+        run: |
+          git clone --depth 1 --single-branch \
+            https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 \
+            "$GITHUB_WORKSPACE/toolchain/clang" 2>&1 | tail -1 || true
+          ls "$GITHUB_WORKSPACE/toolchain/clang/"
+          CLANG_DIR="$(ls -d $GITHUB_WORKSPACE/toolchain/clang/clang-r* 2>/dev/null | head -1)"
+          if [[ -z "$CLANG_DIR" ]]; then
+            CLANG_DIR="$(ls -d $GITHUB_WORKSPACE/toolchain/clang/*/ 2>/dev/null | head -1)"
+          fi
+          echo "selected clang: $CLANG_DIR"
+          echo "CLANG_DIR=$CLANG_DIR" >> "$GITHUB_ENV"
+
+      - name: Build msm_drm.ko
+        env:
+          KERNEL_DIR: ${{ github.workspace }}/kernel
+          DD_DIR: ${{ github.workspace }}/display-drivers
+          CLANG_DIR: ${{ env.CLANG_DIR }}
+          JOBS: 8
+        run: |
+          ./build.sh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: msm_drm
+          path: out/msm_drm.ko
+          if-no-files-found: error

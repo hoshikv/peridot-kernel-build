@@ -1,0 +1,8 @@
+[submodule "kernel"]
+	path = kernel
+	url = https://github.com/crdroidandroid/android_kernel_xiaomi_sm8635.git
+	branch = 16.0
+[submodule "display-drivers"]
+	path = display-drivers
+	url = https://github.com/hoshikv/mi_disp_driver2_peridot.git
+	branch = main
