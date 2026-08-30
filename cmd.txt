@@ -1,5 +1,11 @@
-export PATH="$HOME/tc/bin:$PATH"
-export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
-cd "$GITHUB_WORKSPACE/kernel"
-O="$GITHUB_WORKSPACE/out"
-make V=1 -j1 O="$O" modules 2>&1 | tail -25
+cd "$GITHUB_WORKSPACE/kernel/certs"
+grep -n "key_pass" extract-cert.c | head
+echo "=== patch ==="
+python3 - <<'PY'
+import re
+p="extract-cert.c"
+s=open(p).read()
+s=s.replace("#ifdef USE_PKCS11_ENGINE\nstatic char *key_pass;\n","static char *key_pass;\n").replace("#ifdef USE_PKCS11_ENGINE\nstatic int use_engine = 1;\n","static int use_engine = 1;\n")
+open(p,"w").write(s)
+PY
+grep -n "key_pass\|use_engine" extract-cert.c | head
