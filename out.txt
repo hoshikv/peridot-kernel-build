@@ -1,39 +1,109 @@
-=== qcom/opensource/display-drivers ===
-Android.bp
+=== disk ===
+/dev/root        72G   62G   11G  86% /
+=== hdcp Kbuild head ===
+=== mmrm Kbuild ===
 Android.mk
 BUILD.bazel
-Documentation
 Kbuild
 Makefile
-Makefile.am
-NOTICE
-bridge-drivers
 config
-display_driver_board.mk
-display_driver_build.bzl
-display_driver_product.mk
-display_kernel_headers.py
-display_modules.bzl
-hdcp
-include
-msm
-rotator
+driver
+mmrm_kernel_board.mk
+mmrm_kernel_product.mk
+mmrm_modules.bzl
+mmrm_modules_build.bzl
 target.bzl
-=== dir depth ===
-qcom/opensource/display-drivers
-qcom/opensource/display-drivers/bridge-drivers
-qcom/opensource/display-drivers/config
-qcom/opensource/display-drivers/Documentation
-qcom/opensource/display-drivers/Documentation/devicetree
-qcom/opensource/display-drivers/msm
-qcom/opensource/display-drivers/msm/dp
-qcom/opensource/display-drivers/msm/sde
-qcom/opensource/display-drivers/msm/dsi
-qcom/opensource/display-drivers/msm/mi_disp
-qcom/opensource/display-drivers/include
-qcom/opensource/display-drivers/include/linux
-qcom/opensource/display-drivers/include/uapi
-qcom/opensource/display-drivers/hdcp
-qcom/opensource/display-drivers/rotator
+vm
+
+include $(MMRM_ROOT)/config/waipiommrm.conf
+LINUXINCLUDE += -include $(MMRM_ROOT)/config/waipiommrmconf.h
+
+ifneq ($(CONFIG_ARCH_QTI_VM), y)
+
+obj-m += driver/
+# obj-m += test/
+
+ifeq ($(CONFIG_MSM_MMRM_VM),y)
+LINUXINCLUDE += -I$(MMRM_ROOT)/vm/common/inc/
+obj-m += vm/be/
+endif
+
+else
+
+LINUXINCLUDE += -I$(MMRM_ROOT)/vm/common/inc/
+
+obj-m += vm/fe/
+#obj-y += vm/fe/vm_test/
+=== hw_fence/sync_fence/ext_display Kbuild ===
+--hw_fence--
+Android.mk
+BUILD.bazel
+Kbuild
+Kconfig
+Makefile
+defconfig
+define_hw_fence.bzl
+include
+src
+# SPDX-License-Identifier: GPL-2.0-only
+
+KDIR := $(TOP)/kernel_platform/msm-kernel
+include $(MSM_HW_FENCE_ROOT)/config/kalamammdrivers.conf
+LINUXINCLUDE += -include $(MSM_HW_FENCE_ROOT)/config/kalamammdriversconf.h \
+		-I$(MSM_HW_FENCE_ROOT)hw_fence/include/
+
+ifdef CONFIG_QTI_HW_FENCE
+obj-m += msm_hw_fence.o
+
+msm_hw_fence-y := src/msm_hw_fence.o \
+		src/hw_fence_drv_priv.o \
+		src/hw_fence_drv_utils.o \
+		src/hw_fence_drv_debug.o \
+		src/hw_fence_drv_ipc.o
+--sync_fence--
+Android.mk
+BUILD.bazel
+Kbuild
+Kconfig
+Makefile
+defconfig
+define_sync_fence.bzl
+include
+src
+# SPDX-License-Identifier: GPL-2.0-only
+
+KDIR := $(TOP)/kernel_platform/msm-kernel
+LINUXINCLUDE    += -I$(SYNC_FENCE_ROOT)sync_fence/include/
+include $(SYNC_FENCE_ROOT)/config/kalamammdrivers.conf
+LINUXINCLUDE += -include $(SYNC_FENCE_ROOT)/config/kalamammdriversconf.h
+
+ifdef CONFIG_QCOM_SPEC_SYNC
+obj-m += sync_fence.o
+
+sync_fence-y := src/qcom_sync_file.o
+
+endif
+EXTRA_CFLAGS += -Wformat-extra-args -Wstrict-prototypes -Wformat-insufficient-args \
+		-Wformat-invalid-specifier -Wformat-zero-length -Wnonnull
+--msm_ext_display--
+Android.mk
+BUILD.bazel
+Kbuild
+Kconfig
+Makefile
+defconfig
+define_msm_ext_display.bzl
+src
+# SPDX-License-Identifier: GPL-2.0-only
+
+include $(MSM_EXT_DISPLAY_ROOT)/config/kalamammdrivers.conf
+LINUXINCLUDE += -include $(MSM_EXT_DISPLAY_ROOT)/config/kalamammdriversconf.h
+
+obj-m += msm_ext_display.o
+
+msm_ext_display-y := src/msm_ext_display.o
+
+EXTRA_CFLAGS += -Wformat-extra-args -Wstrict-prototypes -Wformat-insufficient-args \
+		-Wformat-invalid-specifier -Wformat-zero-length -Wnonnull
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:15:54Z run=33317766012
+__RAW__ 2026-08-30T17:16:43Z run=33317766012
