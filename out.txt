@@ -1,64 +1,64 @@
-Cloning into 'modules'...
-=== autfcr ===
-modules
-modules/.git
-modules/.git/refs
-modules/.git/refs/heads
-modules/.git/refs/tags
-modules/.git/info
-modules/.git/objects
-modules/.git/objects/info
-modules/.git/objects/pack
-modules/.git/hooks
-modules/.git/logs
-modules/.git/logs/refs
-modules/.git/logs/refs/heads
-modules/nxp
-modules/nxp/opensource
-modules/nxp/opensource/driver
-modules/nxp/opensource/driver/config
-modules/nxp/opensource/driver/include
-modules/nxp/opensource/driver/nfc
-modules/qcom
-modules/qcom/opensource
-modules/qcom/opensource/datarmnet-ext
-modules/qcom/opensource/datarmnet-ext/sch
-modules/qcom/opensource/datarmnet-ext/perf
-modules/qcom/opensource/datarmnet-ext/mem
-modules/qcom/opensource/datarmnet-ext/aps
-modules/qcom/opensource/datarmnet-ext/shs
-modules/qcom/opensource/datarmnet-ext/src
-modules/qcom/opensource/datarmnet-ext/perf_tether
-modules/qcom/opensource/datarmnet-ext/wlan
-modules/qcom/opensource/datarmnet-ext/offload
-modules/qcom/opensource/spu-kernel
-modules/qcom/opensource/spu-kernel/drivers
-modules/qcom/opensource/spu-kernel/config
-modules/qcom/opensource/spu-kernel/include
-modules/qcom/opensource/graphics-kernel
-modules/qcom/opensource/graphics-kernel/build
-modules/qcom/opensource/graphics-kernel/config
-modules/qcom/opensource/graphics-kernel/include
-modules/qcom/opensource/fingerprint
-modules/qcom/opensource/securemsm-kernel
-modules/qcom/opensource/securemsm-kernel/qrng
-modules/qcom/opensource/securemsm-kernel/build
-modules/qcom/opensource/securemsm-kernel/smmu-proxy
-modules/qcom/opensource/securemsm-kernel/crypto-qti
-modules/qcom/opensource/securemsm-kernel/smcinvoke
-modules/qcom/opensource/securemsm-kernel/qseecom
-modules/qcom/opensource/securemsm-kernel/tz_log
-modules/qcom/opensource/securemsm-kernel/config
-modules/qcom/opensource/securemsm-kernel/linux
-modules/qcom/opensource/securemsm-kernel/include
-modules/qcom/opensource/securemsm-kernel/hdcp
-modules/qcom/opensource/camera-kernel
-modules/qcom/opensource/camera-kernel/dt-bindings
-modules/qcom/opensource/camera-kernel/drivers
-modules/qcom/opensource/camera-kernel/config
-modules/qcom/opensource/camera-kernel/include
-modules/qcom/opensource/mm-drivers
-modules/qcom/opensource/mm-drivers/sync_fence
-modules/qcom/opensource/mm-drivers/msm_ext_display
+=== qcom/opensource dirs ===
+audio-kernel
+bt-kernel
+camera-kernel
+dataipa
+datarmnet
+datarmnet-ext
+display-drivers
+dsp-kernel
+eva-kernel
+fingerprint
+graphics-kernel
+mm-drivers
+mm-sys-kernel
+mmrm-driver
+securemsm-kernel
+spu-kernel
+synx-kernel
+touch-drivers
+video-driver
+wlan
+=== display-drivers? ===
+Android.bp
+Android.mk
+BUILD.bazel
+Documentation
+Kbuild
+Makefile
+Makefile.am
+NOTICE
+bridge-drivers
+config
+=== mm-drivers subdirs ===
+Android.bp
+Android.mk
+BUILD.bazel
+config
+hw_fence
+mm_driver_board.mk
+mm_driver_product.mk
+mm_drivers_kernel_headers.py
+msm_ext_display
+sync_fence
+=== hw-fence / sync-fence ===
+find: warning: you have specified the global option -maxdepth after the argument -iname, but global options are not positional, i.e., -maxdepth affects tests specified before it as well as those specified after it.  Please specify global options before other arguments.
+qcom/opensource/mm-drivers/sync_fence
+qcom/opensource/mm-drivers/hw_fence
+qcom/opensource/mmrm-driver
+qcom/opensource/mmrm-driver/mmrm_kernel_product.mk
+qcom/opensource/mmrm-driver/mmrm_kernel_board.mk
+qcom/opensource/mmrm-driver/mmrm_modules_build.bzl
+qcom/opensource/mmrm-driver/mmrm_modules.bzl
+=== securemsm hdcp ===
+hdcp1.h
+hdcp1_ops.h
+hdcp2p2.h
+hdcp_main.c
+hdcp_main.h
+hdcp_qseecom.c
+hdcp_qseecom.h
+hdcp_smcinvoke.c
+hdcp_smcinvoke.h
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:14:54Z run=33317766012
+__RAW__ 2026-08-30T17:15:27Z run=33317766012
