@@ -17,20 +17,34 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq tmate
 
-      - name: Start tmate + publish SSH info to gist
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Start tmate
         run: |
-          TMATE_SOCK=/tmp/tmate.sock
-          nohup tmate -S "$TMATE_SOCK" -F > "$HOME/tmate.log" 2>&1 &
-          for i in $(seq 1 45); do
-            tmate -S "$TMATE_SOCK" wait tmate-ready 2>/dev/null && break
+          nohup tmate -S /tmp/tmate.sock -F > "$HOME/tmate.log" 2>&1 &
+          for i in $(seq 1 60); do
+            tmate -S /tmp/tmate.sock wait tmate-ready 2>/dev/null && break
             sleep 2
           done
-          sleep 4
-          SSH_LINE="$(tmate -S "$TMATE_SOCK" display -p '#{tmate_ssh}')"
-          echo "$SSH_LINE" > "$GITHUB_WORKSPACE/tmate-ssh.txt"
-          echo "SSH_LINE=[$SSH_LINE]"
-          gh gist create --public --desc "peridot-session-ssh" "$GITHUB_WORKSPACE/tmate-ssh.txt" 2>&1 | tee "$GITHUB_WORKSPACE/gist-url.txt"
-          echo "RUN_ID=$GITHUB_RUN_ID"
-          sleep 20000
+          sleep 5
+
+      - name: Push SSH creds to branch session-info
+        run: |
+          echo "RUN_ID=$GITHUB_RUN_ID started $(date -u +%FT%TZ)" > "$GITHUB_WORKSPACE/session-info.txt"
+          echo "SSH=$(tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}' 2>/dev/null || true)" >> "$GITHUB_WORKSPACE/session-info.txt"
+          echo "WEB=$(tmate -S /tmp/tmate.sock display -p '#{tmate_web}' 2>/dev/null || true)" >> "$GITHUB_WORKSPACE/session-info.txt"
+          {
+            echo "--- tmate.log ---"
+            tail -20 "$HOME/tmate.log" 2>/dev/null || true
+          } >> "$GITHUB_WORKSPACE/session-info.txt"
+          cat "$GITHUB_WORKSPACE/session-info.txt"
+          rm -f "$GITHUB_WORKSPACE/session-info.txt.bak"
+          cd "$GITHUB_WORKSPACE"
+          git config user.name hoshikv
+          git config user.email hoshikv@users.noreply.github.com
+          git checkout -b session-info 2>/dev/null || git checkout session-info
+          git add session-info.txt
+          git commit -m "session creds $GITHUB_RUN_ID" --allow-empty 2>&1 | tail -1 || true
+          git push -f origin session-info 2>&1 | tail -2
+          echo "PUSHED=$?"
+
+      - name: Keep alive
+        run: sleep 20000
