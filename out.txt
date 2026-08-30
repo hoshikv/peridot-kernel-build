@@ -1,19 +1,11 @@
-make[1]: Entering directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-  GEN     Makefile
-drivers/of/Kconfig:5:error: recursive dependency detected!
-drivers/of/Kconfig:5:	symbol OF is selected by X86_INTEL_CE
-arch/x86/Kconfig:604:	symbol X86_INTEL_CE depends on X86_IO_APIC
-arch/x86/Kconfig:1118:	symbol X86_IO_APIC depends on X86_LOCAL_APIC
-arch/x86/Kconfig:1112:	symbol X86_LOCAL_APIC depends on X86_UP_APIC
-arch/x86/Kconfig:1087:	symbol X86_UP_APIC prompt is visible depending on PCI_MSI
-drivers/pci/Kconfig:39:	symbol PCI_MSI is selected by PCIE_QCOM_ECAM
-drivers/pci/controller/Kconfig:361:	symbol PCIE_QCOM_ECAM depends on OF
-For a resolution refer to Documentation/kbuild/kconfig-language.rst
-subsection "Kconfig recursive dependency limitations"
-
-make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/kconfig/Makefile:77: olddefconfig] Error 1
-make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:722: olddefconfig] Error 2
+  HOSTCC  scripts/kconfig/util.o
+  HOSTLD  scripts/kconfig/conf
+#
+# configuration written to .config
+#
 make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-make: *** [Makefile:256: __sub-make] Error 2
+=== arm64 cfg check ===
+CONFIG_ARM64=y
+CONFIG_ARM64_PAGE_SHIFT=12
 __DONE__ rc=0
-__RAW__ 2026-08-30T15:15:51Z run=33317766012
+__RAW__ 2026-08-30T15:17:00Z run=33317766012
