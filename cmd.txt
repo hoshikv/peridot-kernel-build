@@ -1,8 +1,2 @@
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-O="$GITHUB_WORKSPACE/out"
-echo "=== all msm_drm.ko ==="
-find "$D" "$O" -name "msm_drm.ko" 2>/dev/null
-echo "=== last build lines ==="
-tail -20 "$GITHUB_WORKSPACE/msm_drm_link.log"
-echo "=== .ko built ==="
-find "$D" -name "*.ko" -newer "$GITHUB_WORKSPACE/msm_drm_link.log" 2>/dev/null | head
+cat "$D/config/gki_pineappledisp.conf"
