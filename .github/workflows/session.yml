@@ -1,8 +1,6 @@
 name: Interactive Build Session
-
 on:
   workflow_dispatch: {}
-
 jobs:
   session:
     runs-on: ubuntu-24.04
@@ -32,14 +30,28 @@ jobs:
           tar -xzf toolchain/clang.tar.gz -C toolchain/clang-r530567
           rm toolchain/clang.tar.gz
           toolchain/clang-r530567/bin/clang --version | head -1
-          echo "clang ready"
 
-      - name: Start tmate session (keep runner alive 6h)
-        uses: mxschmitt/action-tmate@v3
-        with:
-          detached: true
-
-      - name: Keep runner alive
+      - name: Start tmate + keep alive
         run: |
-          echo "=== RUNNER KEY: $GITHUB_RUN_ID ==="
+          sudo apt-get install -y -qq tmate
+          tmate -F &
+          for i in $(seq 1 30); do
+            tmate wait tmate-ready 2>/dev/null && break
+            sleep 2
+          done
+          sleep 5
+          {
+            echo "WEB_SESSION=$(tmate display -p '#{tmate_web}')"
+            echo "SSH_CMD=$(tmate display -p '#{tmate_ssh}')"
+          } | tee "$GITHUB_WORKSPACE/tmate-url.txt"
+          wc -c "$GITHUB_WORKSPACE/tmate-url.txt"
+          echo "=== waiting for ssh connection; runner lives while this sleeps ==="
+          echo "RUN_ID=$GITHUB_RUN_ID"
           sleep 20000
+
+      - name: Upload tmate connection info
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tmate-url
+          path: tmate-url.txt
