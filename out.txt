@@ -1,43 +1,16 @@
-=== synx-kernel present? ===
-Android.bp
-Android.mk
-nxp
-qcom
-Android.bp
-Android.mk
-nxp
-qcom
-audio-kernel
-bt-kernel
-camera-kernel
-dataipa
-datarmnet
-datarmnet-ext
-display-drivers
-dsp-kernel
-eva-kernel
-fingerprint
-graphics-kernel
-mm-drivers
-mm-sys-kernel
-mmrm-driver
-securemsm-kernel
-spu-kernel
-synx-kernel
-touch-drivers
-video-driver
-wlan
-=== kalamammdrivers.conf ===
-# SPDX-License-Identifier: GPL-2.0-only
-# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-# Copyright (c) 2020, The Linux Foundation. All rights reserved.
-
-export CONFIG_MSM_EXT_DISPLAY=y
-export CONFIG_QCOM_SPEC_SYNC=y
-export CONFIG_QTI_HW_FENCE=y
-=== MMRM config in .config ===
-=== does mmrm have own conf for pineapple? ls config ===
-waipiommrm.conf
-waipiommrmconf.h
-__DONE__ rc=0
-__RAW__ 2026-08-30T17:30:13Z run=33317766012
+=== produced .ko ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/sync_fence/sync_fence.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/msm_ext_display/msm_ext_display.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/hw_fence/msm_hw_fence.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mmrm-driver/driver/msm-mmrm.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/sync_fence/sync_fence.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/msm_ext_display/msm_ext_display.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/hw_fence/msm_hw_fence.ko
+=== symvers files ===
+ls: cannot access '/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Module.symvers': No such file or directory
+-rw-r--r-- 1 runner runner 4047 Aug 30 17:31 /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/hw_fence/Module.symvers
+-rw-r--r-- 1 runner runner  734 Aug 30 17:31 /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/msm_ext_display/Module.symvers
+-rw-r--r-- 1 runner runner  169 Aug 30 17:31 /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/sync_fence/Module.symvers
+-rw-r--r-- 1 runner runner 1147 Aug 30 17:31 /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mmrm-driver/Module.symvers
+__DONE__ rc=2
+__RAW__ 2026-08-30T17:31:38Z run=33317766012
