@@ -1,1 +1,1 @@
-DMSM="/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"; ls $DMSM; echo '=== sde ==='; ls $DMSM/sde 2>/dev/null | head; echo '=== headers ==='; find $DMSM -name sde_connector.h -o -name sde_trace.h -o -name dsi_panel.h 2>/dev/null | head
+curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/search/code?q=mi_dsi_panel.c+internals.h" | head -60
