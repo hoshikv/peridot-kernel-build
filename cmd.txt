@@ -2,7 +2,8 @@ export PATH="$HOME/tc/bin:$PATH"
 export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
 cd "$GITHUB_WORKSPACE/kernel"
 O="$GITHUB_WORKSPACE/out"
-make O="$O" olddefconfig 2>&1 | tail -6
-echo "=== arm64 cfg check ==="
-grep -m2 "CONFIG_ARM64" "$O/.config"
-grep -E "CONFIG_DRM_MSM=" "$O/.config" | head -3
+echo "=== modules_prepare ==="
+make O="$O" modules_prepare 2>&1 | tail -6
+echo "=== msm related config ==="
+grep -E "^CONFIG_DRM_MSM|^CONFIG_DRM_MSM_DSI|MI_DISPLAY|MI_DUMP" "$O/.config"
+df -h / | tail -1
