@@ -1,1 +1,11 @@
-echo ALIVE-$$; date -u; tmux ls 2>/dev/null; ps aux | grep -c "[r]un.sh"
+export PATH="$HOME/tc/bin:$PATH"; export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
+K="$GITHUB_WORKSPACE/kernel"; O="$GITHUB_WORKSPACE/out"
+D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
+echo "=== placeholders ==="
+ls -la "$O/obj/vendor/qcom/opensource/display-drivers/hdcp/Module.symvers" "$O/obj/vendor/qcom/opensource/display-drivers/msm/Module.symvers" 2>&1
+echo "=== config checks ==="
+grep -E "^CONFIG_(HDCP_QSEECOM|MSM_SDE_ROTATOR|DRM_MSM)=" "$O/.config"
+echo "=== rebuild ==="
+make -C "$K" O="$O" M="$D/msm" DISPLAY_ROOT="$D" OUT="$O" modules 2>&1 | tail -15
+echo "RC=$?"
+ls -la "$D/msm/msm_drm.ko" 2>&1
