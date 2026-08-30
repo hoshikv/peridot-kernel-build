@@ -1,8 +1,64 @@
-=== external UNDEFINED (non-kernel) symbols referenced by built .o ===
-/tmp/outbox/run.sh: line 7: /tmp/opencode/undef.txt: No such file or directory
-/tmp/outbox/run.sh: line 9: /tmp/opencode/undef.txt: No such file or directory
-total undefined refs: 
-=== candidates that are external modules (hdcp/ext_disp/fence/spec/sec/qseecom mmrm) ===
-grep: /tmp/opencode/undef.txt: No such file or directory
+total undefined refs: 2124
+=== external-module candidates ===
+__traceiter_sde_hw_fence_status
+__tracepoint_sde_hw_fence_status
+dp_display_mmrm_callback
+hdcp1_deinit
+hdcp1_feature_supported
+hdcp1_init
+hdcp1_ops_notify
+hdcp1_set_enc
+hdcp1_start
+hdcp1_stop
+hdcp2_app_comm
+hdcp2_close_stream
+hdcp2_deinit
+hdcp2_feature_supported
+hdcp2_force_encryption
+hdcp2_init
+hdcp2_open_stream
+mmrm_client_check_scaling_supported
+mmrm_client_deregister
+mmrm_client_register
+mmrm_client_set_value
+msm_dss_mmrm_deregister
+msm_dss_mmrm_register
+msm_ext_disp_deregister_intf
+msm_ext_disp_register_intf
+msm_hdcp_cache_repeater_topology
+msm_hdcp_notify_topology
+msm_hdcp_register
+msm_hdcp_register_cb
+msm_hdcp_unregister
+msm_hw_fence_create
+msm_hw_fence_deregister
+msm_hw_fence_destroy
+msm_hw_fence_register
+msm_hw_fence_register_error_cb
+msm_hw_fence_reset_client
+msm_hw_fence_update_txq
+msm_hw_fence_update_txq_error
+msm_hw_fence_wait_update
+sde_dp_hdcp2p2_deinit
+sde_dp_hdcp2p2_get
+sde_dp_hdcp2p2_init
+sde_encoder_handle_hw_fence_error
+sde_encoder_helper_hw_fence_extended_wait
+sde_encoder_helper_hw_fence_sw_override
+sde_encoder_hw_fence_error_handle
+sde_fence_output_hw_fence_dir_write_init
+sde_fence_register_hw_fences_wait
+sde_fence_update_hw_fences_txq
+sde_fence_update_input_hw_fence_signal
+sde_hdcp_1x_deinit
+sde_hdcp_1x_get
+sde_hdcp_1x_init
+sde_hdcp_2x_deregister
+sde_hdcp_2x_register
+sde_hw_fence_deinit
+sde_hw_fence_init
+sde_power_mmrm_get_requested_clk
+sde_power_mmrm_set_clk_limit
+spec_sync_wait_bind_array
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:12:27Z run=33317766012
+__RAW__ 2026-08-30T17:12:49Z run=33317766012
