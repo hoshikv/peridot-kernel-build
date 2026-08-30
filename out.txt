@@ -1,6 +1,9 @@
-error: cannot pull with rebase: You have unstaged changes.
+Omit --global to set the identity only in this repository.
+
+fatal: empty ident name (for <runner@runnervmgx7h7.5013i53fwa5e1oqzx10xznp5re.phxx.internal.cloudapp.net>) not allowed
+error: cannot pull with rebase: Your index contains uncommitted changes.
 error: Please commit or stash them.
---- verify patch applied ---
+--- patch check ---
 
 bool is_aod_and_panel_initialized(struct dsi_panel *panel)
 {
@@ -22,7 +25,7 @@ bool is_aod_and_panel_initialized(struct dsi_panel *panel)
 		return -EBUSY;
 	}
 
---- internals check ---
 #include "../../../../kernel/kernel/irq/internals.h"
+fcfc5a1 Import vendor_opensource display-drivers peridot-u-oss (msm_drm.ko build tree)
 __DONE__ rc=0
-__RAW__ 2026-08-30T18:02:53Z run=33317766012
+__RAW__ 2026-08-30T18:03:20Z run=33317766012
