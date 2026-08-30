@@ -1,4 +1,4 @@
-echo "=== ls-remote crdroid sm8635-modules ==="
-git ls-remote --heads https://github.com/crdroidandroid/android_kernel_xiaomi_sm8635-modules.git 2>&1 | head -10
-echo "=== ls-remote lineage sm8635-modules ==="
-git ls-remote --heads https://github.com/LineageOS/android_kernel_xiaomi_sm8635-modules.git 2>&1 | head -10
+cd "$GITHUB_WORKSPACE"
+timeout 500 git clone --depth 1 --branch 16.0 --single-branch https://github.com/crdroidandroid/android_kernel_xiaomi_sm8635-modules.git modules 2>&1 | tail -3
+echo "=== autfcr ==="
+find modules -maxdepth 4 -type d | head -60
