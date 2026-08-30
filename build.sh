@@ -32,6 +32,21 @@ mkdir -p "$OUT"
 [[ -f "$KERNEL_DIR/Makefile" ]] || { echo "kernel tree missing"; exit 1; }
 [[ -f "$DISPLAY_ROOT/msm/Kbuild" ]] || { echo "display source missing"; exit 1; }
 
+# fix: key_pass undeclared when USE_PKCS11_ENGINE not defined but pkcs11 branch compiled
+python3 - "$KERNEL_DIR/certs/extract-cert.c" <<'EOF'
+import sys
+p = sys.argv[1]
+s = open(p).read()
+old = "#ifdef USE_PKCS11_ENGINE\nstatic const char *key_pass;\n#endif"
+new = "static const char *key_pass;"
+if old in s:
+    s = s.replace(old, new)
+    open(p, "w").write(s)
+    print("[*] extract-cert.c patched (key_pass unconditional)")
+else:
+    print("[*] no patch needed (key_pass already unconditional or pattern absent)")
+EOF
+
 if [[ ! -f "$OUT/.config" ]]; then
   echo "[*] configure kernel (defconfig linege peridot)"
   make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH defconfig
