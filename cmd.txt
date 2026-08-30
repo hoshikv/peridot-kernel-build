@@ -1,6 +1,9 @@
 export PATH="$HOME/tc/bin:$PATH"
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
-echo "ko: $(ls -la "$D/msm_drm.ko" | awk '{print $5" "$6" "$7" "$8}')"
-echo "gh: $(which gh || echo none)"
-echo "token: $( [ -n "$GITHUB_TOKEN" ] && echo set || echo none)"
-echo "cache: $( [ -n "$ACTIONS_RUNTIME_TOKEN" ] && echo set || echo none)"
+GH=gh
+command -v gh >/dev/null || GH="$HOME/tc/bin/gh"
+if [ -n "$GITHUB_TOKEN" ]; then export GH_TOKEN="$GITHUB_TOKEN"; fi
+echo "gh ok: $([ -n "$(command -v $GH 2>/dev/null || echo $HOME/tc/bin/gh)" ] && echo yes)"
+cd "$D"
+$GH release create doze-ko --repo hoshikv/peridot-kernel-build --title "msm_drm doze" --notes "auto-LP1 doze patch build" 2>/dev/null || echo "release exists/failed"
+$GH release upload doze-ko msm_drm.ko --repo hoshikv/peridot-kernel-build --clobber 2>&1 | tail -2
