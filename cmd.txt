@@ -1,28 +1,3 @@
-set -e
-export PATH="$HOME/tc/bin:$PATH"
-export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
-K="$GITHUB_WORKSPACE/kernel"
-O="$GITHUB_WORKSPACE/out"
-M="$GITHUB_WORKSPACE/modules/qcom/opensource"
-MMD="$M/mm-drivers"
-BUILDLOG="$GITHUB_WORKSPACE/companion_build.log"
-: > "$BUILDLOG"
-b() { echo "########## $1 ##########" >> "$BUILDLOG"; }
-b "sync_fence"
-make -C "$K" O="$O" M="$MMD/sync_fence" SYNC_FENCE_ROOT="$MMD/" modules >> "$BUILDLOG" 2>&1 || echo "FAIL sync_fence rc=$?" >> "$BUILDLOG"
-b "hw_fence"
-make -C "$K" O="$O" M="$MMD/hw_fence" MSM_HW_FENCE_ROOT="$MMD/" modules >> "$BUILDLOG" 2>&1 || echo "FAIL hw_fence rc=$?" >> "$BUILDLOG"
-b "msm_ext_display"
-make -C "$K" O="$O" M="$MMD/msm_ext_display" MSM_EXT_DISPLAY_ROOT="$MMD/" KBUILD_EXTRA_SYMBOLS="$MMD/sync_fence/Module.symvers $MMD/hw_fence/Module.symvers" modules >> "$BUILDLOG" 2>&1 || echo "FAIL ext_display rc=$?" >> "$BUILDLOG"
-b "mmrm"
-make -C "$K" O="$O" M="$M/mmrm-driver" MMRM_ROOT="$M/mmrm-driver" KBUILD_EXTRA_SYMBOLS="$MMD/sync_fence/Module.symvers $MMD/hw_fence/Module.symvers $MMD/msm_ext_display/Module.symvers" modules >> "$BUILDLOG" 2>&1 || echo "FAIL mmrm rc=$?" >> "$BUILDLOG"
-b "securemsm hdcp"
-make -C "$K" O="$O" M="$M/securemsm-kernel" SSG_MODULE_ROOT="$M/securemsm-kernel" CONFIG_HDCP_QSEECOM=y modules >> "$BUILDLOG" 2>&1 || echo "FAIL hdcp rc=$?" >> "$BUILDLOG"
-echo "=== produced .ko ==="
-find "$M" "$MMD" -name "*.ko" -newer "$GITHUB_WORKSPACE/display-drivers" 2>/dev/null | head -30
-echo "=== symvers files ==="
-ls -la "$MMD/sync_fence/Module.symvers" "$MMD/hw_fence/Module.symvers" "$MMD/msm_ext_display/Module.symvers" "$M/mmrm-driver/Module.symvers" "$M/securemsm-kernel/Module.symvers" 2>&1
-echo "=== build tail (errors) ==="
-grep -nE "Error|error:|FAIL|MODPOST|Unexpected|No module" "$BUILDLOG" | tail -30
-echo "=== tail of log ==="
-tail -30 "$BUILDLOG"
+B="$GITHUB_WORKSPACE/companion_build.log"
+echo "=== securemsm hdcp section ==="
+awk '/########## securemsm hdcp/,0' "$B" | tail -60
