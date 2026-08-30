@@ -1,4 +1,8 @@
-H="Authorization: token $GH_TOKEN"
-echo "=== MiCode/vendor_opensource_display-drivers branches ==="
-curl -s -H "$H" "https://api.github.com/repos/MiCode/vendor_opensource_display-drivers/branches?per_page=100" > /tmp/b.json
-grep -o "\"name\":\"[^\"]*\"" /tmp/b.json | head -60
+F="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.c"
+echo "=== test relative paths ==="
+cd "$(dirname "$F")"
+for p in ../../../../kernel/kernel/irq/internals.h ../../../kernel/kernel/irq/internals.h ../../../../kernel/irq/internals.h; do
+  if [ -f "$p" ]; then echo "OK: $p"; else echo "no: $p"; fi
+done
+echo "=== old line ==="
+sed -n "21p" "$F"
