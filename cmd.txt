@@ -1,11 +1,12 @@
 M="$GITHUB_WORKSPACE/modules/qcom/opensource"
-echo "=== mmrm-driver Makefile / bzl module names ==="
-sed -n '1,80p' "$M/mmrm-driver/mmrm_modules.bzl" 2>/dev/null
-echo "=== mmrm-driver driver/ Kbuild ==="
-find "$M/mmrm-driver/driver" -name "Kbuild" -exec sh -c 'echo "--- {}"; head -40 {}' \;
-echo "=== mmrm-driver vm/be/Kbuild ==="
-head -40 "$M/mmrm-driver/vm/be/Kbuild" 2>/dev/null
-echo "=== waipiommrm.conf ==="
-head -20 "$M/mmrm-driver/config/waipiommrm.conf"
-echo "=== securemsm top Kbuild ==="
-head -60 "$M/securemsm-kernel/Kbuild"
+O="$GITHUB_WORKSPACE/out"
+echo "=== synx-kernel present? ==="
+ls "$M/../.." 2>/dev/null
+ls "$GITHUB_WORKSPACE/modules" | head -30
+ls "$M"
+echo "=== kalamammdrivers.conf ==="
+cat "$M/mm-drivers/config/kalamammdrivers.conf"
+echo "=== MMRM config in .config ==="
+grep -E "CONFIG_MSM_MMRM|CONFIG_QTI_HW_FENCE|CONFIG_QCOM_SPEC_SYNC|CONFIG_HDCP_QSEECOM" "$O/.config" | head
+echo "=== does mmrm have own conf for pineapple? ls config ==="
+ls "$M/mmrm-driver/config"
