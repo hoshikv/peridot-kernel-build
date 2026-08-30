@@ -1,11 +1,8 @@
-export PATH="$HOME/tc/bin:$PATH"
-export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
-cd "$GITHUB_WORKSPACE/kernel"
-O="$GITHUB_WORKSPACE/out"
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-echo "=== find existing build artifacts in D ==="
-find "$D" -name "*.o" -o -name "*.ko" -o -name "*.mod" 2>/dev/null | head
-echo "=== first lines of D Makefile ==="
-head -40 "$D/Makefile" 2>/dev/null
-echo "=== Kbuild ==="
-ls "$D/Kbuild" 2>/dev/null && head -20 "$D/Kbuild"
+echo "=== config dir ==="
+ls "$D/config" 2>/dev/null
+find "$D/config" -type f -maxdepth 2 2>/dev/null
+echo "=== grep DRM_MSM in D config ==="
+grep -rn "DRM_MSM" "$D/config" 2>/dev/null | head
+echo "=== display_driver_board.mk ==="
+head -40 "$D/display_driver_board.mk" 2>/dev/null
