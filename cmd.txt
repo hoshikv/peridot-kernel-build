@@ -1,17 +1,13 @@
 export PATH="$HOME/tc/bin:$PATH"
-export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
+D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
 K="$GITHUB_WORKSPACE/kernel"
 O="$GITHUB_WORKSPACE/out"
-D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-M="$GITHUB_WORKSPACE/modules/qcom/opensource"
-MMD="$M/mm-drivers"
-mkdir -p "$D/msm" 2>/dev/null
-touch "$GITHUB_WORKSPACE/.doze_rebuild.start"
-make -C "$K" O="$O" M="$D" DISPLAY_ROOT="$D" OUT="$O" \
- KBUILD_EXTRA_SYMBOLS="$MMD/sync_fence/Module.symvers $MMD/hw_fence/Module.symvers $MMD/msm_ext_display/Module.symvers $M/mmrm-driver/Module.symvers $M/securemsm-kernel/Module.symvers" \
- CONFIG_DRM_MSM=y CONFIG_DRM_MSM_SDE=y CONFIG_SYNC_FILE=y CONFIG_DRM_MSM_DSI=y CONFIG_DRM_MSM_DP=y CONFIG_DRM_MSM_DP_MST=y CONFIG_DSI_PARSER=y CONFIG_QCOM_MDSS_PLL=y CONFIG_DRM_SDE_RSC=y CONFIG_DRM_SDE_WB=y CONFIG_DRM_MSM_REGISTER_LOGGING=y CONFIG_MSM_MMRM=y CONFIG_DISPLAY_BUILD=m CONFIG_HDCP_QSEECOM=y CONFIG_DRM_SDE_VM=y CONFIG_QTI_HW_FENCE=y CONFIG_QCOM_SPEC_SYNC=y CONFIG_QCOM_WCD939X_I2C=y MI_DISPLAY_MODIFY=y \
- modules > "$GITHUB_WORKSPACE/msm_doze_build.log" 2>&1
-RC=$?
-echo "BUILD_RC=$RC"
-ls -la "$D/msm/msm_drm.ko" 2>/dev/null
-tail -5 "$GITHUB_WORKSPACE/msm_doze_build.log"
+echo "=== vermagic ==="
+llvm-nm "$D/msm_drm.ko" 2>/dev/null | grep -m1 "vermagic" || strings "$D/msm_drm.ko" | grep -m1 "6.1.174"
+echo "kernel release: $(cat $O/include/config/kernel.release)"
+echo "=== build-id ==="
+llvm-readelf -n "$D/msm_drm.ko" 2>/dev/null | grep -m1 "Build ID"
+echo "=== symbol present ==="
+llvm-nm "$D/msm_drm.ko" 2>/dev/null | grep -m1 "is_aod_and_panel_initialized"
+echo "=== FOD HBM enum strings survived ==="
+strings "$D/msm_drm.ko" | grep -m2 "LOCAL_HBM_HLPM_WHITE_1000NIT\|LOCAL_HBM_HLPM_WHITE_110NIT"
