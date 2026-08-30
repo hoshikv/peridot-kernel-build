@@ -1,13 +1,16 @@
-hello-from-runner
-runner
-/home/runner/work/peridot-kernel-build/peridot-kernel-build
-x86_64
-2
-               total        used        free      shared  buff/cache   available
-Mem:           7.8Gi       913Mi       3.5Gi        44Mi       3.7Gi       6.9Gi
-/dev/root        72G   59G   13G  83% /
-README.md
-build.sh
-display-drivers
+/dev/root        72G   54G   19G  75% /
+2.6M	/home/runner/work
+actionarchivecache
+az
+containerd
+google
+hca
+hostedtoolcache
+microsoft
+pipx
+pipx_bin
+post-generation
+primer
+runner-cache
 __DONE__ rc=0
-__RAW__ 2026-08-30T14:49:07Z run=33317766012
+__RAW__ 2026-08-30T14:51:57Z run=33317766012
