@@ -15,6 +15,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
 
       - name: Restore build dir
         id: cache-out
