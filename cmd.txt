@@ -1,13 +1,7 @@
-D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
-cd "$D"
-git config user.email "runner@actions.local"
-git config user.name "runner"
-git add mi_disp/mi_dsi_panel.c
-git commit -m "fix: use out-of-tree kernel internals.h include" 2>&1 | tail -2
-git pull --rebase origin main 2>&1 | tail -6
-echo "--- patch check ---"
-sed -n '161,172p' mi_disp/mi_dsi_panel.c
-echo ">>>>"
-sed -n '308,315p' mi_disp/mi_disp_lhbm.c
-sed -n '21p' mi_disp/mi_dsi_panel.c
-git log --oneline -3
+export PATH="$HOME/tc/bin:$PATH"
+M="$GITHUB_WORKSPACE/modules/qcom/opensource"
+MMD="$M/mm-drivers"
+for f in "$MMD/sync_fence/Module.symvers" "$MMD/hw_fence/Module.symvers" "$MMD/msm_ext_display/Module.symvers" "$M/mmrm-driver/Module.symvers" "$M/securemsm-kernel/Module.symvers"; do
+  if [ -f "$f" ]; then echo "OK $f ($(wc -c < "$f")B)"; else echo "MISSING $f"; fi
+done
+df -h / | tail -1
