@@ -1,3 +1,14 @@
-B="$GITHUB_WORKSPACE/companion_build.log"
-echo "=== securemsm hdcp section ==="
-awk '/########## securemsm hdcp/,0' "$B" | tail -60
+export PATH="$HOME/tc/bin:$PATH"
+export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
+K="$GITHUB_WORKSPACE/kernel"
+O="$GITHUB_WORKSPACE/out"
+M="$GITHUB_WORKSPACE/modules/qcom/opensource/securemsm-kernel"
+LOG="$GITHUB_WORKSPACE/sec_hdcp.log"
+make -C "$K" O="$O" M="$M" SSG_MODULE_ROOT="$M" CONFIG_QCOM_SMCINVOKE= CONFIG_QTI_TZ_LOG= CONFIG_HDCP_QSEECOM=y modules > "$LOG" 2>&1
+echo "rc=$?"
+find "$M" -name "*.ko" -newer "$LOG" | head
+ls -la "$M/Module.symvers"
+echo "=== exports from hdcp module ==="
+nm -g "$M/hdcp_qseecom_dlkm.ko" 2>/dev/null | grep " T " | head -40
+echo "=== errors tail ==="
+grep -nE "error:|Error|No such" "$LOG" | tail -10
