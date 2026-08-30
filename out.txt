@@ -1,12 +1,5 @@
-=== vermagic ===
-0000000000000585 r __UNIQUE_ID_vermagic348
-kernel release: 6.1.174-g0edbd843260b-dirty
-=== build-id ===
-    Build ID: 066d6c1f9cc8de43e2ea029cd7c95100a66c41e5
-=== symbol present ===
-000000000016af40 T is_aod_and_panel_initialized
-=== FOD HBM enum strings survived ===
-[D]LOCAL_HBM_HLPM_WHITE_110NIT
-[I]LOCAL_HBM_HLPM_WHITE_1000NIT use doze_lbm_dbv_level as defaults
+---
+vermagic=6.1.174-g0edbd843260b-dirty SMP preempt mod_unload modversions aarch64
+kernel: #define UTS_RELEASE "6.1.174-g0edbd843260b-dirty"
 __DONE__ rc=0
-__RAW__ 2026-08-30T18:07:06Z run=33317766012
+__RAW__ 2026-08-30T18:07:28Z run=33317766012
