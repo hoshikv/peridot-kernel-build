@@ -1,4 +1,27 @@
-=== search github for sm8635 vendor modules repo ===
-=== check MiCode vendor_opensource_display-drivers full tree default branch ===
-__DONE__ rc=1
-__RAW__ 2026-08-30T17:08:42Z run=33317766012
+=== in-tree: spec_sync ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/include/linux/soc/qcom/qcom_sync_file.h
+=== in-tree: hw_fence ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/gpu/drm/amd/amdgpu/amdgpu_job.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/gpu/drm/msm/msm_gem_submit.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/gpu/drm/msm/msm_ringbuffer.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/drivers/gpu/drm/msm/msm_gpu.c
+=== in-tree: msm_ext_disp ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/include/linux/soc/qcom/msm_ext_display.h
+=== in-tree: hdcp1_init / hdcp2_feature ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/include/linux/hdcp_qseecom.h
+=== kernel arch ===
+Android.bp
+Android.mk
+BUILD.bazel
+BUILD.dtc
+COPYING
+CREDITS
+Documentation
+Kbuild
+Kconfig
+Kconfig.ext
+__DONE__ rc=0
+__RAW__ 2026-08-30T17:09:57Z run=33317766012
