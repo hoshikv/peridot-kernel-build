@@ -53,6 +53,8 @@ if [[ ! -f "$OUT/.config" ]]; then
 fi
 echo "[*] disable -Werror (clang r530567 lebih baru dari source ACK 6.1)"
 "$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d WERROR
+sed -i 's/^KBUILD_CFLAGS += -Werror$/KBUILD_CFLAGS += -Wno-error/' \
+  "$KERNEL_DIR/scripts/Makefile.extrawarn"
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH olddefconfig
 
 echo "[*] modules_prepare"
