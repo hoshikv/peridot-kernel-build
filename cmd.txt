@@ -1,11 +1,4 @@
-K="$GITHUB_WORKSPACE/kernel"
-echo "=== does kernel tree have modules repo hints? ==="
-ls "$K" | grep -i "module\|opensource\|vendor" 
-cat "$K/qcom/opensource/display-drivers" 2>/dev/null && echo "(filelink above)"
-echo "=== submodules in kernel repo ==="
-cat "$K/.gitmodules" 2>/dev/null | head -40
-echo "=== check crdroid modules repo on github ==="
-curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/crdroidandroid/android_kernel_xiaomi_sm8650-modules/branches/16.0" | grep -o "\"name\":\"16.0\"" | head -1
-curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/LineageOS/android_kernel_xiaomi_sm8650-modules/branches/lineage-23.2" | grep -o "\"name\":\"lineage-23.2\"" | head -1
-echo "=== what repo is the kernel? ==="
-git -C "$K" remote -v | head -2
+for repo in "crdroidandroid/android_kernel_xiaomi_sm8635-modules" "LineageOS/android_kernel_xiaomi_sm8635-modules"; do
+echo "=== $repo ==="
+curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/$repo/branches?per_page=100" | grep -o "\"name\":\"[^\"]*\"" | grep -i "16.0\|lineage-23.2" | head -5
+done
