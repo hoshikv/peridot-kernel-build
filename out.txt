@@ -1,27 +1,11 @@
-	    /home/runner/work/peridot-kernel-build/peridot-kernel-build/out/tools/bpf/resolve_btfids/libsubcmd/libsubcmd.a install_headers
-make[4]: 'install_headers' is up to date.
-make -f /home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/tools/build/Makefile.build dir=. obj=resolve_btfids
-make -f /home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build obj=arch/arm64/kernel/vdso \
-include/generated/vdso-offsets.h arch/arm64/kernel/vdso/vdso.so
-make -f /home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build obj=arch/arm64/kernel/vdso32 \
-include/generated/vdso32-offsets.h arch/arm64/kernel/vdso32/vdso.so
-make -f /home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build obj=. need-builtin=1 need-modorder=1 
-make -f /home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build obj=certs \
-need-builtin=1 \
-need-modorder=1 \
-
-  clang -Wp,-MMD,certs/.extract-cert.d -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer -std=gnu11     -I ./certs   -o certs/extract-cert /home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/certs/extract-cert.c   -lcrypto 
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/certs/extract-cert.c:149:7: error: use of undeclared identifier 'key_pass'
-  149 |                 if (key_pass)
-      |                     ^
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/certs/extract-cert.c:150:42: error: use of undeclared identifier 'key_pass'
-  150 |                         ERR(!ENGINE_ctrl_cmd_string(e, "PIN", key_pass, 0), "Set PKCS#11 PIN");
-      |                                                               ^
-2 errors generated.
-make[3]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.host:114: certs/extract-cert] Error 1
-make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build:503: certs] Error 2
-make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2139: .] Error 2
-make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-make: *** [Makefile:256: __sub-make] Error 2
+81:static const char *key_pass;
+112:	key_pass = getenv("KBUILD_SIGN_PIN");
+149:		if (key_pass)
+150:			ERR(!ENGINE_ctrl_cmd_string(e, "PIN", key_pass, 0), "Set PKCS#11 PIN");
+=== patch ===
+81:static const char *key_pass;
+112:	key_pass = getenv("KBUILD_SIGN_PIN");
+149:		if (key_pass)
+150:			ERR(!ENGINE_ctrl_cmd_string(e, "PIN", key_pass, 0), "Set PKCS#11 PIN");
 __DONE__ rc=0
-__RAW__ 2026-08-30T15:31:53Z run=33317766012
+__RAW__ 2026-08-30T15:32:47Z run=33317766012
