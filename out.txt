@@ -1,10 +1,34 @@
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/certs/extract-cert.c:149:7: error: use of undeclared identifier 'key_pass'
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/certs/extract-cert.c:150:42: error: use of undeclared identifier 'key_pass'
-2 errors generated.
-make[3]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.host:114: certs/extract-cert] Error 1
-make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.build:503: certs] Error 2
-make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2139: .] Error 2
-make: *** [Makefile:256: __sub-make] Error 2
-=== done ===
+	$(Q)rm -f $(MODORDER)
+
+single-goals := $(addprefix $(build-dir)/, $(single-no-ko))
+
+KBUILD_MODULES := 1
+
+endif
+
+# Preset locale variables to speed up the build process. Limit locale
+# tweaks to this spot to avoid wrong language settings when running
+# make menuconfig etc.
+# Error messages still appears in the original language
+PHONY += $(build-dir)
+$(build-dir): prepare
+	$(Q)$(MAKE) $(build)=$@ $(if $(KBUILD_MIXED_TREE),,need-builtin=1) need-modorder=1 $(single-goals)
+
+clean-dirs := $(addprefix _clean_, $(clean-dirs))
+PHONY += $(clean-dirs) clean
+$(clean-dirs):
+	$(Q)$(MAKE) $(clean)=$(patsubst _clean_%,%,$@)
+
+=== BUILD_SHADOW ===
+118:# See the file "Documentation/dev-tools/sparse.rst" for more details,
+139:# Use make M=dir or set the environment variable KBUILD_EXTMOD to specify the
+142:  KBUILD_EXTMOD := $(M)
+145:$(if $(word 2, $(KBUILD_EXTMOD)), \
+148:$(foreach x, % :, $(if $(findstring $x, $(KBUILD_EXTMOD)), \
+152:ifneq ($(filter %/, $(KBUILD_EXTMOD)),)
+153:KBUILD_EXTMOD := $(shell dirname $(KBUILD_EXTMOD).)
+156:export KBUILD_EXTMOD
+302:clean-targets := %clean mrproper cleandocs
+303:no-dot-config-targets := $(clean-targets) \
 __DONE__ rc=0
-__RAW__ 2026-08-30T15:29:43Z run=33317766012
+__RAW__ 2026-08-30T15:30:21Z run=33317766012
