@@ -1,9 +1,50 @@
-=== grep hdcp in Kbuild ===
-41:obj-$(CONFIG_HDCP_QSEECOM) += hdcp_qseecom_dlkm.o
-42:hdcp_qseecom_dlkm-objs := hdcp/hdcp_main.o hdcp/hdcp_smcinvoke.o hdcp/hdcp_qseecom.o
-=== is CONFIG_HDCP_QSEECOM visible to make? ===
-hdcp_qseecom_dlkm-objs := hdcp/hdcp_main.o hdcp/hdcp_smcinvoke.o hdcp/hdcp_qseecom.o
-hdcp_qseecom_dlkm-objs := hdcp/hdcp_main.o hdcp/hdcp_smcinvoke.o hdcp/hdcp_qseecom.o
-=== did hdcp objs compile? find .o under hdcp/ ===
+rc=0
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qrng_dlkm.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qseecom_dlkm.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcedev-mod_dlkm.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qcrypto-msm_dlkm.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/smmu_proxy_dlkm.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/tz_log_dlkm.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/qce50_dlkm.ko
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/smcinvoke_dlkm.ko
+=== hdcp module exports ===
+0x51a33bb9	hdcp2_feature_supported	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0x1d384434	hdcp2_force_encryption	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0xfed9a8ba	hdcp2_app_comm	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0x399d03b1	hdcp2_open_stream	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0x177e5577	hdcp2_close_stream	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0x28ff8398	hdcp2_init	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0x94882a94	hdcp2_set_hdcp_key_verify_retries	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0xa3b22369	hdcp2_deinit	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0xf6f01d13	hdcp1_init	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0x145b0f1a	hdcp1_set_hdcp_key_verify_retries	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0x0c1b6ea3	hdcp1_deinit	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0x428b02ca	hdcp1_feature_supported	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0x4d0f81ea	hdcp1_set_enc	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0x726c5663	hdcp1_ops_notify	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0xbf9f9ca2	hdcp1_start	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+0x4c837e8a	hdcp1_stop	/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp_qseecom_dlkm	EXPORT_SYMBOL_GPL	
+=== unresolved in hdcp module ===
+                 U __stack_chk_fail
+                 U _printk
+                 U firmware_request_from_smcinvoke
+                 U fortify_panic
+                 U get_client_env_object
+                 U kfree
+                 U kfree_sensitive
+                 U kmalloc_caches
+                 U kmalloc_trace
+                 U memcpy
+                 U msleep
+                 U mutex_lock
+                 U mutex_unlock
+                 U of_find_compatible_node
+                 U of_find_property
+                 U qseecom_send_command
+                 U qseecom_shutdown_app
+                 U qseecom_start_app
+                 U qtee_shmbridge_free_shm
+=== errors tail ===
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:35:36Z run=33317766012
+__RAW__ 2026-08-30T17:36:24Z run=33317766012
