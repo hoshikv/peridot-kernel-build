@@ -1,0 +1,64 @@
+name: Remote Shell
+on:
+  workflow_dispatch: {}
+jobs:
+  shell:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: tmux poller (read cmd.txt, write out.txt)
+        run: |
+          set -u
+          REPO=hoshikv/peridot-kernel-build
+          BIN=$(command -v gh || true)
+          export GH_TOKEN
+
+          sudo apt-get update -qq 2>/dev/null
+          sudo apt-get install -y -qq tmux jq bc bison flex libssl-dev libelf-dev python3 curl unzip file 2>/dev/null
+          command -v gh >/dev/null || sudo apt-get install -y -qq gh 2>/dev/null
+          mkdir -p /tmp/outbox
+
+          TM=build
+          tmux kill-session -t $TM 2>/dev/null
+          tmux new-session -d -s $TM -c "$GITHUB_WORKSPACE"
+
+          publish() {
+            local msg="$1" f="$2"
+            local sha cur
+            cur=$(gh api "repos/$REPO/contents/out.txt" --jq .sha 2>/dev/null) || cur=
+            local args=(-f message="$msg" -f content="$(base64 -w0 "$f")")
+            [ -n "$cur" ] && args+=(-f sha="$cur")
+            gh api --method PUT "repos/$REPO/contents/out.txt" "${args[@]}" --jq '.commit.sha' >/dev/null 2>&1 || true
+          }
+
+          echo "READY run=$GITHUB_RUN_ID $(date -u +%FT%TZ)" > /tmp/outbox/out.txt
+          echo "__DONE__" >> /tmp/outbox/out.txt
+          publish "ready $GITHUB_RUN_ID" /tmp/outbox/out.txt
+
+          LAST_CMD_SHA=
+
+          while true; do
+            CB=$(gh api "repos/$REPO/contents/cmd.txt" 2>/dev/null) || { sleep 5; continue; }
+            SHA=$(echo "$CB" | jq -r .sha 2>/dev/null)
+            if [ -n "$SHA" ] && [ "$SHA" != "$LAST_CMD_SHA" ]; then
+              CMD=$(echo "$CB" | jq -r .content | base64 -d)
+              LAST_CMD_SHA=$SHA
+              printf '%s' "$CMD" > /tmp/outbox/run.sh
+              rm -f /tmp/outbox/out.txt
+              tmux send-keys -t $TM "bash /tmp/outbox/run.sh > /tmp/outbox/out.txt 2>&1; echo \"__DONE__ rc=\$?\" >> /tmp/outbox/out.txt" Enter
+              for i in $(seq 1 660); do grep -q "__DONE__" /tmp/outbox/out.txt 2>/dev/null && break; sleep 5; done
+              { echo "__RAW__ $(date -u +%FT%TZ) run=$GITHUB_RUN_ID"; } >> /tmp/outbox/out.txt
+              tail -n 2000 /tmp/outbox/out.txt > /tmp/outbox/out.txt.t && mv /tmp/outbox/out.txt.t /tmp/outbox/out.txt
+              publish "out $GITHUB_RUN_ID $SHA" /tmp/outbox/out.txt
+              echo "PUBLISHED $SHA"
+            fi
+            sleep 5
+          done
