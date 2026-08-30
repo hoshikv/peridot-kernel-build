@@ -9,7 +9,8 @@ ARCH=arm64
 JOBS="${JOBS:-$(nproc --ignore=2)}"
 
 DISPLAY_ROOT="$DD_DIR/vendor_opensource_display-drivers-peridot-u-oss"
-CFG_LINEAGE="$KERNEL_DIR/arch/$ARCH/configs/vendor/peridot_GKI.config"
+VENDOR_CFG="$KERNEL_DIR/arch/$ARCH/configs/vendor"
+MERGED_DEFCONFIG="$OUT/merged_defconfig"
 
 if [[ -n "${CLANG_DIR:-}" ]]; then
   export CC="$CLANG_DIR/bin/clang"
@@ -28,6 +29,7 @@ export OBJDUMP=llvm-objdump
 export READELF=llvm-readelf
 
 mkdir -p "$OUT"
+mkdir -p "$DISPLAY_ROOT/msm"
 
 [[ -f "$KERNEL_DIR/Makefile" ]] || { echo "kernel tree missing"; exit 1; }
 [[ -f "$DISPLAY_ROOT/msm/Kbuild" ]] || { echo "display source missing"; exit 1; }
@@ -44,23 +46,34 @@ if old in s:
     open(p, "w").write(s)
     print("[*] extract-cert.c patched (key_pass unconditional)")
 else:
-    print("[*] no patch needed (key_pass already unconditional or pattern absent)")
+    print("[*] no patch needed")
 EOF
 
-if [[ ! -f "$OUT/.config" ]]; then
-  echo "[*] configure kernel (defconfig linege peridot)"
-  make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH defconfig
-fi
-echo "[*] disable -Werror (clang r530567 lebih baru dari source ACK 6.1)"
-"$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d WERROR
+# disable -Werror (clang r530567 lebih baru dari source ACK 6.1)
 sed -i 's/^KBUILD_CFLAGS += -Werror$/KBUILD_CFLAGS += -Wno-error/' \
   "$KERNEL_DIR/scripts/Makefile.extrawarn"
-make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH olddefconfig
 
-echo "[*] modules_prepare"
+if [[ ! -f "$MERGED_DEFCONFIG" ]]; then
+  echo "[*] merge config gki_defconfig + pineapple_GKI + peridot_GKI"
+  "$KERNEL_DIR/scripts/kconfig/merge_config.sh" -m -r \
+    "$KERNEL_DIR/arch/$ARCH/configs/gki_defconfig" \
+    "$VENDOR_CFG/pineapple_GKI.config" \
+    "$VENDOR_CFG/peridot_GKI.config" 2>&1 | tail -4
+  [[ -f "$KERNEL_DIR/.config" ]] && cp "$KERNEL_DIR/.config" "$MERGED_DEFCONFIG"
+  rm -f "$KERNEL_DIR/.config"
+fi
+
+if [[ ! -f "$OUT/.config" ]]; then
+  echo "[*] configure using merged defconfig"
+  cp "$MERGED_DEFCONFIG" "$OUT/.config"
+fi
+"$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d WERROR
+
+echo "[*] olddefconfig + modules_prepare"
+make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH olddefconfig
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH modules_prepare
 
-echo "[*] build vmlinux + in-tree modules (membuat Module.symvers wajib utk CRC)"
+echo "[*] build vmlinux + in-tree modules (Module.symvers utk CRC)"
 if [[ ! -f "$OUT/Module.symvers" ]]; then
   make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" vmlinux
   make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" modules
@@ -70,10 +83,10 @@ echo "[*] build msm_drm out-of-tree"
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" \
     M="$DISPLAY_ROOT/msm" \
     KBUILD_EXTRA_SYMBOLS="$OUT/Module.symvers" \
-    modules
+    modules 2>&1 | tee "$OUT/build.log"
 
 echo "[*] locate result"
-find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec ls -la {} \; 2>/dev/null
-find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec cp {} "$OUT/" 2>/dev/null \; || true
+find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec ls -la {} \; 2>/dev/null || true
+find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec cp {} "$OUT/" \; 2>/dev/null || true
 
 echo "[*] done: $OUT/msm_drm.ko"
