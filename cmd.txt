@@ -1,13 +1,8 @@
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
 O="$GITHUB_WORKSPACE/out"
-M="$GITHUB_WORKSPACE/modules/qcom/opensource"
-export PATH="$HOME/tc/bin:$PATH"
-export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
-K="$GITHUB_WORKSPACE/kernel"
-KXS="$M/mm-drivers/sync_fence/Module.symvers $M/mm-drivers/hw_fence/Module.symvers $M/mm-drivers/msm_ext_display/Module.symvers $M/mmrm-driver/Module.symvers $M/securemsm-kernel/Module.symvers"
-LOG="$GITHUB_WORKSPACE/msm_drm_link.log"
-make -C "$K" O="$O" M="$D" DISPLAY_ROOT="$D" OUT="$O" KBUILD_EXTRA_SYMBOLS="$KXS" CONFIG_HDCP_QSEECOM=y modules > "$LOG" 2>&1
-echo "rc=$?"
-ls -la "$D/msm/msm_drm.ko" 2>/dev/null
-echo "=== errors ==="
-grep -nE "error:|Error|undefined|Missing|No such" "$LOG" | tail -30
+echo "=== all msm_drm.ko ==="
+find "$D" "$O" -name "msm_drm.ko" 2>/dev/null
+echo "=== last build lines ==="
+tail -20 "$GITHUB_WORKSPACE/msm_drm_link.log"
+echo "=== .ko built ==="
+find "$D" -name "*.ko" -newer "$GITHUB_WORKSPACE/msm_drm_link.log" 2>/dev/null | head
