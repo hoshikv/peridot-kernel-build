@@ -1,156 +1,29 @@
-=== mi_disp_lhbm.c around 280-360 ===
-	}
+-rw-r--r-- 1 runner runner 47259344 Aug 30 17:41 /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko
+=== vermagic & crc ===
+name=%s
+vermagic=6.1.174-g0edbd843260b-dirty SMP preempt mod_unload modversions aarch64
+name=msm_drm
+=== kernel vermagic in O ===
+#define UTS_RELEASE "6.1.174-g0edbd843260b-dirty"
+6.1.174-g0edbd843260b-dirty
+=== reloc / build-id ===
+Displaying notes found in: .note.Linux
+  Owner                Data size 	Description
+  Linux                0x00000001	OPEN
+   description data: 00
+  Linux                0x00000004	func
+   description data: 00 00 00 00
 
-	if (atomic_read(&lhbm_fod->allow_tx_lhbm)) {
-		disp_id = mi_get_disp_id(display->display_type);
-		mi_disp_feature_event_notify_by_type(disp_id, MI_DISP_EVENT_FOD,
-				sizeof(fod_ui_ready), fod_ui_ready);
+Displaying notes found in: .note.gnu.build-id
+  Owner                Data size 	Description
+  GNU                  0x00000014	NT_GNU_BUILD_ID (unique build ID bitstring)
+    Build ID: 7f8d0b3e34152d29926e43f5aa4d19af8de6e9c5
 
-		DISP_INFO("%s display fod_ui_ready notify=%d\n",
-			display->display_type, fod_ui_ready);
-	}
+Displaying notes found in: .note.gnu.property
+  Owner                Data size 	Description
+  GNU                  0x00000010	NT_GNU_PROPERTY_TYPE_0 (property note)
+    Properties:    aarch64 feature: PAC
 
-	return 0;
-}
-
-static int mi_disp_lhbm_fod_set_disp_param(struct disp_lhbm_fod *lhbm_fod, u32 lhbm_value)
-{
-	struct dsi_panel *panel = NULL;
-	struct mi_dsi_panel_cfg *mi_cfg = NULL;
-	struct disp_feature_ctl ctl;
-	struct dsi_display *dsi_display = NULL;
-	struct sde_kms *sde_kms = NULL;
-	int rc = 0;
-
-	if (!lhbm_fod || !lhbm_fod->display || !lhbm_fod->display->panel) {
-		DISP_ERROR("invalid params\n");
-		return -EINVAL;
-	}
-	dsi_display = lhbm_fod->display;
-	memset(&ctl, 0, sizeof(struct disp_feature_ctl));
-	panel = lhbm_fod->display->panel;
-
-	if (sde_kms_is_suspend_blocked(dsi_display->drm_dev)) {
-		DISP_ERROR("sde_kms is suspended, skip to set disp_param\n");
-		return -EBUSY;
-	}
-
-	sde_kms = dsi_display_get_kms(dsi_display);
-	if (sde_kms) {
-		sde_vm_lock(sde_kms);
-		if (!sde_vm_owns_hw(sde_kms)) {
-			DISP_ERROR("op not supported due to HW unavailablity\n");
-			rc = -EOPNOTSUPP;
-			goto end;
-		}
-	}
-
-	mutex_lock(&panel->panel_lock);
-
-	mi_cfg = &panel->mi_cfg;
-
-	switch (lhbm_value) {
-	case LHBM_TARGET_BRIGHTNESS_WHITE_1000NIT:
-	case LHBM_TARGET_BRIGHTNESS_WHITE_110NIT:
-	case LHBM_TARGET_BRIGHTNESS_GREEN_500NIT:
-		ctl.feature_id = DISP_FEATURE_LOCAL_HBM;
-		if (lhbm_value == LHBM_TARGET_BRIGHTNESS_GREEN_500NIT) {
-			ctl.feature_val = LOCAL_HBM_NORMAL_GREEN_500NIT;
-		} else if (lhbm_value == LHBM_TARGET_BRIGHTNESS_WHITE_1000NIT) {
-			if (is_aod_and_panel_initialized(panel) &&
-				(mi_cfg->panel_state == PANEL_STATE_DOZE_HIGH
-				||mi_cfg->panel_state == PANEL_STATE_DOZE_LOW))
-				ctl.feature_val = LOCAL_HBM_HLPM_WHITE_1000NIT;
-			else
-				ctl.feature_val = LOCAL_HBM_NORMAL_WHITE_1000NIT;
-		} else if (lhbm_value == LHBM_TARGET_BRIGHTNESS_WHITE_110NIT) {
-			if (is_aod_and_panel_initialized(panel) &&
-				(mi_cfg->panel_state == PANEL_STATE_DOZE_HIGH
-				||mi_cfg->panel_state == PANEL_STATE_DOZE_LOW))
-				ctl.feature_val = LOCAL_HBM_HLPM_WHITE_110NIT;
-			else
-				ctl.feature_val = LOCAL_HBM_NORMAL_WHITE_110NIT;
-		} else {
-			DISP_ERROR("invalid target_brightness = %d\n", lhbm_fod->target_brightness);
-		}
-		break;
-	case LHBM_TARGET_BRIGHTNESS_OFF_AUTH_STOP:
-		ctl.feature_id = DISP_FEATURE_LOCAL_HBM;
-		if (is_aod_and_panel_initialized(panel))
-			ctl.feature_val = LOCAL_HBM_OFF_TO_NORMAL_BACKLIGHT_RESTORE;
-		else
-			ctl.feature_val = LOCAL_HBM_OFF_TO_NORMAL;
-=== mi_dsi_panel.c around 140-210 ===
-	return 0;
-}
-
-int mi_dsi_release_wakelock(struct dsi_panel *panel)
-{
-	struct mi_dsi_panel_cfg *mi_cfg = NULL;
-
-	if (!panel) {
-		DISP_ERROR("invalid params\n");
-		return -EINVAL;
-	}
-
-	mi_cfg = &panel->mi_cfg;
-
-	if (mi_cfg->disp_wakelock) {
-		__pm_relax(mi_cfg->disp_wakelock);
-	}
-
-	return 0;
-
-}
-
-bool is_aod_and_panel_initialized(struct dsi_panel *panel)
-{
-	if ((panel->power_mode == SDE_MODE_DPMS_LP1 ||
-		panel->power_mode == SDE_MODE_DPMS_LP2) &&
-		dsi_panel_initialized(panel)){
-		return true;
-	} else {
-		return false;
-	}
-}
-
-int mi_dsi_panel_esd_irq_ctrl(struct dsi_panel *panel,
-				bool enable)
-{
-	int ret  = 0;
-
-	if (!panel) {
-		DISP_ERROR("invalid params\n");
-		return -EINVAL;
-	}
-
-	mutex_lock(&panel->panel_lock);
-	ret = mi_dsi_panel_esd_irq_ctrl_locked(panel, enable);
-	mutex_unlock(&panel->panel_lock);
-
-	return ret;
-}
-
-int mi_dsi_panel_esd_irq_ctrl_locked(struct dsi_panel *panel,
-				bool enable)
-{
-	struct mi_dsi_panel_cfg *mi_cfg;
-	struct irq_desc *desc;
-
-	if (!panel || !panel->panel_initialized) {
-		DISP_ERROR("Panel not ready!\n");
-		return -EINVAL;
-	}
-
-	mi_cfg = &panel->mi_cfg;
-	if (gpio_is_valid(mi_cfg->esd_err_irq_gpio)) {
-		if (mi_cfg->esd_err_irq) {
-			if (enable) {
-				if (!mi_cfg->esd_err_enabled) {
-					desc = irq_to_desc(mi_cfg->esd_err_irq);
-					if (!irq_settings_is_level(desc))
-						desc->istate &= ~IRQS_PENDING;
-					enable_irq_wake(mi_cfg->esd_err_irq);
-					enable_irq(mi_cfg->esd_err_irq);
+=== modinfo ===
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:42:09Z run=33317766012
+__RAW__ 2026-08-30T17:44:07Z run=33317766012
