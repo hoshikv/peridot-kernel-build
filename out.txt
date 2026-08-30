@@ -1,34 +1,102 @@
-=== find existing build artifacts in D ===
-=== first lines of D Makefile ===
-# SPDX-License-Identifier: GPL-2.0-only
-
-KBUILD_OPTIONS+= DISPLAY_ROOT=$(KERNEL_SRC)/$(M)
-
-all:
-	$(MAKE) -C $(KERNEL_SRC) M=$(M) modules $(KBUILD_OPTIONS)
-
-modules_install:
-	$(MAKE) INSTALL_MOD_STRIP=1 -C $(KERNEL_SRC) M=$(M) modules_install
-
-%:
-	$(MAKE) -C $(KERNEL_SRC) M=$(M) $@ $(KBUILD_OPTIONS)
-
-clean:
-	rm -f *.o *.ko *.mod.c *.mod.o *~ .*.cmd Module.symvers
-	rm -rf .tmp_versions
-=== Kbuild ===
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/Kbuild
-# SPDX-License-Identifier: GPL-2.0-only
-
-ifeq ($(DISPLAY_ROOT),)
-DISPLAY_ROOT=$(srctree)/techpack/display
+=== config dir ===
+augen3disp.conf
+augen3dispconf.h
+bengaldisp.conf
+bengaldispconf.h
+gki_holidisp.conf
+gki_holidispconf.h
+gki_kalamadisp.conf
+gki_kalamadispconf.h
+gki_kalamadisptui.conf
+gki_kalamadisptuiconf.h
+gki_lahainadisp.conf
+gki_lahainadispconf.h
+gki_neodisp.conf
+gki_neodispconf.h
+gki_niobedisp.conf
+gki_niobedispconf.h
+gki_parrotdisp.conf
+gki_parrotdispconf.h
+gki_pineappledisp.conf
+gki_pineappledispconf.h
+gki_pineappledisptui.conf
+gki_pineappledisptuiconf.h
+gki_pittidisp.conf
+gki_pittidispconf.h
+gki_waipiodisp.conf
+gki_waipiodispconf.h
+gki_waipiodisptui.conf
+gki_waipiodisptuiconf.h
+holidisp.conf
+holidispconf.h
+konadisp.conf
+konadispconf.h
+lahainadisp.conf
+lahainadispconf.h
+saipdisp.conf
+saipdispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_pineappledisptui.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/bengaldisp.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_pineappledisptuiconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_lahainadispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_kalamadisptuiconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/augen3disp.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_niobedisp.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_waipiodisptuiconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_neodisp.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_holidispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/lahainadisp.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/konadispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/holidispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_niobedispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_holidisp.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/holidisp.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_neodispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/saipdispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_pittidispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_pineappledisp.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_kalamadispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_waipiodisptui.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_waipiodispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_pittidisp.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_lahainadisp.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/augen3dispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_parrotdispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_kalamadisptui.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_pineappledispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_parrotdisp.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/konadisp.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/lahainadispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/saipdisp.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/bengaldispconf.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_kalamadisp.conf
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_waipiodisp.conf
+=== grep DRM_MSM in D config ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_pineappledisptui.conf:1:export CONFIG_DRM_MSM=y
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_pineappledisptui.conf:2:export CONFIG_DRM_MSM_SDE=y
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_pineappledisptui.conf:4:export CONFIG_DRM_MSM_DSI=y
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_pineappledisptui.conf:7:export CONFIG_DRM_MSM_REGISTER_LOGGING=y
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/bengaldisp.conf:4:export CONFIG_DRM_MSM=y
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/bengaldisp.conf:5:export CONFIG_DRM_MSM_SDE=y
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/bengaldisp.conf:7:export CONFIG_DRM_MSM_DSI=y
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/bengaldisp.conf:8:export CONFIG_DRM_MSM_DP=n
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/bengaldisp.conf:12:export CONFIG_DRM_MSM_REGISTER_LOGGING=y
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/config/gki_pineappledisptuiconf.h:7:#define CONFIG_DRM_MSM 1
+=== display_driver_board.mk ===
+#SPDX-License-Identifier: GPL-2.0-only
+DISPLAY_DLKM_ENABLE := true
+ifeq ($(TARGET_KERNEL_DLKM_DISABLE), true)
+	ifeq ($(TARGET_KERNEL_DLKM_DISPLAY_OVERRIDE), false)
+		DISPLAY_DLKM_ENABLE := false
+	endif
 endif
 
-LINUXINCLUDE    += \
-		   -I$(DISPLAY_ROOT)/include/uapi/display \
-		   -I$(DISPLAY_ROOT)/include
-USERINCLUDE     += -I$(DISPLAY_ROOT)/include/uapi/display
-
-obj-$(CONFIG_DRM_MSM) += msm/
+ifeq ($(DISPLAY_DLKM_ENABLE),  true)
+	ifeq ($(call is-board-platform-in-list,$(TARGET_BOARD_PLATFORM)),true)
+		BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/msm_drm.ko
+		BOARD_VENDOR_RAMDISK_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/msm_drm.ko
+		BOARD_VENDOR_RAMDISK_RECOVERY_KERNEL_MODULES_LOAD += $(KERNEL_MODULES_OUT)/msm_drm.ko
+	endif
+endif
 __DONE__ rc=0
-__RAW__ 2026-08-30T16:20:54Z run=33317766012
+__RAW__ 2026-08-30T16:21:43Z run=33317766012
