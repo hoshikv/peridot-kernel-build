@@ -1,8 +1,3 @@
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
-M="$GITHUB_WORKSPACE/modules/qcom/opensource/display-drivers/msm"
-for f in mi_dsi_display.c mi_dsi_panel.c mi_disp_lhbm.c; do
-  echo "################ $f ################"
-  diff -u "$M/mi_disp/$f" "$D/mi_disp/$f" 2>/dev/null | grep -nE "^[-+]" | grep -iE "doze|LP1|LP2|aod|suspend|power_mode|panel_state|LHBM_HLPM|is_aod" | head -60
-done
-echo "#### mi_dsi_display.c suspend handler (import) ####"
-awk '/mi_display_pm_suspend_delayed_work_handler/,/^}/' "$D/mi_disp/mi_dsi_display.c" | head -40
+echo "--- runner mi_dsi_panel.c line 18-24 ---"
+sed -n '18,24p' "$D/mi_disp/mi_dsi_panel.c"
