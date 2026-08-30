@@ -1,1 +1,12 @@
-D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"; echo "=== rest of msm/Kbuild ==="; sed -n "140,400p" "$D/msm/Kbuild"; echo "=== grep EXTRA_SYMBOLS ==="; grep -rn "EXTRA_SYMBOLS\|ExternalSymbols\|Module.symvers\|MODULE_SYMVERS" "$D/msm" 2>/dev/null | head -30
+export PATH="$HOME/tc/bin:$PATH"; export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
+K="$GITHUB_WORKSPACE/kernel"; O="$GITHUB_WORKSPACE/out"
+D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
+echo "=== HDCP_QSEECOM & SDE_ROTATOR config ==="
+grep -E "CONFIG_HDCP_QSEECOM|CONFIG_MSM_SDE_ROTATOR|CONFIG_DRM_MSM" "$O/.config"
+echo "=== create placeholder Module.symvers ==="
+mkdir -p "$O/obj/vendor/qcom/opensource/display-drivers/hdcp" "$O/obj/vendor/qcom/opensource/display-drivers/msm"
+touch "$O/obj/vendor/qcom/opensource/display-drivers/hdcp/Module.symvers"
+touch "$O/obj/vendor/qcom/opensource/display-drivers/msm/Module.symvers"
+ls -la "$O/obj/vendor/qcom/opensource/display-drivers/hdcp/"
+echo "=== rebuild ==="
+make -C "$K" O="$O" M="$D/msm" DISPLAY_ROOT="$D" OUT="$O" modules 2>&1 | tail -20
