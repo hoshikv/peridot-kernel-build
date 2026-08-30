@@ -60,7 +60,7 @@ make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH olddefconfig
 echo "[*] modules_prepare"
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH modules_prepare
 
-echo "[*] build vmlinux + in-tree modules (membuat Module.symvers)"
+echo "[*] build vmlinux + in-tree modules (membuat Module.symvers wajib utk CRC)"
 if [[ ! -f "$OUT/Module.symvers" ]]; then
   make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" vmlinux
   make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" modules
