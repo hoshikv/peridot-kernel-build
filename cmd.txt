@@ -1,8 +1,10 @@
 D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm"
 M="$GITHUB_WORKSPACE/modules/qcom/opensource/display-drivers/msm"
-echo "### num lines each file ###"
-wc -l "$M/mi_disp/mi_disp_lhbm.c" "$D/mi_disp/mi_disp_lhbm.c" "$M/mi_disp/mi_dsi_panel.c" "$D/mi_disp/mi_dsi_panel.c"
-echo "### diff mi_disp_lhbm.c ###"
-diff -u "$M/mi_disp/mi_disp_lhbm.c" "$D/mi_disp/mi_disp_lhbm.c" 2>/dev/null | head -80
-echo "### rest of mi_dsi_panel.c diff (beyond 120) ###"
-diff -u "$M/mi_disp/mi_dsi_panel.c" "$D/mi_disp/mi_dsi_panel.c" 2>/dev/null | sed -n '120,400p'
+echo "===== MODULES is_aod_and_panel_initialized ====="
+awk '/bool is_aod_and_panel_initialized/,/^}/' "$M/mi_disp/mi_dsi_panel.c" 2>/dev/null | head -20
+echo "===== IMPORT is_aod_and_panel_initialized ====="
+awk '/bool is_aod_and_panel_initialized/,/^}/' "$D/mi_disp/mi_dsi_panel.c" 2>/dev/null | head -20
+echo "===== MODULES fod_set_disp_param HLPM part ====="
+awk '/mi_disp_lhbm_fod_set_disp_param/,/^static/' "$M/mi_disp/mi_disp_lhbm.c" 2>/dev/null | grep -nE "HLPM|aod|DOZE|feature_val|LHBM_TARGET" | head -30
+echo "===== IMPORT fod_set_disp_param HLPM part ====="
+awk '/mi_disp_lhbm_fod_set_disp_param/,/^static/' "$D/mi_disp/mi_disp_lhbm.c" 2>/dev/null | grep -nE "HLPM|aod|DOZE|feature_val|LHBM_TARGET" | head -30
