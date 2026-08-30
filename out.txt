@@ -1,24 +1,27 @@
-=== display-drivers/hdcp ls ===
-msm_hdcp.c
-=== hdcp Kbuild ===
-NO Kbuild in hdcp
-=== config conf for companions ===
--- display-drivers/config --
-augen3disp.conf
-augen3dispconf.h
-bengaldisp.conf
-bengaldispconf.h
-gki_holidisp.conf
-gki_holidispconf.h
-gki_kalamadisp.conf
-gki_kalamadispconf.h
-gki_kalamadisptui.conf
-gki_kalamadisptuiconf.h
--- mmrm-driver/config --
-waipiommrm.conf
-waipiommrmconf.h
--- mm-drivers/hw_fence/config --
--- mm-drivers/sync_fence/config --
--- mm-drivers/msm_ext_display/config --
+=== where is sde_fence_output_hw_fence_dir_write_init defined? ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/sde/sde_encoder.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/sde/sde_fence.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/sde/sde_fence.h
+=== where is sde_encoder_helper_hw_fence_sw_override defined? ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/sde/sde_encoder_phys_cmd.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/sde/sde_encoder.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/sde/sde_encoder_phys_vid.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/sde/sde_encoder_phys_wb.c
+=== where is msm_ext_disp_register_intf defined? ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/msm_ext_display/src/msm_ext_display.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/dp/dp_audio.c
+=== where is spec_sync_wait_bind_array defined? ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/sync_fence/src/qcom_sync_file.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/sde/sde_crtc.c
+=== where is hdcp1_init defined? ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_smcinvoke.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_qseecom.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_main.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/display-drivers/msm/sde_hdcp_1x.c
+=== sde_fence.c exists in import msm tree? ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde/sde_fence.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde/sde_fence.h
+=== does import msm Kbuild reference sde_fence.o? ===
+228:				 sde/sde_fence.o \
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:19:02Z run=33317766012
+__RAW__ 2026-08-30T17:20:12Z run=33317766012
