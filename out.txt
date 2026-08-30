@@ -1,21 +1,7 @@
-export CONFIG_DRM_MSM=y
-export CONFIG_DRM_MSM_SDE=y
-export CONFIG_SYNC_FILE=y
-export CONFIG_DRM_MSM_DSI=y
-export CONFIG_DRM_MSM_DP=y
-export CONFIG_DRM_MSM_DP_MST=y
-export CONFIG_DSI_PARSER=y
-export CONFIG_QCOM_MDSS_PLL=y
-export CONFIG_DRM_SDE_RSC=y
-export CONFIG_DRM_SDE_WB=y
-export CONFIG_DRM_MSM_REGISTER_LOGGING=y
-export CONFIG_MSM_MMRM=y
-export CONFIG_DISPLAY_BUILD=m
-export CONFIG_HDCP_QSEECOM=y
-export CONFIG_DRM_SDE_VM=y
-export CONFIG_QTI_HW_FENCE=y
-export CONFIG_QCOM_SPEC_SYNC=y
-export CONFIG_QCOM_WCD939X_I2C=y
-export MI_DISPLAY_MODIFY=y
+rc=0
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko
+=== errors ===
+2123:/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.c:4447:32: warning: flag '0' results in undefined behavior with 's' conversion specifier [-Wformat]
+2126:/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.c:4452:50: warning: flag '0' results in undefined behavior with 's' conversion specifier [-Wformat]
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:39:34Z run=33317766012
+__RAW__ 2026-08-30T17:41:31Z run=33317766012
