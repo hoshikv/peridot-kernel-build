@@ -1,6 +1,4 @@
-export PATH="$HOME/tc/bin:$PATH"
-export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
 cd "$GITHUB_WORKSPACE/kernel"
-O="$GITHUB_WORKSPACE/out"
-make -j2 O="$O" modules 2>&1 | grep -iE "error|Error|unknown|undefined|No rule|nothing to be done" | head -40
-echo "=== done ==="
+sed -n '2125,2145p' Makefile
+echo "=== BUILD_SHADOW ==="
+grep -n "build_thing\|KBUILD_EXTMOD\|tools/\|_emodules\|targets :" Makefile 2>/dev/null | sed -n '1,10p'
