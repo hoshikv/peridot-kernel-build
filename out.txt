@@ -1,14 +1,10 @@
-New value: # CONFIG_LEDS_QPNP_VIBRATOR_LDO is not set
-
-#
-# merged configuration written to .config (needs make)
-#
-=== olddefconfig ===
+make[1]: Entering directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
+***
+*** The source tree is not clean, please run 'make mrproper'
+*** in /home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel
 ***
 make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:676: outputmakefile] Error 1
 make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
 make: *** [Makefile:256: __sub-make] Error 2
-=== grep msm ===
-grep: /home/runner/work/peridot-kernel-build/peridot-kernel-build/out/.config: No such file or directory
-__DONE__ rc=2
-__RAW__ 2026-08-30T15:10:34Z run=33317766012
+__DONE__ rc=0
+__RAW__ 2026-08-30T15:11:50Z run=33317766012
