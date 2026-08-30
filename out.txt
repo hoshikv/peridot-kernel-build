@@ -1,6 +1,30 @@
-Cloning into 'display-drivers'...
-fcfc5a16e4a4d4374b977200da3a54fa07351664 Import vendor_opensource display-drivers peridot-u-oss (msm_drm.ko build tree)
-ls: cannot access 'msm': No such file or directory
-/dev/root        72G   59G   14G  82% /
+README.md
+vendor_opensource_display-drivers-peridot-u-oss
+---M
+---cfg
+./vendor_opensource_display-drivers-peridot-u-oss/target.bzl
+./vendor_opensource_display-drivers-peridot-u-oss/display_modules.bzl
+./vendor_opensource_display-drivers-peridot-u-oss/display_driver_build.bzl
+---vendor opensource
+Android.bp
+Android.mk
+BUILD.bazel
+Documentation
+Kbuild
+Makefile
+Makefile.am
+NOTICE
+bridge-drivers
+config
+display_driver_board.mk
+display_driver_build.bzl
+display_driver_product.mk
+display_kernel_headers.py
+display_modules.bzl
+hdcp
+include
+msm
+rotator
+target.bzl
 __DONE__ rc=0
-__RAW__ 2026-08-30T15:07:53Z run=33317766012
+__RAW__ 2026-08-30T15:09:14Z run=33317766012
