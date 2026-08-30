@@ -1,15 +1,12 @@
-59:#ifndef OPENSSL_IS_BORINGSSL
-69:#endif
-80:#ifdef USE_PKCS11_ENGINE
-81:static const char *key_pass;
-82:#endif
-111:#ifdef USE_PKCS11_ENGINE
-112:	key_pass = getenv("KBUILD_SIGN_PIN");
-113:#endif
-128:#ifdef OPENSSL_IS_BORINGSSL
-131:#else
-149:		if (key_pass)
-150:			ERR(!ENGINE_ctrl_cmd_string(e, "PIN", key_pass, 0), "Set PKCS#11 PIN");
-154:#endif
-__DONE__ rc=0
-__RAW__ 2026-08-30T15:34:24Z run=33317766012
+80:static const char *key_pass;
+109:	key_pass = getenv("KBUILD_SIGN_PIN");
+145:		if (key_pass)
+146:			ERR(!ENGINE_ctrl_cmd_string(e, "PIN", key_pass, 0), "Set PKCS#11 PIN");
+=== recompile check ===
+make[1]: *** [include/config/auto.conf.cmd] Deleting file 'include/generated/rustc_cfg'
+make[1]: *** [include/config/auto.conf.cmd] Deleting file 'include/generated/autoconf.h'
+make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
+make: *** [Makefile:256: __sub-make] Error 2
+ls: cannot access '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out/certs/extract-cert': No such file or directory
+__DONE__ rc=2
+__RAW__ 2026-08-30T15:35:18Z run=33317766012
