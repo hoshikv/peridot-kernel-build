@@ -1,10 +1,21 @@
-=== all msm_drm.ko ===
-=== last build lines ===
-make: Entering directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
-make[1]: Entering directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-  MODPOST /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/Module.symvers
-make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-make: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
-=== .ko built ===
+export CONFIG_DRM_MSM=y
+export CONFIG_DRM_MSM_SDE=y
+export CONFIG_SYNC_FILE=y
+export CONFIG_DRM_MSM_DSI=y
+export CONFIG_DRM_MSM_DP=y
+export CONFIG_DRM_MSM_DP_MST=y
+export CONFIG_DSI_PARSER=y
+export CONFIG_QCOM_MDSS_PLL=y
+export CONFIG_DRM_SDE_RSC=y
+export CONFIG_DRM_SDE_WB=y
+export CONFIG_DRM_MSM_REGISTER_LOGGING=y
+export CONFIG_MSM_MMRM=y
+export CONFIG_DISPLAY_BUILD=m
+export CONFIG_HDCP_QSEECOM=y
+export CONFIG_DRM_SDE_VM=y
+export CONFIG_QTI_HW_FENCE=y
+export CONFIG_QCOM_SPEC_SYNC=y
+export CONFIG_QCOM_WCD939X_I2C=y
+export MI_DISPLAY_MODIFY=y
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:39:01Z run=33317766012
+__RAW__ 2026-08-30T17:39:34Z run=33317766012
