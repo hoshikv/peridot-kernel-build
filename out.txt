@@ -1,45 +1,192 @@
-===== MODULES is_aod_and_panel_initialized =====
-bool is_aod_and_panel_initialized(struct dsi_panel *panel) {
-  if ((panel->power_mode == SDE_MODE_DPMS_LP1 ||
-       panel->power_mode == SDE_MODE_DPMS_LP2) &&
-      dsi_panel_initialized(panel)) {
-    return true;
-  } else {
-    return false;
-  }
-}
-===== IMPORT is_aod_and_panel_initialized =====
-bool is_aod_and_panel_initialized(struct dsi_panel *panel)
+################ mi_dsi_display.c ################
+45:-char *get_display_power_mode_name(int power_mode) {
+46:-  switch (power_mode) {
+49:-  case SDE_MODE_DPMS_LP1:
+50:-    return "Doze";
+51:-  case SDE_MODE_DPMS_LP2:
+52:-    return "Doze_Suspend";
+55:-  case SDE_MODE_DPMS_SUSPEND:
+56:-    return "Suspend";
+118:-  if (sde_kms_is_suspend_blocked(dsi_display->drm_dev) &&
+120:-    DISP_ERROR("sde_kms is suspended, skip to set disp_param\n");
+141:+char *get_display_power_mode_name(int power_mode)
+143:+	switch (power_mode) {
+146:+	case SDE_MODE_DPMS_LP1:
+147:+		return "Doze";
+148:+	case SDE_MODE_DPMS_LP2:
+149:+		return "Doze_Suspend";
+152:+	case SDE_MODE_DPMS_SUSPEND:
+153:+		return "Suspend";
+220:+	if (sde_kms_is_suspend_blocked(dsi_display->drm_dev) &&
+222:+		DISP_ERROR("sde_kms is suspended, skip to set disp_param\n");
+804:-      dsi_display->panel->power_mode != SDE_MODE_DPMS_ON) {
+934:-  if (sde_kms_is_suspend_blocked(dsi_display->drm_dev)) {
+935:-    DISP_ERROR("sde_kms is suspended, skip to write dsi cmd\n");
+992:+		dsi_display->panel->power_mode != SDE_MODE_DPMS_ON) {
+1132:+	if (sde_kms_is_suspend_blocked(dsi_display->drm_dev)) {
+1133:+		DISP_ERROR("sde_kms is suspended, skip to write dsi cmd\n");
+1172:-  if (sde_kms_is_suspend_blocked(dsi_display->drm_dev)) {
+1173:-    DISP_ERROR("sde_kms is suspended, skip to read dsi cmd\n");
+1207:+	if (sde_kms_is_suspend_blocked(dsi_display->drm_dev)) {
+1208:+		DISP_ERROR("sde_kms is suspended, skip to read dsi cmd\n");
+1728:-int mi_dsi_display_set_doze_brightness(void *display, u32 doze_brightness) {
+1739:-  if (sde_kms_is_suspend_blocked(dsi_display->drm_dev)) {
+1740:-    DISP_ERROR("sde_kms is suspended, skip to set doze brightness\n");
+1758:-  mutex_lock(&dsi_display->panel->mi_cfg.doze_lock);
+1759:-  SDE_ATRACE_BEGIN("set_doze_brightness");
+1760:-  ret = mi_dsi_panel_set_doze_brightness(dsi_display->panel, doze_brightness);
+1761:-  SDE_ATRACE_END("set_doze_brightness");
+1762:-  mutex_unlock(&dsi_display->panel->mi_cfg.doze_lock);
+1767:-      disp_id, MI_DISP_EVENT_DOZE, sizeof(doze_brightness), doze_brightness);
+1990:+int mi_dsi_display_set_doze_brightness(void *display,
+1991:+			u32 doze_brightness)
+2003:+	if (sde_kms_is_suspend_blocked(dsi_display->drm_dev)) {
+2004:+		DISP_ERROR("sde_kms is suspended, skip to set doze brightness\n");
+2022:+	mutex_lock(&dsi_display->panel->mi_cfg.doze_lock);
+2023:+	SDE_ATRACE_BEGIN("set_doze_brightness");
+2024:+	ret = mi_dsi_panel_set_doze_brightness(dsi_display->panel,
+2025:+				doze_brightness);
+2026:+	SDE_ATRACE_END("set_doze_brightness");
+2027:+	mutex_unlock(&dsi_display->panel->mi_cfg.doze_lock);
+2031:+	mi_disp_feature_event_notify_by_type(disp_id, MI_DISP_EVENT_DOZE,
+2032:+			sizeof(doze_brightness), doze_brightness);
+2042:-int mi_dsi_display_get_doze_brightness(void *display, u32 *doze_brightness) {
+2044:+int mi_dsi_display_get_doze_brightness(void *display,
+2045:+			u32 *doze_brightness)
+2058:-  return mi_dsi_panel_get_doze_brightness(dsi_display->panel, doze_brightness);
+2059:+	return mi_dsi_panel_get_doze_brightness(dsi_display->panel,
+2060:+				doze_brightness);
+2102:-  if (sde_kms_is_suspend_blocked(dsi_display->drm_dev)) {
+2103:-    DISP_ERROR("sde_kms is suspended, skip to write dsi cmd_set\n");
+2106:+	if (sde_kms_is_suspend_blocked(dsi_display->drm_dev)) {
+################ mi_dsi_panel.c ################
+92:-  mutex_init(&mi_cfg->doze_lock);
+96:-    DISP_ERROR("doze_wakelock wake_source register failed");
+173:-bool is_aod_and_panel_initialized(struct dsi_panel *panel) {
+174:-  if ((panel->power_mode == SDE_MODE_DPMS_LP1 ||
+175:-       panel->power_mode == SDE_MODE_DPMS_LP2) &&
+411:-  u8 doze_cmd[2] = {0};
+414:-  doze_cmd[0] = 0x00;
+415:-  doze_cmd[1] = 0x01;
+432:-      mi_dsi_panel_update_cmd_set(panel, cur_mode, index, info, doze_cmd, size);
+692:+	mutex_init(&mi_cfg->doze_lock);
+696:+		DISP_ERROR("doze_wakelock wake_source register failed");
+767:+bool is_aod_and_panel_initialized(struct dsi_panel *panel)
+769:+	if ((panel->power_mode == SDE_MODE_DPMS_LP1 ||
+770:+		panel->power_mode == SDE_MODE_DPMS_LP2) &&
+1303:-  case DSI_CMD_SET_MI_DOZE_HBM:
+1304:-    cmd_update_index = DSI_CMD_SET_MI_DOZE_HBM_UPDATE;
+1307:-  case DSI_CMD_SET_MI_DOZE_LBM:
+1308:-    cmd_update_index = DSI_CMD_SET_MI_DOZE_LBM_UPDATE;
+1367:-  if (mi_cfg->panel_state != PANEL_STATE_ON) {
+1368:-    DISP_INFO("%s exit when panel state(%d)\n", __func__, mi_cfg->panel_state);
+1408:-  if (mi_cfg->panel_state != PANEL_STATE_ON) {
+1409:-    DISP_INFO("%s exit when panel state(%d)\n", __func__, mi_cfg->panel_state);
+1436:-  if (mi_cfg->panel_state != PANEL_STATE_ON) {
+1437:-    DISP_INFO("%s exit when panel state(%d)\n", __func__, mi_cfg->panel_state);
+1527:-  } else if (panel->power_mode == SDE_MODE_DPMS_LP1) {
+1529:-      DISP_INFO("[%s] skip set backlight %d due to LP1 on\n", panel->type,
+1541:-      DISP_INFO("[%s] skip set backlight %d due to LP1 on\n", panel->type,
+1623:+		case DSI_CMD_SET_MI_DOZE_HBM:
+1624:+			cmd_update_index = DSI_CMD_SET_MI_DOZE_HBM_UPDATE;
+1627:+		case DSI_CMD_SET_MI_DOZE_LBM:
+1628:+			cmd_update_index = DSI_CMD_SET_MI_DOZE_LBM_UPDATE;
+1691:+	if (mi_cfg->panel_state != PANEL_STATE_ON) {
+1692:+		DISP_INFO("%s exit when panel state(%d)\n", __func__, mi_cfg->panel_state);
+1731:+	if (mi_cfg->panel_state != PANEL_STATE_ON) {
+1732:+		DISP_INFO("%s exit when panel state(%d)\n", __func__, mi_cfg->panel_state);
+1760:+	if (mi_cfg->panel_state != PANEL_STATE_ON) {
+1761:+		DISP_INFO("%s exit when panel state(%d)\n", __func__, mi_cfg->panel_state);
+1848:+	} else if (panel->power_mode == SDE_MODE_DPMS_LP1) {
+1850:+			DISP_INFO("[%s] skip set backlight %d due to LP1 on\n", panel->type, bl_lvl);
+1857:+			DISP_INFO("[%s] skip set backlight %d due to LP1 on\n", panel->type, bl_lvl);
+3019:-int mi_dsi_panel_update_doze_cmd_locked(struct dsi_panel *panel, u8 value) {
+3034:-  cmd_update_index = DSI_CMD_SET_MI_DOZE_LBM_UPDATE;
+3041:-    mi_dsi_panel_update_cmd_set(panel, cur_mode, DSI_CMD_SET_MI_DOZE_LBM, info,
+3071:+int mi_dsi_panel_update_doze_cmd_locked(struct dsi_panel *panel, u8 value)
+3087:+	cmd_update_index = DSI_CMD_SET_MI_DOZE_LBM_UPDATE;
+3095:+			DSI_CMD_SET_MI_DOZE_LBM, info,
+3105:-                                     u32 doze_brightness) {
+3120:-    mi_cfg->last_doze_brightness = mi_cfg->doze_brightness;
+3121:-    mi_cfg->doze_brightness = doze_brightness;
+3122:-    DISP_INFO("Skip! [%s] set doze brightness %d due to FOD_HBM_ON\n",
+3123:-              panel->type, doze_brightness);
+3125:-              panel->mi_cfg.aod_to_normal_pending == true) ||
+3126:-             panel->mi_cfg.aod_to_normal_statue == true) {
+3127:-    mi_cfg->last_doze_brightness = mi_cfg->doze_brightness;
+3128:-    mi_cfg->doze_brightness = doze_brightness;
+3129:-    mi_dsi_update_backlight_in_aod(panel, false);
+3130:-    panel->mi_cfg.aod_to_normal_pending = false;
+3131:-    panel->mi_cfg.aod_to_normal_statue = true;
+3132:-  } else if (panel->mi_cfg.panel_state == PANEL_STATE_ON ||
+3133:-             mi_cfg->doze_brightness != doze_brightness) {
+################ mi_disp_lhbm.c ################
+484:-  if (sde_kms_is_suspend_blocked(dsi_display->drm_dev)) {
+485:-    DISP_ERROR("sde_kms is suspended, skip to set disp_param\n");
+511:-      if (is_aod_and_panel_initialized(panel) &&
+512:-          (mi_cfg->panel_state == PANEL_STATE_DOZE_HIGH ||
+513:-           mi_cfg->panel_state == PANEL_STATE_DOZE_LOW))
+518:-      if (is_aod_and_panel_initialized(panel) &&
+519:-          (mi_cfg->panel_state == PANEL_STATE_DOZE_HIGH ||
+520:-           mi_cfg->panel_state == PANEL_STATE_DOZE_LOW))
+531:-    if (is_aod_and_panel_initialized(panel))
+538:-    if (is_aod_and_panel_initialized(panel)) {
+653:+	if (sde_kms_is_suspend_blocked(dsi_display->drm_dev)) {
+654:+		DISP_ERROR("sde_kms is suspended, skip to set disp_param\n");
+680:+			if (is_aod_and_panel_initialized(panel) &&
+681:+				(mi_cfg->panel_state == PANEL_STATE_DOZE_HIGH
+682:+				||mi_cfg->panel_state == PANEL_STATE_DOZE_LOW))
+687:+			if (is_aod_and_panel_initialized(panel) &&
+688:+				(mi_cfg->panel_state == PANEL_STATE_DOZE_HIGH
+689:+				||mi_cfg->panel_state == PANEL_STATE_DOZE_LOW))
+699:+		if (is_aod_and_panel_initialized(panel))
+706:+		if (is_aod_and_panel_initialized(panel)) {
+745:-  ctl.feature_id = DISP_FEATURE_AOD_TO_NORMAL;
+802:-        is_aod_and_panel_initialized(lhbm_fod->display->panel)) {
+874:+	ctl.feature_id = DISP_FEATURE_AOD_TO_NORMAL;
+922:+			&& is_aod_and_panel_initialized(lhbm_fod->display->panel)) {
+1092:-  if (panel->power_mode == SDE_MODE_DPMS_ON) {
+1133:+	if (panel->power_mode == SDE_MODE_DPMS_ON) {
+#### mi_dsi_display.c suspend handler (import) ####
+static void mi_display_pm_suspend_delayed_work_handler(struct kthread_work *work)
 {
-	if ((panel->power_mode == SDE_MODE_DPMS_LP1 ||
-		panel->power_mode == SDE_MODE_DPMS_LP2) &&
-		dsi_panel_initialized(panel)){
-		return true;
+	struct disp_delayed_work *delayed_work = container_of(work,
+					struct disp_delayed_work, delayed_work.work);
+	struct dsi_panel *dsi_panel = (struct dsi_panel *)(delayed_work->data);
+	struct mi_dsi_panel_cfg *mi_cfg = &dsi_panel->mi_cfg;
+	unsigned long mode_flags_backup = 0;
+	int pmic_pwrkey_status = mi_cfg->pmic_pwrkey_status;
+	int rc = 0;
+
+	mi_dsi_acquire_wakelock(dsi_panel);
+
+	dsi_panel_acquire_panel_lock(dsi_panel);
+	if (dsi_panel->panel_initialized && pmic_pwrkey_status == PMIC_PWRKEY_BARK_TRIGGER) {
+		/* First disable esd irq, then send panel off cmd */
+		if (mi_cfg->esd_err_enabled) {
+			mi_dsi_panel_esd_irq_ctrl_locked(dsi_panel, false);
+		}
+
+		mode_flags_backup = dsi_panel->mipi_device.mode_flags;
+		dsi_panel->mipi_device.mode_flags |= MIPI_DSI_MODE_LPM;
+		rc = mipi_dsi_dcs_set_display_off(&dsi_panel->mipi_device);
+		dsi_panel->mipi_device.mode_flags = mode_flags_backup;
+		if (rc < 0){
+			DISP_ERROR("failed to send MIPI_DCS_SET_DISPLAY_OFF\n");
+		} else {
+			DISP_INFO("panel send MIPI_DCS_SET_DISPLAY_OFF\n");
+		}
 	} else {
-		return false;
+		DISP_INFO("panel does not need to be off in advance\n");
 	}
+	dsi_panel_release_panel_lock(dsi_panel);
+
+	mi_dsi_release_wakelock(dsi_panel);
+
+	kfree(delayed_work);
 }
-===== MODULES fod_set_disp_param HLPM part =====
-7:                     LHBM_TARGET_BRIGHTNESS_OFF_FINGER_UP &&
-9:                     LHBM_TARGET_BRIGHTNESS_OFF_AUTH_STOP) {
-47:  if (lhbm_value == LHBM_TARGET_BRIGHTNESS_OFF_FINGER_UP ||
-48:      lhbm_value == LHBM_TARGET_BRIGHTNESS_OFF_AUTH_STOP) {
-53:          LHBM_TARGET_BRIGHTNESS_OFF_FINGER_UP &&
-54:      lhbm_value == LHBM_TARGET_BRIGHTNESS_OFF_AUTH_STOP &&
-56:    DISP_INFO("skip set LHBM_TARGET_BRIGHTNESS_OFF_AUTH_STOP\n");
-105:        mi_cfg->feature_val[DISP_FEATURE_FP_STATUS] != AUTH_STOP) {
-114:      ctl.feature_val = LOCAL_HBM_OFF_TO_NORMAL_BACKLIGHT;
-116:      panel->mi_cfg.feature_val[DISP_FEATURE_LOCAL_HBM] = ctl.feature_val;
-===== IMPORT fod_set_disp_param HLPM part =====
-5:			} else if (lhbm_setting_event.lhbm_value != LHBM_TARGET_BRIGHTNESS_OFF_FINGER_UP &&
-6:				lhbm_setting_event.lhbm_value != LHBM_TARGET_BRIGHTNESS_OFF_AUTH_STOP) {
-44:	if (lhbm_value == LHBM_TARGET_BRIGHTNESS_OFF_FINGER_UP ||
-45:			lhbm_value == LHBM_TARGET_BRIGHTNESS_OFF_AUTH_STOP) {
-49:	if (atomic_read(&lhbm_fod->target_brightness) == LHBM_TARGET_BRIGHTNESS_OFF_FINGER_UP &&
-50:			lhbm_value == LHBM_TARGET_BRIGHTNESS_OFF_AUTH_STOP) {
-51:		DISP_INFO("skip set LHBM_TARGET_BRIGHTNESS_OFF_AUTH_STOP\n");
-101:		if(mi_cfg->lhbm_gxzw && !mi_cfg->lhbm_0size_on && mi_cfg->feature_val[DISP_FEATURE_FP_STATUS] != AUTH_STOP) {
-109:			ctl.feature_val = LOCAL_HBM_OFF_TO_NORMAL_BACKLIGHT;
-111:			panel->mi_cfg.feature_val[DISP_FEATURE_LOCAL_HBM] = ctl.feature_val;
+			mi_display_pm_suspend_delayed_work_handler);
+	suspend_delayed_work->dd_ptr = dd_ptr;
+	suspend_delayed_work->wq = &dd_ptr->pending_wq;
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:52:39Z run=33317766012
+__RAW__ 2026-08-30T17:56:39Z run=33317766012
