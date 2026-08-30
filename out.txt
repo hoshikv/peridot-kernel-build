@@ -1,175 +1,31 @@
-=== rest of msm/Kbuild ===
-
-ifeq ($(CONFIG_MSM_SDE_ROTATOR), y)
-msm_drm-$(CONFIG_SYNC_FILE) += ../rotator/sde_rotator_sync.o
-
-msm_drm-$(CONFIG_DEBUG_FS) += ../rotator/sde_rotator_debug.o \
-			      ../rotator/sde_rotator_r1_debug.o \
-			      ../rotator/sde_rotator_r3_debug.o
-endif
-
-msm_drm-$(CONFIG_DRM_SDE_VM) += sde/sde_vm_common.o \
-				sde/sde_vm_primary.o \
-				sde/sde_vm_trusted.o \
-				sde/sde_vm_msgq.o
-
-msm_drm-$(CONFIG_DRM_MSM_DP) += dp/dp_altmode.o \
-				dp/dp_parser.o \
-				dp/dp_power.o \
-				dp/dp_catalog.o \
-				dp/dp_catalog_v420.o \
-				dp/dp_catalog_v200.o \
-				dp/dp_aux.o \
-				dp/dp_panel.o \
-				dp/dp_link.o \
-				dp/dp_ctrl.o \
-				dp/dp_audio.o \
-				dp/dp_debug.o \
-				dp/dp_hpd.o \
-				dp/dp_aux_bridge.o \
-				dp/dp_bridge_hpd.o \
-				dp/dp_mst_sim.o \
-				dp/dp_mst_sim_helper.o \
-				dp/dp_gpio_hpd.o \
-				dp/dp_lphw_hpd.o \
-				dp/dp_display.o \
-				dp/dp_drm.o \
-				dp/dp_pll.o \
-				dp/dp_pll_5nm.o \
-				dp/dp_pll_4nm.o
-
-msm_drm-$(CONFIG_DRM_MSM_DP_MST) += dp/dp_mst_drm.o
-
-msm_drm-$(CONFIG_DRM_MSM_DP_USBPD_LEGACY) += dp/dp_usbpd.o
-
-msm_drm-$(CONFIG_DRM_MSM_SDE) += sde/sde_crtc.o \
-				 sde/sde_encoder.o \
-				 sde/sde_encoder_dce.o \
-				 sde/sde_encoder_phys_vid.o \
-				 sde/sde_encoder_phys_cmd.o \
-				 sde/sde_irq.o sde/sde_core_irq.o \
-				 sde/sde_core_perf.o \
-				 sde/sde_rm.o \
-				 sde/sde_kms_utils.o \
-				 sde/sde_kms.o \
-				 sde/sde_plane.o \
-				 sde/sde_connector.o \
-				 sde/sde_color_processing.o \
-				 sde/sde_vbif.o \
-				 sde_dbg.o \
-				 sde_dbg_evtlog.o \
-				 sde_io_util.o \
-				 sde_vm_event.o \
-				 sde/sde_hw_reg_dma_v1_color_proc.o \
-				 sde/sde_hw_color_proc_v4.o \
-				 sde/sde_hw_ad4.o \
-				 sde/sde_hw_uidle.o \
-				 sde_edid_parser.o \
-				 sde/sde_hw_catalog.o \
-				 sde/sde_hw_cdm.o \
-				 sde/sde_hw_dspp.o \
-				 sde/sde_hw_intf.o \
-				 sde/sde_hw_lm.o \
-				 sde/sde_hw_ctl.o \
-				 sde/sde_hw_util.o \
-				 sde/sde_hw_sspp.o \
-				 sde/sde_hw_wb.o \
-				 sde/sde_hw_pingpong.o \
-				 sde/sde_hw_top.o \
-				 sde/sde_hw_interrupts.o \
-				 sde/sde_hw_vbif.o \
-				 sde/sde_formats.o \
-				 sde_power_handle.o \
-				 sde/sde_hw_color_processing_v1_7.o \
-				 sde/sde_reg_dma.o \
-				 sde/sde_hw_reg_dma_v1.o \
-				 sde/sde_hw_dsc.o \
-				 sde/sde_hw_dsc_1_2.o \
-				 sde/sde_hw_vdc.o \
-				 sde/sde_hw_ds.o \
-				 sde/sde_fence.o \
-				 sde/sde_hw_qdss.o \
-				 sde_dsc_helper.o \
-				 sde_vdc_helper.o \
-				 sde/sde_hw_dnsc_blur.o \
-				 sde/sde_hw_rc.o
-
-msm_drm-$(CONFIG_DRM_SDE_WB) += sde/sde_wb.o \
-				sde/sde_encoder_phys_wb.o
-
-msm_drm-$(CONFIG_DRM_SDE_RSC) += sde_rsc.o \
-				 sde_rsc_hw.o \
-				 sde_rsc_hw_v3.o
-
-msm_drm-$(CONFIG_DRM_MSM_DSI) += dsi/dsi_phy.o \
-				 dsi/dsi_pwr.o \
-				 dsi/dsi_phy.o \
-				 dsi/dsi_phy_hw_v3_0.o \
-				 dsi/dsi_phy_hw_v4_0.o \
-				 dsi/dsi_phy_hw_v5_0.o \
-				 dsi/dsi_phy_timing_calc.o \
-				 dsi/dsi_phy_timing_v3_0.o \
-				 dsi/dsi_phy_timing_v4_0.o \
-				 dsi/dsi_pll.o \
-				 dsi/dsi_pll_5nm.o \
-				 dsi/dsi_pll_4nm.o \
-				 dsi/dsi_ctrl_hw_cmn.o \
-				 dsi/dsi_ctrl_hw_2_2.o \
-				 dsi/dsi_ctrl.o \
-				 dsi/dsi_catalog.o \
-				 dsi/dsi_drm.o \
-				 dsi/dsi_display.o \
-				 dsi/dsi_panel.o \
-				 dsi/dsi_clk_manager.o \
-				 dsi/dsi_display_test.o
-
-msm_drm-$(CONFIG_DSI_PARSER) += dsi/dsi_parser.o
-
-msm_drm-$(CONFIG_THERMAL_OF) += msm_cooling_device.o
-
-msm_drm-$(CONFIG_DRM_MSM) += msm_atomic.o \
-			     msm_fb.o \
-			     msm_drv.o \
-			     msm_gem.o \
-			     msm_gem_prime.o \
-			     msm_gem_vma.o \
-			     msm_smmu.o \
-			     msm_prop.o
-
-msm_drm-$(CONFIG_DRM_MSM) += mi_disp/mi_disp_core.o \
-			     mi_disp/mi_disp_feature.o \
-			     mi_disp/mi_disp_sysfs.o \
-			     mi_disp/mi_disp_file.o \
-			     mi_disp/mi_disp_print.o \
-			     mi_disp/mi_disp_procfs.o \
-			     mi_disp/mi_disp_debugfs.o \
-			     mi_disp/mi_disp_print.o \
-			     mi_disp/mi_disp_log.o \
-			     mi_disp/mi_disp_flatmode.o\
-			     mi_disp/mi_disp_lhbm.o \
-			     mi_disp/mi_disp_parser.o \
-			     mi_disp/mi_dsi_display.o \
-			     mi_disp/mi_dsi_panel.o \
-			     mi_disp/mi_sde_crtc.o \
-			     mi_disp/mi_sde_encoder.o \
-			     mi_disp/mi_sde_connector.o
-
-
-CDEFINES += -DBUILD_TIMESTAMP=\"$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')\"
-
-=== grep EXTRA_SYMBOLS ===
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Kbuild:104:KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/display-drivers/hdcp/Module.symvers
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Kbuild:105:KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/display-drivers/msm/Module.symvers
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Android.mk:39:KBUILD_OPTIONS += KBUILD_EXTRA_SYMBOLS+=$(PWD)/$(call intermediates-dir-for,DLKM,mmrm-module-symvers)/Module.symvers
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Android.mk:42:	KBUILD_OPTIONS += KBUILD_EXTRA_SYMBOLS+=$(PWD)/$(call intermediates-dir-for,DLKM,sync-fence-module-symvers)/Module.symvers
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Android.mk:43:	KBUILD_OPTIONS += KBUILD_EXTRA_SYMBOLS+=$(PWD)/$(call intermediates-dir-for,DLKM,msm-ext-disp-module-symvers)/Module.symvers
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Android.mk:44:	KBUILD_OPTIONS += KBUILD_EXTRA_SYMBOLS+=$(PWD)/$(call intermediates-dir-for,DLKM,hw-fence-module-symvers)/Module.symvers
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Android.mk:45:	KBUILD_OPTIONS += KBUILD_EXTRA_SYMBOLS+=$(PWD)/$(call intermediates-dir-for,DLKM,sec-module-symvers)/Module.symvers
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Android.mk:61:LOCAL_ADDITIONAL_DEPENDENCIES += $(call intermediates-dir-for,DLKM,mmrm-module-symvers)/Module.symvers
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Android.mk:68:	LOCAL_ADDITIONAL_DEPENDENCIES += $(call intermediates-dir-for,DLKM,sync-fence-module-symvers)/Module.symvers
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Android.mk:69:	LOCAL_ADDITIONAL_DEPENDENCIES += $(call intermediates-dir-for,DLKM,msm-ext-disp-module-symvers)/Module.symvers
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Android.mk:70:	LOCAL_ADDITIONAL_DEPENDENCIES += $(call intermediates-dir-for,DLKM,hw-fence-module-symvers)/Module.symvers
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Android.mk:71:	LOCAL_ADDITIONAL_DEPENDENCIES += $(call intermediates-dir-for,DLKM,sec-module-symvers)/Module.symvers
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Makefile:14:	rm -f *.o *.ko *.mod.c *.mod.o *~ .*.cmd Module.symvers
+=== HDCP_QSEECOM & SDE_ROTATOR config ===
+# CONFIG_DRM_MSM is not set
+CONFIG_DRM_MSM_HELPER=m
+=== create placeholder Module.symvers ===
+total 8
+drwxr-xr-x 2 runner runner 4096 Aug 30 16:56 .
+drwxr-xr-x 4 runner runner 4096 Aug 30 16:56 ..
+-rw-r--r-- 1 runner runner    0 Aug 30 16:56 Module.symvers
+=== rebuild ===
+4 warnings generated.
+  CC [M]  /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_sde_connector.o
+  LD [M]  /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.o
+  MODPOST /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Module.symvers
+ERROR: modpost: "hdcp1_deinit" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "hdcp1_init" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "hdcp1_start" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "hdcp1_feature_supported" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "hdcp1_set_enc" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "hdcp1_ops_notify" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "hdcp1_stop" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "hdcp2_feature_supported" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "hdcp2_open_stream" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+ERROR: modpost: "hdcp2_close_stream" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
+WARNING: modpost: suppressed 20 unresolved symbol warnings because there were too many)
+make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.modpost:187: /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Module.symvers] Error 1
+make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2091: modpost] Error 2
+make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
+make: *** [Makefile:256: __sub-make] Error 2
+make: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
 __DONE__ rc=0
-__RAW__ 2026-08-30T16:55:22Z run=33317766012
+__RAW__ 2026-08-30T16:57:46Z run=33317766012
