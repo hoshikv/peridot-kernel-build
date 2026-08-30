@@ -1,16 +1,6 @@
-Cloning into 'kernel'...
-Updating files:  29% (22134/76134)Updating files:  30% (22841/76134)Updating files:  31% (23602/76134)Updating files:  32% (24363/76134)Updating files:  33% (25125/76134)Updating files:  34% (25886/76134)Updating files:  35% (26647/76134)Updating files:  35% (27374/76134)Updating files:  36% (27409/76134)Updating files:  37% (28170/76134)Updating files:  38% (28931/76134)Updating files:  39% (29693/76134)Updating files:  40% (30454/76134)Updating files:  41% (31215/76134)Updating files:  42% (31977/76134)Updating files:  43% (32738/76134)Updating files:  44% (33499/76134)Updating files:  45% (34261/76134)Updating files:  46% (35022/76134)Updating files:  47% (35783/76134)Updating files:  48% (36545/76134)Updating files:  49% (37306/76134)Updating files:  49% (37652/76134)Updating files:  50% (38067/76134)Updating files:  51% (38829/76134)Updating files:  52% (39590/76134)Updating files:  53% (40352/76134)Updating files:  54% (41113/76134)Updating files:  55% (41874/76134)Updating files:  56% (42636/76134)Updating files:  57% (43397/76134)Updating files:  58% (44158/76134)Updating files:  59% (44920/76134)Updating files:  60% (45681/76134)Updating files:  61% (46442/76134)Updating files:  62% (47204/76134)Updating files:  63% (47965/76134)Updating files:  64% (48726/76134)Updating files:  64% (49003/76134)Updating files:  65% (49488/76134)Updating files:  66% (50249/76134)Updating files:  67% (51010/76134)Updating files:  68% (51772/76134)Updating files:  69% (52533/76134)Updating files:  70% (53294/76134)Updating files:  71% (54056/76134)Updating files:  72% (54817/76134)Updating files:  73% (55578/76134)Updating files:  74% (56340/76134)Updating files:  75% (57101/76134)Updating files:  76% (57862/76134)Updating files:  77% (58624/76134)Updating files:  78% (59385/76134)Updating files:  79% (60146/76134)Updating files:  80% (60908/76134)Updating files:  81% (61669/76134)Updating files:  82% (62430/76134)Updating files:  83% (63192/76134)Updating files:  84% (63953/76134)Updating files:  84% (64620/76134)Updating files:  85% (64714/76134)Updating files:  86% (65476/76134)Updating files:  87% (66237/76134)Updating files:  88% (66998/76134)Updating files:  89% (67760/76134)Updating files:  90% (68521/76134)Updating files:  91% (69282/76134)Updating files:  92% (70044/76134)Updating files:  93% (70805/76134)Updating files:  94% (71566/76134)Updating files:  95% (72328/76134)Updating files:  96% (73089/76134)Updating files:  97% (73850/76134)Updating files:  98% (74612/76134)Updating files:  99% (75373/76134)Updating files:  99% (75690/76134)Updating files: 100% (76134/76134)Updating files: 100% (76134/76134), done.
-0edbd8432 Merge branch 'LineageOS:lineage-23.2' into 16.0
-anorak_GKI.config
-anorak_consolidate.config
-autoghgvm.config
-autoghgvm_GKI.config
-autoghgvm_consolidate.config
-autoghgvm_debug.config
-autogvm.config
-autogvm_GKI.config
-autogvm_consolidate.config
-autogvm_debug.config
+Cloning into 'display-drivers'...
+fcfc5a16e4a4d4374b977200da3a54fa07351664 Import vendor_opensource display-drivers peridot-u-oss (msm_drm.ko build tree)
+ls: cannot access 'msm': No such file or directory
 /dev/root        72G   59G   14G  82% /
 __DONE__ rc=0
-__RAW__ 2026-08-30T15:04:04Z run=33317766012
+__RAW__ 2026-08-30T15:07:53Z run=33317766012
