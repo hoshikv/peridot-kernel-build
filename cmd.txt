@@ -1,4 +1,4 @@
-for repo in "crdroidandroid/android_kernel_xiaomi_sm8635-modules" "LineageOS/android_kernel_xiaomi_sm8635-modules"; do
-echo "=== $repo ==="
-curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/$repo/branches?per_page=100" | grep -o "\"name\":\"[^\"]*\"" | grep -i "16.0\|lineage-23.2" | head -5
-done
+echo "=== search github for sm8635 vendor modules repo ==="
+curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/search/repositories?q=sm8635+modules+xiaomi" | grep -o "\"full_name\":\"[^\"]*\"" | head -10
+echo "=== check MiCode vendor_opensource_display-drivers full tree default branch ==="
+curl -s -H "Authorization: token $GH_TOKEN" "https://api.github.com/repos/MiCode/vendor_opensource_display-drivers" | grep -o "\"default_branch\":\"[^\"]*\""
