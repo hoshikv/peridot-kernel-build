@@ -1,15 +1,7 @@
-export PATH="$HOME/tc/bin:$PATH"
-export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
-K="$GITHUB_WORKSPACE/kernel"
-O="$GITHUB_WORKSPACE/out"
 M="$GITHUB_WORKSPACE/modules/qcom/opensource/securemsm-kernel"
-LOG="$GITHUB_WORKSPACE/sec_hdcp.log"
-make -C "$K" O="$O" M="$M" SSG_MODULE_ROOT="$M" CONFIG_QCOM_SMCINVOKE= CONFIG_QTI_TZ_LOG= CONFIG_QTI_SMMU_PROXY= CONFIG_HDCP_QSEECOM=y modules > "$LOG" 2>&1
-echo "rc=$?"
-ls -la "$M/Module.symvers"
-echo "=== hdcp modules exports (hdcp1/hdcp2) ==="
-nm -g "$M/hdcp_qseecom_dlkm.ko" 2>/dev/null | grep -E " T " | grep -i hdcp | head -40
-echo "=== hdcp symvers lines ==="
-grep -i hdcp "$M/Module.symvers" | head -20
-echo "=== errors ==="
-grep -nE "error:|Error|undefined" "$LOG" | tail -10
+echo "=== .ko produced ==="
+find "$M" -name "*.ko" | head
+echo "=== symvers content ==="
+cat "$M/Module.symvers"
+echo "=== undefined UND list in hdcp module if exists ==="
+nm -u "$M/hdcp_qseecom_dlkm.ko" 2>/dev/null | head -20
