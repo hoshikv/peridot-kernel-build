@@ -1,26 +1,52 @@
-=== Kbuild hdcp lines ===
-104:KBUILD_EXTRA_SYMBOLS +=$(OUT)/obj/vendor/qcom/opensource/display-drivers/hdcp/Module.symvers
-122:msm_drm-$(CONFIG_HDCP_QSEECOM) := ../hdcp/msm_hdcp.o \
-123:				  dp/dp_hdcp2p2.o \
-124:				  sde_hdcp_1x.o \
-125:				  sde_hdcp_2x.o
-=== rebuild WITHOUT HDCP_QSEECOM ===
-ERROR: modpost: "msm_ext_disp_deregister_intf" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "sde_hdcp_1x_init" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "sde_hdcp_1x_get" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "sde_dp_hdcp2p2_init" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "sde_hdcp_1x_deinit" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "sde_dp_hdcp2p2_get" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "sde_dp_hdcp2p2_deinit" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "spec_sync_wait_bind_array" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-ERROR: modpost: "msm_hw_fence_update_txq_error" [/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko] undefined!
-WARNING: modpost: suppressed 14 unresolved symbol warnings because there were too many)
-make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.modpost:187: /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Module.symvers] Error 1
-make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2091: modpost] Error 2
-make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-make: *** [Makefile:256: __sub-make] Error 2
-make: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
-RC=0
-ls: cannot access '/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.ko': No such file or directory
-__DONE__ rc=2
-__RAW__ 2026-08-30T17:06:54Z run=33317766012
+=== does kernel tree have modules repo hints? ===
+modules.bzl
+modules.list.msm.anorak
+modules.list.msm.autoghgvm
+modules.list.msm.autogvm
+modules.list.msm.blair
+modules.list.msm.gen3auto
+modules.list.msm.kalama
+modules.list.msm.neo-la
+modules.list.msm.neo-le
+modules.list.msm.niobe
+modules.list.msm.pineapple
+modules.list.msm.pineapple-le
+modules.list.msm.pitti
+modules.list.msm.sdmsteppeauto
+modules.list.msm.seraph
+modules.systemdlkm_blocklist.msm.anorak
+modules.systemdlkm_blocklist.msm.autoghgvm
+modules.systemdlkm_blocklist.msm.autogvm
+modules.systemdlkm_blocklist.msm.blair
+modules.systemdlkm_blocklist.msm.gen3auto
+modules.systemdlkm_blocklist.msm.kalama
+modules.systemdlkm_blocklist.msm.neo-la
+modules.systemdlkm_blocklist.msm.neo-le
+modules.systemdlkm_blocklist.msm.niobe
+modules.systemdlkm_blocklist.msm.pineapple
+modules.systemdlkm_blocklist.msm.pineapple-le
+modules.systemdlkm_blocklist.msm.pitti
+modules.systemdlkm_blocklist.msm.sdmsteppeauto
+modules.systemdlkm_blocklist.msm.seraph
+modules.vendor_blocklist.msm.anorak
+modules.vendor_blocklist.msm.autoghgvm
+modules.vendor_blocklist.msm.autogvm
+modules.vendor_blocklist.msm.blair
+modules.vendor_blocklist.msm.gen3auto
+modules.vendor_blocklist.msm.kalama
+modules.vendor_blocklist.msm.neo-la
+modules.vendor_blocklist.msm.neo-le
+modules.vendor_blocklist.msm.niobe
+modules.vendor_blocklist.msm.pineapple
+modules.vendor_blocklist.msm.pineapple-le
+modules.vendor_blocklist.msm.pitti
+modules.vendor_blocklist.msm.sdmsteppeauto
+modules.vendor_blocklist.msm.seraph
+modules_unprotected.bzl
+=== submodules in kernel repo ===
+=== check crdroid modules repo on github ===
+=== what repo is the kernel? ===
+origin	https://github.com/crdroidandroid/android_kernel_xiaomi_sm8635.git (fetch)
+origin	https://github.com/crdroidandroid/android_kernel_xiaomi_sm8635.git (push)
+__DONE__ rc=0
+__RAW__ 2026-08-30T17:07:47Z run=33317766012
