@@ -1,7 +1,1 @@
-F="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/mi_disp/mi_dsi_panel.c"
-sed -i "21s|#include \"internals.h\"|#include \"../../../../kernel/kernel/irq/internals.h\"|" "$F"
-echo "=== new line 21 ==="; sed -n "21p" "$F"
-export PATH="$HOME/tc/bin:$PATH"; export ARCH=arm64 SUBARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1
-K="$GITHUB_WORKSPACE/kernel"; O="$GITHUB_WORKSPACE/out"
-D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"
-make -C "$K" O="$O" M="$D/msm" DISPLAY_ROOT="$D" modules 2>&1 | tail -25
+D="$GITHUB_WORKSPACE/display-drivers/vendor_opensource_display-drivers-peridot-u-oss"; wc -l "$D/msm/Kbuild"; sed -n "1,140p" "$D/msm/Kbuild"
