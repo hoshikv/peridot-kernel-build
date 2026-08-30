@@ -1,4 +1,6 @@
-=== branches sm8635-modules (crdroid) ===
-=== branches lineage sm8635-modules ===
+=== ls-remote crdroid sm8635-modules ===
+228944f7235d21d2ab3aedf00398f31d41495369	refs/heads/16.0
+=== ls-remote lineage sm8635-modules ===
+ed4ad0d1ad00b755af2fe61387dcc5397ad20b8f	refs/heads/lineage-23.2
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:14:05Z run=33317766012
+__RAW__ 2026-08-30T17:14:22Z run=33317766012
