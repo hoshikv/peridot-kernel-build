@@ -1,34 +1,8 @@
-[main 9fd7ce7] fix: use out-of-tree kernel internals.h include
- 1 file changed, 1 insertion(+), 1 deletion(-)
-From https://github.com/hoshikv/mi_disp_driver2_peridot
- * branch            main       -> FETCH_HEAD
-   fcfc5a1..83ead6b  main       -> origin/main
-Rebasing (1/1)dropping 9fd7ce7189fee7162779ffff690da795d33bff1e fix: use out-of-tree kernel internals.h include -- patch contents already upstream
-Successfully rebased and updated refs/heads/main.
---- patch check ---
-
-bool is_aod_and_panel_initialized(struct dsi_panel *panel)
-{
-	struct mi_dsi_panel_cfg *mi_cfg = &panel->mi_cfg;
-
-	return dsi_panel_initialized(panel) &&
-		(panel->power_mode == SDE_MODE_DPMS_LP1 ||
-		 panel->power_mode == SDE_MODE_DPMS_LP2 ||
-		 mi_cfg->panel_state == PANEL_STATE_DOZE_HIGH ||
-		 mi_cfg->panel_state == PANEL_STATE_DOZE_LOW);
-}
-
->>>>
-	memset(&ctl, 0, sizeof(struct disp_feature_ctl));
-	panel = lhbm_fod->display->panel;
-
-	if (sde_kms_is_suspend_blocked(dsi_display->drm_dev) &&
-	    !is_aod_and_panel_initialized(panel)) {
-		DISP_ERROR("sde_kms is suspended, skip to set disp_param\n");
-		return -EBUSY;
-	}
-#include "../../../../kernel/kernel/irq/internals.h"
-83ead6b mi_disp/peridot: auto-LP1 doze fix for AOD + FOD HBM
-fcfc5a1 Import vendor_opensource display-drivers peridot-u-oss (msm_drm.ko build tree)
+OK /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/sync_fence/Module.symvers (169B)
+OK /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/hw_fence/Module.symvers (4047B)
+OK /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/msm_ext_display/Module.symvers (734B)
+OK /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mmrm-driver/Module.symvers (1147B)
+OK /home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Module.symvers (7978B)
+/dev/root        72G   62G   11G  86% /
 __DONE__ rc=0
-__RAW__ 2026-08-30T18:03:47Z run=33317766012
+__RAW__ 2026-08-30T18:04:15Z run=33317766012
