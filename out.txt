@@ -1,10 +1,7 @@
---- runner mi_dsi_panel.c line 18-24 ---
-#include "dsi_display.h"
-#include "dsi_ctrl_hw.h"
-#include "dsi_parser.h"
-#include "../../../../kernel/kernel/irq/internals.h"
-#include "sde_connector.h"
-#include "sde_trace.h"
-#include "mi_dsi_panel.h"
+true
+fcfc5a1 Import vendor_opensource display-drivers peridot-u-oss (msm_drm.ko build tree)
+---
+mi_disp/mi_disp_lhbm.c
+mi_disp/mi_dsi_panel.c
 __DONE__ rc=0
-__RAW__ 2026-08-30T18:01:00Z run=33317766012
+__RAW__ 2026-08-30T18:02:10Z run=33317766012
