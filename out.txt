@@ -1,38 +1,29 @@
-=== find definitions hdcp1_init / hdcp2_feature_supported ===
-=== where is sde_hdcp_2x using it, surrounding context ===
-	cdata.buf = hdcp->app_data.response.data + 1;
-
-	sde_hdcp_2x_wakeup_client(hdcp, &cdata);
-}
-
-static bool sde_hdcp_2x_client_feature_supported(void *data)
-{
-	struct sde_hdcp_2x_ctrl *hdcp = data;
-
-	while (atomic_read(&hdcp->enable_pending))
-		usleep_range(1000, 1500);
-
-	return hdcp2_feature_supported(hdcp->hdcp2_ctx);
-}
-
-static void sde_hdcp_2x_force_encryption(void *data, bool enable)
-{
-	struct sde_hdcp_2x_ctrl *hdcp = data;
-
-	if (!hdcp) {
-		pr_err("invalid input\n");
-		return;
-	}
-
-	hdcp->force_encryption = enable;
-	pr_info("force_encryption=%d\n", hdcp->force_encryption);
-}
-
-static void sde_hdcp_2x_clean(struct sde_hdcp_2x_ctrl *hdcp)
-{
-	struct list_head *element;
-=== check dp dir for hdcp ===
-dp_hdcp2p2.c
-dp_hdcp2p2.o
+=== all hdcp-related files in import tree ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_2x.o
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_1x.o
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/dp/dp_hdcp2p2.o
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/dp/.dp_hdcp2p2.o.cmd
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/dp/dp_hdcp2p2.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_1x.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_2x.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_2x.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/.sde_hdcp_2x.o.cmd
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/.sde_hdcp_1x.o.cmd
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/include/linux/msm_hdcp.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/include/uapi/display/hdcp
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/include/uapi/display/hdcp/msm_hdmi_hdcp_mgr.h
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/hdcp
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/hdcp/.msm_hdcp.o.d
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/hdcp/msm_hdcp.o
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/hdcp/.msm_hdcp.o.cmd
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/hdcp/msm_hdcp.c
+=== does sde_hdcp_1x define its own? ===
+1588:	hdcp->hdcp1_handle = hdcp1_init();
+=== hdcp2_feature_supported def search ===
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_2x.o
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/sde_hdcp_2x.c
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/msm_drm.o
+=== look for hdcp impl files e.g. hdcp1_main, hdcp2_main ===
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:03:46Z run=33317766012
+__RAW__ 2026-08-30T17:04:35Z run=33317766012
