@@ -1,5 +1,7 @@
-=== search repos with peridot-u-oss ===
-{"total_count":0,"incomplete_results":false,"items":[]}
-=== lineageOS sm8450-modules tree: internals.h? ===
+=== branch peridot-u-oss ===
+=== branch peridot-u-oss2 ===
+=== branch peridot-u-oss-mainline ===
+=== branch sm8635-u-oss ===
+=== list branches matching peridot ===
 __DONE__ rc=0
-__RAW__ 2026-08-30T16:47:19Z run=33317766012
+__RAW__ 2026-08-30T16:48:55Z run=33317766012
