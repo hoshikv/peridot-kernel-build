@@ -1,45 +1,10 @@
-=== out-of-tree msm build ===
-ERROR: modpost: net/nfc/nfc: 'nfc_fw_download_done' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_dep_link_is_up' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_find_se' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_set_remote_general_bytes' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_get_local_general_bytes' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_tm_data_received' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_tm_activated' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_tm_deactivated' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_alloc_recv_skb' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_targets_found' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_target_lost' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_driver_failure' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_add_se' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_remove_se' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_se_transaction' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_se_connectivity' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_class' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_allocate_device' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_register_device' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_unregister_rfkill' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_remove_device' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_unregister_device' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: '__nfc_alloc_vendor_cmd_reply_skb' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_vendor_cmd_reply' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_proto_register' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_proto_unregister' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/nfc/nfc: 'nfc_send_to_raw_sock' exported twice. Previous export was in net/nfc/nfc.ko
-ERROR: modpost: net/qrtr/qrtr: 'qrtr_print_wakeup_reason' exported twice. Previous export was in net/qrtr/qrtr.ko
-ERROR: modpost: net/qrtr/qrtr: 'qrtr_peek_pkt_size' exported twice. Previous export was in net/qrtr/qrtr.ko
-ERROR: modpost: net/qrtr/qrtr: 'qrtr_endpoint_post' exported twice. Previous export was in net/qrtr/qrtr.ko
-ERROR: modpost: net/qrtr/qrtr: 'qrtr_endpoint_register' exported twice. Previous export was in net/qrtr/qrtr.ko
-ERROR: modpost: net/qrtr/qrtr: 'qrtr_endpoint_unregister' exported twice. Previous export was in net/qrtr/qrtr.ko
-ERROR: modpost: net/qrtr/qrtr: 'qrtr_get_service_id' exported twice. Previous export was in net/qrtr/qrtr.ko
-ERROR: modpost: net/qrtr/qrtr: 'qrtr_ns_init' exported twice. Previous export was in net/qrtr/qrtr.ko
-ERROR: modpost: net/qrtr/qrtr: 'qrtr_ns_remove' exported twice. Previous export was in net/qrtr/qrtr.ko
-make[2]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/scripts/Makefile.modpost:187: /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/Module.symvers] Error 1
-make[1]: *** [/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel/Makefile:2091: modpost] Error 2
+=== retry out-of-tree without KBUILD_EXTRA_SYMBOLS ===
+make: Entering directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
+make[1]: Entering directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
+  MODPOST /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/Module.symvers
 make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-make: *** [Makefile:256: __sub-make] Error 2
 make: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/kernel'
 === ko files ===
 /dev/root        72G   62G   11G  86% /
 __DONE__ rc=0
-__RAW__ 2026-08-30T16:12:02Z run=33317766012
+__RAW__ 2026-08-30T16:16:33Z run=33317766012
