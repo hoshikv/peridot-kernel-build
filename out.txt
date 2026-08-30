@@ -1,34 +1,38 @@
-	$(Q)rm -f $(MODORDER)
-
-single-goals := $(addprefix $(build-dir)/, $(single-no-ko))
-
-KBUILD_MODULES := 1
-
-endif
-
-# Preset locale variables to speed up the build process. Limit locale
-# tweaks to this spot to avoid wrong language settings when running
-# make menuconfig etc.
-# Error messages still appears in the original language
-PHONY += $(build-dir)
-$(build-dir): prepare
-	$(Q)$(MAKE) $(build)=$@ $(if $(KBUILD_MIXED_TREE),,need-builtin=1) need-modorder=1 $(single-goals)
-
-clean-dirs := $(addprefix _clean_, $(clean-dirs))
-PHONY += $(clean-dirs) clean
-$(clean-dirs):
-	$(Q)$(MAKE) $(clean)=$(patsubst _clean_%,%,$@)
-
-=== BUILD_SHADOW ===
-118:# See the file "Documentation/dev-tools/sparse.rst" for more details,
-139:# Use make M=dir or set the environment variable KBUILD_EXTMOD to specify the
-142:  KBUILD_EXTMOD := $(M)
-145:$(if $(word 2, $(KBUILD_EXTMOD)), \
-148:$(foreach x, % :, $(if $(findstring $x, $(KBUILD_EXTMOD)), \
-152:ifneq ($(filter %/, $(KBUILD_EXTMOD)),)
-153:KBUILD_EXTMOD := $(shell dirname $(KBUILD_EXTMOD).)
-156:export KBUILD_EXTMOD
-302:clean-targets := %clean mrproper cleandocs
-303:no-dot-config-targets := $(clean-targets) \
+2110: 		$(foreach x, o mod, $(patsubst %.ko, %.$x, $(single-ko)))
+2111: 
+2112: $(single-ko): single_modules
+2113: 	@:
+2114: $(single-no-ko): $(build-dir)
+2115: 	@:
+2116: 
+2117: # Remove MODORDER when done because it is not the real one.
+2118: PHONY += single_modules
+2119: single_modules: $(single-no-ko) modules_prepare
+2120: 	$(Q){ $(foreach m, $(single-ko), echo $(extmod_prefix)$m;) } > $(MODORDER)
+2121: 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modpost
+2122: ifneq ($(KBUILD_MODPOST_NOFINAL),1)
+2123: 	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modfinal
+2124: endif
+2125: 	$(Q)rm -f $(MODORDER)
+2126: 
+2127: single-goals := $(addprefix $(build-dir)/, $(single-no-ko))
+2128: 
+2129: KBUILD_MODULES := 1
+2130: 
+2131: endif
+2132: 
+2133: # Preset locale variables to speed up the build process. Limit locale
+2134: # tweaks to this spot to avoid wrong language settings when running
+2135: # make menuconfig etc.
+2136: # Error messages still appears in the original language
+2137: PHONY += $(build-dir)
+2138: $(build-dir): prepare
+2139: 	$(Q)$(MAKE) $(build)=$@ $(if $(KBUILD_MIXED_TREE),,need-builtin=1) need-modorder=1 $(single-goals)
+2140: 
+2141: clean-dirs := $(addprefix _clean_, $(clean-dirs))
+2142: PHONY += $(clean-dirs) clean
+2143: $(clean-dirs):
+2144: 	$(Q)$(MAKE) $(clean)=$(patsubst _clean_%,%,$@)
+2145: 
 __DONE__ rc=0
-__RAW__ 2026-08-30T15:30:21Z run=33317766012
+__RAW__ 2026-08-30T15:30:59Z run=33317766012
