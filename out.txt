@@ -1,12 +1,25 @@
-80:static const char *key_pass;
-109:	key_pass = getenv("KBUILD_SIGN_PIN");
-145:		if (key_pass)
-146:			ERR(!ENGINE_ctrl_cmd_string(e, "PIN", key_pass, 0), "Set PKCS#11 PIN");
-=== recompile check ===
-make[1]: *** [include/config/auto.conf.cmd] Deleting file 'include/generated/rustc_cfg'
-make[1]: *** [include/config/auto.conf.cmd] Deleting file 'include/generated/autoconf.h'
+  LD [M]  net/can/can.ko
+  LD [M]  net/ieee802154/6lowpan/ieee802154_6lowpan.ko
+  LD [M]  net/ieee802154/ieee802154.ko
+  LD [M]  net/ieee802154/ieee802154_socket.ko
+  LD [M]  net/l2tp/l2tp_core.ko
+  LD [M]  net/l2tp/l2tp_ppp.ko
+  LD [M]  net/mac80211/mac80211.ko
+  LD [M]  net/mac802154/mac802154.ko
+  LD [M]  net/nfc/nfc.ko
+  LD [M]  net/qrtr/qrtr-gunyah.ko
+  LD [M]  net/qrtr/qrtr-mhi.ko
+  LD [M]  net/qrtr/qrtr-smd.ko
+  LD [M]  net/qrtr/qrtr.ko
+  LD [M]  net/rfkill/rfkill.ko
+  LD [M]  net/tipc/diag.ko
+  LD [M]  net/tipc/tipc.ko
+  LD [M]  net/wireless/cfg80211.ko
+  LD [M]  sound/soc/codecs/snd-soc-hdmi-codec.ko
+  LD [M]  sound/usb/snd-usb-audio-qmi.ko
 make[1]: Leaving directory '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out'
-make: *** [Makefile:256: __sub-make] Error 2
-ls: cannot access '/home/runner/work/peridot-kernel-build/peridot-kernel-build/out/certs/extract-cert': No such file or directory
-__DONE__ rc=2
-__RAW__ 2026-08-30T15:35:18Z run=33317766012
+=== symvers ===
+17746 /home/runner/work/peridot-kernel-build/peridot-kernel-build/out/Module.symvers
+/dev/root        72G   62G   11G  86% /
+__DONE__ rc=0
+__RAW__ 2026-08-30T16:03:58Z run=33317766012
