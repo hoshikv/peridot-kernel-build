@@ -31,10 +31,11 @@ mkdir -p "$OUT"
 [[ -f "$DISPLAY_ROOT/msm/Kbuild" ]] || { echo "display source missing"; exit 1; }
 
 if [[ ! -f "$OUT/.config" ]]; then
-  echo "[*] generate peridot GKI config"
-  make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH \
-    vendor/peridot_GKI.config
+  echo "[*] generate config (defconfig = Lineage peridot GKI)"
+  make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH defconfig
 fi
+echo "[*] note: CONFIG_DRM_MSM di-check"
+grep -E '^CONFIG_DRM_MSM=' "$OUT/.config" || echo "WARN: CONFIG_DRM_MSM tidak diset di .config"
 
 echo "[*] modules_prepare"
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH modules_prepare
