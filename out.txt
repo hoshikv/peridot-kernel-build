@@ -1,45 +1,92 @@
-===== securemsm hdcp Kbuild =====
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_smcinvoke.c
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_main.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp1_ops.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_qseecom.c
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp1.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_smcinvoke.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_qseecom.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp2p2.h
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/hdcp/hdcp_main.c
-NO Kbuild
-===== hw_fence full Kbuild =====
+=== how is securemsm hdcp built? Android.bp/Makefile? ===
+find: warning: you have specified the global option -maxdepth after the argument -name, but global options are not positional, i.e., -maxdepth affects tests specified before it as well as those specified after it.  Please specify global options before other arguments.
+find: warning: you have specified the global option -maxdepth after the argument -name, but global options are not positional, i.e., -maxdepth affects tests specified before it as well as those specified after it.  Please specify global options before other arguments.
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Kbuild
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Android.mk
+/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/securemsm-kernel/Android.bp
+Android.bp
+Android.mk
+BUILD.bazel
+Kbuild
+Makefile
+build
+config
+crypto-qti
+hdcp
+include
+linux
+qrng
+qseecom
+securemsm_kernel.bzl
+securemsm_kernel_product_board.mk
+securemsm_kernel_vendor_board.mk
+securemsm_modules.bzl
+smcinvoke
+smmu-proxy
+ssg_kernel_headers.py
+tz_log
+=== mmrm Kbuild ===
+
+include $(MMRM_ROOT)/config/waipiommrm.conf
+LINUXINCLUDE += -include $(MMRM_ROOT)/config/waipiommrmconf.h
+
+ifneq ($(CONFIG_ARCH_QTI_VM), y)
+
+obj-m += driver/
+# obj-m += test/
+
+ifeq ($(CONFIG_MSM_MMRM_VM),y)
+LINUXINCLUDE += -I$(MMRM_ROOT)/vm/common/inc/
+obj-m += vm/be/
+endif
+
+else
+
+LINUXINCLUDE += -I$(MMRM_ROOT)/vm/common/inc/
+
+obj-m += vm/fe/
+#obj-y += vm/fe/vm_test/
+
+endif
+Android.mk
+BUILD.bazel
+Kbuild
+Makefile
+config
+driver
+mmrm_kernel_board.mk
+mmrm_kernel_product.mk
+mmrm_modules.bzl
+mmrm_modules_build.bzl
+target.bzl
+vm
+=== sync_fence Kbuild ===
 # SPDX-License-Identifier: GPL-2.0-only
 
 KDIR := $(TOP)/kernel_platform/msm-kernel
-include $(MSM_HW_FENCE_ROOT)/config/kalamammdrivers.conf
-LINUXINCLUDE += -include $(MSM_HW_FENCE_ROOT)/config/kalamammdriversconf.h \
-		-I$(MSM_HW_FENCE_ROOT)hw_fence/include/
+LINUXINCLUDE    += -I$(SYNC_FENCE_ROOT)sync_fence/include/
+include $(SYNC_FENCE_ROOT)/config/kalamammdrivers.conf
+LINUXINCLUDE += -include $(SYNC_FENCE_ROOT)/config/kalamammdriversconf.h
 
-ifdef CONFIG_QTI_HW_FENCE
-obj-m += msm_hw_fence.o
+ifdef CONFIG_QCOM_SPEC_SYNC
+obj-m += sync_fence.o
 
-msm_hw_fence-y := src/msm_hw_fence.o \
-		src/hw_fence_drv_priv.o \
-		src/hw_fence_drv_utils.o \
-		src/hw_fence_drv_debug.o \
-		src/hw_fence_drv_ipc.o
-
-ifneq ($(CONFIG_ARCH_KALAMA), y)
-LINUXINCLUDE += -I$(MSM_HW_FENCE_ROOT)/../synx-kernel/msm/synx/ \
-		-I$(MSM_HW_FENCE_ROOT)/../synx-kernel/include/uapi/synx/media/
-msm_hw_fence-y += src/msm_hw_fence_synx_translation.o
-endif
-
-msm_hw_fence-$(CONFIG_DEBUG_FS) += src/hw_fence_ioctl.o
+sync_fence-y := src/qcom_sync_file.o
 
 endif
 EXTRA_CFLAGS += -Wformat-extra-args -Wstrict-prototypes -Wformat-insufficient-args \
-		-Wformat-invalid-specifier -Wformat-zero-length -Wnonnull===== conf files =====
-/home/runner/work/peridot-kernel-build/peridot-kernel-build/modules/qcom/opensource/mm-drivers/config:
-kalamammdrivers.conf
-kalamammdriversconf.h
-===== gki conf for pineapple in mm-drivers =====
+		-Wformat-invalid-specifier -Wformat-zero-length -Wnonnull
+=== ext_display Kbuild ===
+# SPDX-License-Identifier: GPL-2.0-only
+
+include $(MSM_EXT_DISPLAY_ROOT)/config/kalamammdrivers.conf
+LINUXINCLUDE += -include $(MSM_EXT_DISPLAY_ROOT)/config/kalamammdriversconf.h
+
+obj-m += msm_ext_display.o
+
+msm_ext_display-y := src/msm_ext_display.o
+
+EXTRA_CFLAGS += -Wformat-extra-args -Wstrict-prototypes -Wformat-insufficient-args \
+		-Wformat-invalid-specifier -Wformat-zero-length -Wnonnull
 __DONE__ rc=0
-__RAW__ 2026-08-30T17:22:38Z run=33317766012
+__RAW__ 2026-08-30T17:26:38Z run=33317766012
