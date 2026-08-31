@@ -1,5 +1,2 @@
----
-vermagic=6.1.174-g0edbd843260b-dirty SMP preempt mod_unload modversions aarch64
-kernel: #define UTS_RELEASE "6.1.174-g0edbd843260b-dirty"
-__DONE__ rc=0
-__RAW__ 2026-08-30T18:07:28Z run=33317766012
+READY run=33370180538 2026-08-31T07:51:08Z
+__DONE__
