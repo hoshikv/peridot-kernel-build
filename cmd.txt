@@ -1,29 +1,17 @@
 set -e
-export GH_TOKEN
 cd "$GITHUB_WORKSPACE"
-echo "[1] apt deps"
-sudo apt-get update -qq 2>/dev/null || true
-sudo apt-get install -y -qq git bc bison flex libssl-dev libelf-dev python3 ca-certificates curl unzip file gzip 2>/dev/null || true
-echo "[2] submodules kernel + display-drivers"
-git submodule update --init --recursive
-echo "kernel:" $(git -C kernel rev-parse --short HEAD)
-echo "dd:" $(git -C display-drivers rev-parse --short HEAD)
-echo "[3] clang r530567"
-mkdir -p toolchain
-if [ ! -x toolchain/clang-r530567/bin/clang ]; then
-  curl -L --fail -o toolchain/clang.tar.gz \
-    "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r530567.tar.gz"
-  mkdir -p toolchain/clang-r530567
-  tar -xzf toolchain/clang.tar.gz -C toolchain/clang-r530567
-fi
-toolchain/clang-r530567/bin/clang --version | head -1
-export CLANG_DIR="$PWD/toolchain/clang-r530567"
-export KERNEL_DIR="$PWD/kernel"
-export DD_DIR="$PWD/display-drivers"
-export JOBS=4
+echo "=== disk ==="
 df -h / | tail -1
-echo "[4] build (vmlinux + Image + msm_drm.ko)"
-./build.sh
-echo "[5] RESULT"
-ls -la out/Image out/Image.gz out/msm_drm.ko 2>/dev/null
-strings out/msm_drm.ko 2>/dev/null | grep -m1 "vermagic=" || true
+echo "=== workspace ==="
+ls -la
+echo "=== kernel ==="
+ls kernel/Makefile 2>/dev/null && echo "kernel OK" || echo "kernel MISSING"
+ls kernel/.git 2>/dev/null && echo "kernel git OK" || echo "kernel git MISSING"
+echo "=== display-drivers ==="
+ls display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Kbuild 2>/dev/null && echo "dd OK" || echo "dd MISSING"
+ls display-drivers/.git 2>/dev/null && echo "dd git OK" || echo "dd git MISSING"
+echo "=== clang ==="
+ls toolchain/clang-r530567/bin/clang 2>/dev/null && echo "clang OK" || echo "clang MISSING"
+echo "=== out ==="
+ls out/ 2>/dev/null | head -5 || echo "out MISSING"
+echo "=== done ==="
