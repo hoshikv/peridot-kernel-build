@@ -143,7 +143,9 @@ echo "[*] build mmrm"
 make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
   SYNC_FENCE_ROOT="$MMD/" MSM_HW_FENCE_ROOT="$MMD/" MMRM_ROOT="$MM/mmrm-driver" \
   KBUILD_EXTRA_SYMBOLS="$SYNC/Module.symvers $HW/Module.symvers $EXT/Module.symvers" \
-  M="$MMRM" modules 2>&1 | tail -3
+  M="$MMRM_SYM" modules 2>&1 | tail -3
+
+echo "    mmrm Module.symvers: $MMRM_SYM/Module.symvers"
 
 echo "[*] build securemsm (hdcp + smcinvoke + tz_log)"
 make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
