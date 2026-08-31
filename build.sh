@@ -92,6 +92,12 @@ if [[ ! -f "$OUT/Module.symvers" ]]; then
   make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" modules
 fi
 
+echo "[*] build kernel Image (untuk boot)"
+make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" Image dtbs
+cp -f "$OUT/arch/arm64/boot/Image" "$OUT/Image" 2>/dev/null || true
+gzip -9 -f -k "$OUT/Image" 2>/dev/null || true
+ls -la "$OUT/Image" "$OUT/Image.gz" 2>/dev/null || true
+
 # ---------- companion out-of-tree modules (dependencies of msm_drm) ----------
 SYNC="$MMD/sync_fence"
 HW="$MMD/hw_fence"
@@ -147,4 +153,4 @@ find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec ls -la {} \; 2>/dev/null || true
 find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec cp {} "$OUT/" \; 2>/dev/null || true
 
 ls -la "$OUT/msm_drm.ko" 2>/dev/null || { echo "ERROR: msm_drm.ko not produced"; exit 1; }
-echo "[*] done: $OUT/msm_drm.ko"
+echo "[*] done: $OUT/msm_drm.ko + $OUT/Image"
