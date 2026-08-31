@@ -1,4 +1,4 @@
-name: Build msm_drm.ko
+name: Build kernel + vendor_dlkm
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 180
+    timeout-minutes: 360
     steps:
       - name: Checkout (with submodules)
         uses: actions/checkout@v4
@@ -22,18 +22,18 @@ jobs:
         uses: actions/cache@v4
         with:
           path: out
-          key: peridot-out-${{ hashFiles('display-drivers/**') }}-${{ github.sha }}
-          restore-keys: peridot-out-
+          key: peridot-full-${{ hashFiles('display-drivers/**') }}-${{ github.sha }}
+          restore-keys: peridot-full-
 
       - name: Install build deps
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq \
             git bc bison flex libssl-dev libelf-dev python3 \
-            ca-certificates wget file unzip
+            ca-certificates wget file unzip gzip
           df -h / | tail -1
 
-      - name: Download Android clang prebuilt (single version tarball)
+      - name: Download Android clang prebuilt
         id: clang
         uses: actions/cache@v4
         with:
@@ -51,13 +51,23 @@ jobs:
           rm toolchain/clang.tar.gz
           toolchain/clang-r530567/bin/clang --version | head -1
 
+      - name: Install erofs-utils
+        run: |
+          sudo apt-get install -y -qq erofs-utils 2>/dev/null || {
+            cd /tmp
+            git clone --depth 1 https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git
+            cd erofs-utils
+            ./autogen.sh && ./configure --prefix=/usr && make -j$(nproc) && sudo make install
+          }
+          which mkfs.erofs && mkfs.erofs --version || true
+
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: ${{ runner.os }}-kernel
           max-size: 4G
 
-      - name: Build msm_drm.ko
+      - name: Build kernel + modules + vendor_dlkm
         env:
           KERNEL_DIR: ${{ github.workspace }}/kernel
           DD_DIR: ${{ github.workspace }}/display-drivers
@@ -66,12 +76,49 @@ jobs:
           CCACHE_DIR: ${{ github.workspace }}/.ccache
         run: |
           df -h / | tail -1
+          chmod +x build.sh
           ./build.sh
           df -h / | tail -1
 
-      - name: Upload artifact
+      - name: Summary
+        run: |
+          echo "=== Build artifacts ==="
+          ls -lh out/Image out/Image.gz out/msm_drm.ko out/vendor_dlkm.img 2>/dev/null
+          echo "=== vermagic ==="
+          strings out/msm_drm.ko 2>/dev/null | grep -m1 "vermagic=" || true
+
+      - name: Upload kernel Image
         uses: actions/upload-artifact@v4
         with:
-          name: msm_drm
+          name: kernel-Image
+          path: |
+            out/Image
+            out/Image.gz
+          if-no-files-found: error
+
+      - name: Upload msm_drm.ko
+        uses: actions/upload-artifact@v4
+        with:
+          name: msm_drm-patched
           path: out/msm_drm.ko
           if-no-files-found: error
+
+      - name: Upload vendor_dlkm.img
+        uses: actions/upload-artifact@v4
+        with:
+          name: vendor_dlkm
+          path: out/vendor_dlkm.img
+          if-no-files-found: warn
+
+      - name: Release
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          TAG="build-$(date -u +%Y%m%d-%H%M)"
+          gh release create "$TAG" \
+            --repo "${{ github.repository }}" \
+            --title "kernel + vendor_dlkm $TAG" \
+            --notes "auto build: Image + msm_drm.ko (doze patched) + vendor_dlkm.img" \
+            out/Image out/Image.gz out/msm_drm.ko out/vendor_dlkm.img \
+            --clobber 2>&1 || echo "release failed (non-fatal)"

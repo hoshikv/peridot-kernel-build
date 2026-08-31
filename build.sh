@@ -8,6 +8,8 @@ MODULES_DIR="${MODULES_DIR:-$ROOT/modules}"
 OUT="$ROOT/out"
 ARCH=arm64
 JOBS="${JOBS:-$(nproc --ignore=2)}"
+VENDOR_DLKM="$OUT/vendor_dlkm"
+MODDIR="$VENDOR_DLKM/lib/modules"
 
 DISPLAY_ROOT="$DD_DIR/vendor_opensource_display-drivers-peridot-u-oss"
 MM="$MODULES_DIR/qcom/opensource"
@@ -33,13 +35,13 @@ export OBJCOPY=llvm-objcopy
 export OBJDUMP=llvm-objdump
 export READELF=llvm-readelf
 
-mkdir -p "$OUT"
+mkdir -p "$OUT" "$MODDIR"
 mkdir -p "$DISPLAY_ROOT/msm"
 
 [[ -f "$KERNEL_DIR/Makefile" ]] || { echo "kernel tree missing"; exit 1; }
 [[ -f "$DISPLAY_ROOT/msm/Kbuild" ]] || { echo "display source missing"; exit 1; }
 
-# fix: key_pass undeclared when USE_PKCS11_ENGINE not defined but pkcs11 branch compiled
+# fix: key_pass undeclared
 python3 - "$KERNEL_DIR/certs/extract-cert.c" <<'EOF'
 import sys
 p = sys.argv[1]
@@ -49,30 +51,35 @@ new = "static const char *key_pass;"
 if old in s:
     s = s.replace(old, new)
     open(p, "w").write(s)
-    print("[*] extract-cert.c patched (key_pass unconditional)")
+    print("[*] extract-cert.c patched")
 else:
     print("[*] no patch needed")
 EOF
 
-# disable -Werror (clang r530567 lebih baru dari source ACK 6.1)
+# disable -Werror
 sed -i 's/^KBUILD_CFLAGS += -Werror$/KBUILD_CFLAGS += -Wno-error/' \
   "$KERNEL_DIR/scripts/Makefile.extrawarn"
 
-# companion modules source (crdroid sm8635)
+# companion modules source
 if [[ ! -d "$MODULES_DIR/.git" ]]; then
   echo "[*] clone companion modules: $MODULES_URL"
   git clone --depth 1 "$MODULES_URL" "$MODULES_DIR"
 fi
-# securemsm trace header requires TLMM ../sm8635-modules symlink
 ln -sfn "$MODULES_DIR" "$ROOT/sm8635-modules"
 
+# ---------- defconfig ----------
 if [[ ! -f "$MERGED_DEFCONFIG" ]]; then
-  echo "[*] merge config gki_defconfig + pineapple_GKI + peridot_GKI"
-  "$KERNEL_DIR/scripts/kconfig/merge_config.sh" -m -r \
+  echo "[*] merge config"
+  "$KERNEL_DIR/scripts/kconfig/merge_config.sh" -m \
     "$KERNEL_DIR/arch/$ARCH/configs/gki_defconfig" \
     "$VENDOR_CFG/pineapple_GKI.config" \
     "$VENDOR_CFG/peridot_GKI.config" 2>&1 | tail -4
-  [[ -f "$KERNEL_DIR/.config" ]] && cp "$KERNEL_DIR/.config" "$MERGED_DEFCONFIG"
+  if [[ -f "$KERNEL_DIR/.config" ]]; then
+    cp "$KERNEL_DIR/.config" "$MERGED_DEFCONFIG"
+  else
+    echo "[*] merge_config did not produce .config, using gki_defconfig as fallback"
+    cp "$KERNEL_DIR/arch/$ARCH/configs/gki_defconfig" "$MERGED_DEFCONFIG"
+  fi
   rm -f "$KERNEL_DIR/.config"
 fi
 
@@ -86,19 +93,20 @@ echo "[*] olddefconfig + modules_prepare"
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH olddefconfig
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH modules_prepare
 
-echo "[*] build vmlinux + in-tree modules (Module.symvers utk CRC)"
+# ---------- kernel + in-tree modules ----------
+echo "[*] build vmlinux + in-tree modules"
 if [[ ! -f "$OUT/Module.symvers" ]]; then
   make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" vmlinux
   make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" modules
 fi
 
-echo "[*] build kernel Image (untuk boot)"
+echo "[*] build kernel Image"
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" Image dtbs
 cp -f "$OUT/arch/arm64/boot/Image" "$OUT/Image" 2>/dev/null || true
 gzip -9 -f -k "$OUT/Image" 2>/dev/null || true
 ls -la "$OUT/Image" "$OUT/Image.gz" 2>/dev/null || true
 
-# ---------- companion out-of-tree modules (dependencies of msm_drm) ----------
+# ---------- companion out-of-tree modules ----------
 SYNC="$MMD/sync_fence"
 HW="$MMD/hw_fence"
 EXT="$MMD/msm_ext_display"
@@ -133,11 +141,8 @@ make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
   CONFIG_QCOM_SMCINVOKE=m CONFIG_HDCP_QSEECOM=m CONFIG_QTI_TZ_LOG=m \
   M="$SECURE" modules 2>&1 | tail -3
 
-ls -la "$SYNC/Module.symvers" "$HW/Module.symvers" "$EXT/Module.symvers" \
-      "$MM/mmrm-driver/Module.symvers" "$SECURE/Module.symvers"
-
-# ---------- msm_drm out-of-tree (target yang di-patch) ----------
-echo "[*] build msm_drm"
+# ---------- msm_drm out-of-tree (doze patched) ----------
+echo "[*] build msm_drm (doze patched)"
 make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
     M="$DISPLAY_ROOT" DISPLAY_ROOT="$DISPLAY_ROOT" OUT="$OUT" \
     KBUILD_EXTRA_SYMBOLS="$SYNC/Module.symvers $HW/Module.symvers $EXT/Module.symvers $MM/mmrm-driver/Module.symvers $SECURE/Module.symvers" \
@@ -148,9 +153,71 @@ make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
     CONFIG_QCOM_SPEC_SYNC=y CONFIG_QCOM_WCD939X_I2C=y MI_DISPLAY_MODIFY=y \
     modules 2>&1 | tee "$OUT/build.log"
 
-echo "[*] locate result"
-find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec ls -la {} \; 2>/dev/null || true
 find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec cp {} "$OUT/" \; 2>/dev/null || true
-
 ls -la "$OUT/msm_drm.ko" 2>/dev/null || { echo "ERROR: msm_drm.ko not produced"; exit 1; }
-echo "[*] done: $OUT/msm_drm.ko + $OUT/Image"
+
+# ---------- collect all .ko into vendor_dlkm ----------
+echo "[*] collect all .ko into vendor_dlkm"
+KVER=$(ls -d "$OUT/lib/modules/"*/ 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo "unknown")
+echo "    kernel version dir: $KVER"
+
+# 1) in-tree modules
+if [[ -d "$OUT/lib/modules/$KVER" ]]; then
+  find "$OUT/lib/modules/$KVER" -name '*.ko' -exec cp {} "$MODDIR/" \;
+  echo "    in-tree: $(find "$MODDIR" -name '*.ko' | wc -l) modules"
+fi
+
+# 2) companion modules
+for ko in "$SYNC"/*.ko "$HW"/*.ko "$EXT"/*.ko "$MMRM"/*.ko "$SECURE"/*.ko; do
+  [[ -f "$ko" ]] && cp "$ko" "$MODDIR/"
+done
+
+# 3) msm_drm
+cp -f "$OUT/msm_drm.ko" "$MODDIR/"
+
+echo "    total .ko: $(find "$MODDIR" -name '*.ko' | wc -l)"
+
+# ---------- generate modules.load ----------
+echo "[*] generate modules.load"
+find "$MODDIR" -name '*.ko' -printf '%f\n' | sort > "$MODDIR/modules.load"
+echo "    modules.load: $(wc -l < "$MODDIR/modules.load") entries"
+
+# ---------- generate modules.dep ----------
+echo "[*] generate modules.dep"
+> "$MODDIR/modules.dep"
+for ko in "$MODDIR"/*.ko; do
+  bn=$(basename "$ko")
+  # for now, simple (no deps tracked between out-of-tree)
+  echo "$bn:" >> "$MODDIR/modules.dep"
+done
+
+# ---------- package vendor_dlkm.img ----------
+echo "[*] package vendor_dlkm.img"
+KVERDIR="$VENDOR_DLKM/lib/modules/$KVER"
+if [[ -d "$KVERDIR" ]]; then
+  # move modules.load etc into versioned dir
+  mv "$MODDIR/modules.load" "$KVERDIR/modules.load" 2>/dev/null || true
+  mv "$MODDIR/modules.dep" "$KVERDIR/modules.dep" 2>/dev/null || true
+  # move .ko from flat MODDIR into versioned dir
+  find "$MODDIR" -maxdepth 1 -name '*.ko' -exec mv {} "$KVERDIR/" \; 2>/dev/null || true
+  # symlink
+  ln -sfn "$KVER" "$VENDOR_DLKM/lib/modules/latest" 2>/dev/null || true
+fi
+
+MKFS="$ROOT/../../tmp/opencode/erofs-install/bin/mkfs.erofs"
+if [[ ! -x "$MKFS" ]]; then
+  MKFS=$(command -v mkfs.erofs 2>/dev/null || echo "")
+fi
+if [[ -n "$MKFS" ]]; then
+  "$MKFS" -z lz4 -b 4096 --all-root -T 0 \
+    "$OUT/vendor_dlkm.img" "$VENDOR_DLKM" 2>&1 | tail -5
+  ls -la "$OUT/vendor_dlkm.img"
+else
+  echo "    WARNING: mkfs.erofs not found, skipping vendor_dlkm.img packaging"
+  echo "    vendor_dlkm contents at: $VENDOR_DLKM"
+fi
+
+echo ""
+echo "========== BUILD COMPLETE =========="
+ls -la "$OUT/Image" "$OUT/Image.gz" "$OUT/msm_drm.ko" "$OUT/vendor_dlkm.img" 2>/dev/null
+echo "vermagic: $(strings "$OUT/msm_drm.ko" | grep -m1 'vermagic=')"
