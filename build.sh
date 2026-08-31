@@ -70,16 +70,12 @@ ln -sfn "$MODULES_DIR" "$ROOT/sm8635-modules"
 # ---------- defconfig ----------
 if [[ ! -f "$MERGED_DEFCONFIG" ]]; then
   echo "[*] merge config"
-  "$KERNEL_DIR/scripts/kconfig/merge_config.sh" -m \
-    "$KERNEL_DIR/arch/$ARCH/configs/gki_defconfig" \
-    "$VENDOR_CFG/pineapple_GKI.config" \
-    "$VENDOR_CFG/peridot_GKI.config" 2>&1 | tail -4
-  if [[ -f "$KERNEL_DIR/.config" ]]; then
-    cp "$KERNEL_DIR/.config" "$MERGED_DEFCONFIG"
-  else
-    echo "[*] merge_config did not produce .config, using gki_defconfig as fallback"
-    cp "$KERNEL_DIR/arch/$ARCH/configs/gki_defconfig" "$MERGED_DEFCONFIG"
-  fi
+  ( cd "$KERNEL_DIR" && \
+    "$KERNEL_DIR/scripts/kconfig/merge_config.sh" -m -r \
+      "$KERNEL_DIR/arch/$ARCH/configs/gki_defconfig" \
+      "$VENDOR_CFG/pineapple_GKI.config" \
+      "$VENDOR_CFG/peridot_GKI.config" 2>&1 | tail -4 )
+  [[ -f "$KERNEL_DIR/.config" ]] && cp "$KERNEL_DIR/.config" "$MERGED_DEFCONFIG" || { echo "ERROR: merge_config produced no .config"; exit 1; }
   rm -f "$KERNEL_DIR/.config"
 fi
 
@@ -88,6 +84,7 @@ if [[ ! -f "$OUT/.config" ]]; then
   cp "$MERGED_DEFCONFIG" "$OUT/.config"
 fi
 "$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d WERROR
+"$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d DEBUG_INFO_BTF
 
 echo "[*] olddefconfig + modules_prepare"
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH olddefconfig
@@ -96,8 +93,12 @@ make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH modules_prepare
 # ---------- kernel + in-tree modules ----------
 echo "[*] build vmlinux + in-tree modules"
 if [[ ! -f "$OUT/Module.symvers" ]]; then
-  make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" vmlinux
-  make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" modules
+  make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" vmlinux 2>&1 | tee "$OUT/vmlinux.log"
+  rc=${PIPESTATUS[0]}
+  [[ $rc -ne 0 ]] && { echo "ERROR: vmlinux build failed (rc=$rc)"; tail -50 "$OUT/vmlinux.log"; exit 1; }
+  make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" modules 2>&1 | tee "$OUT/modules.log"
+  rc=${PIPESTATUS[0]}
+  [[ $rc -ne 0 ]] && { echo "ERROR: modules build failed (rc=$rc)"; tail -50 "$OUT/modules.log"; exit 1; }
 fi
 
 echo "[*] build kernel Image"
