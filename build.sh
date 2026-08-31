@@ -151,6 +151,21 @@ make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
   M="$SECURE" modules 2>&1 | tail -3
 
 # ---------- msm_drm out-of-tree (doze patched) ----------
+# mi_dsi_panel.c does: #include "../../../../kernel/kernel/irq/internals.h"
+# from $DISPLAY_ROOT/msm/mi_disp/ -> resolves to $ROOT/kernel/kernel/irq/internals.h
+echo "[*] verify kernel/irq/internals.h reachable for display module"
+REPO_KERNEL_IRQ="$ROOT/kernel/kernel/irq"
+if [[ ! -f "$REPO_KERNEL_IRQ/internals.h" ]]; then
+  echo "    internals.h not at $REPO_KERNEL_IRQ; creating symlink from KERNEL_DIR"
+  if [[ -f "$KERNEL_DIR/kernel/irq/internals.h" ]]; then
+    mkdir -p "$ROOT/kernel/kernel"
+    ln -sfn "$KERNEL_DIR/kernel/irq" "$ROOT/kernel/kernel/irq"
+  else
+    echo "    ERROR: $KERNEL_DIR/kernel/irq/internals.h also missing"
+  fi
+fi
+test -f "$REPO_KERNEL_IRQ/internals.h" && echo "    internals.h OK" || echo "    WARNING: internals.h still not found"
+
 echo "[*] build msm_drm (doze patched)"
 make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
     M="$DISPLAY_ROOT" DISPLAY_ROOT="$DISPLAY_ROOT" OUT="$OUT" \

@@ -10,20 +10,32 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
-      - name: Checkout (with submodules)
+      - name: Checkout (no submodules)
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: 'false'
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
+
+      - name: Init submodules manually (kernel + display-drivers)
+        run: |
+          git submodule init
+          git -c http.extraheader="AUTHORIZATION: basic ${{ secrets.GH_TOKEN }}" \
+            submodule update --init --recursive --depth 1
+          echo "=== kernel ==="
+          test -f kernel/Makefile && echo "kernel OK ($(git -C kernel rev-parse --short HEAD))" || echo "kernel MISSING"
+          echo "=== display ==="
+          test -f display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Kbuild && echo "display OK" || echo "display MISSING"
+          echo "=== internals.h reachable ==="
+          test -f "$PWD/kernel/kernel/irq/internals.h" && echo "internals.h OK" || echo "internals.h MISSING"
 
       - name: Restore build dir
         id: cache-out
         uses: actions/cache@v4
         with:
           path: out
-          key: peridot-full-${{ hashFiles('display-drivers/**') }}-${{ github.sha }}
-          restore-keys: peridot-full-
+          key: peridot-full-v2-${{ hashFiles('display-drivers/**') }}-${{ github.sha }}
+          restore-keys: peridot-full-v2-
 
       - name: Install build deps
         run: |
