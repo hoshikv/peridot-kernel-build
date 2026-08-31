@@ -120,6 +120,14 @@ jobs:
           path: out/vendor_dlkm.img
           if-no-files-found: warn
 
+      - name: Upload mmrm.log (debug)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mmrm-log
+          path: out/mmrm.log
+          if-no-files-found: ignore
+
       - name: Release
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         env:
