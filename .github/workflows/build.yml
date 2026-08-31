@@ -18,9 +18,12 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
 
       - name: Init submodules manually (kernel + display-drivers)
+        env:
+          GH_AUTH: ${{ secrets.GH_TOKEN }}
+          REPO_URL_KERNEL: https://github.com/crdroidandroid/android_kernel_xiaomi_sm8635.git
+          REPO_URL_DD: https://github.com/hoshikv/mi_disp_driver2_peridot.git
         run: |
-          git submodule init
-          git -c http.extraheader="AUTHORIZATION: basic ${{ secrets.GH_TOKEN }}" \
+          git -c http.extraheader="Authorization: token ${GH_AUTH}" \
             submodule update --init --recursive --depth 1
           echo "=== kernel ==="
           test -f kernel/Makefile && echo "kernel OK ($(git -C kernel rev-parse --short HEAD))" || echo "kernel MISSING"
