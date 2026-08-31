@@ -119,7 +119,8 @@ ls -la "$OUT/Image" "$OUT/Image.gz" 2>/dev/null || true
 SYNC="$MMD/sync_fence"
 HW="$MMD/hw_fence"
 EXT="$MMD/msm_ext_display"
-MMRM="$MM/mmrm-driver/driver"
+MMRM="$MM/mmrm-driver"
+MMRM_SYM="$MMRM/driver"
 SECURE="$MM/securemsm-kernel"
 
 echo "[*] build sync_fence"
@@ -169,7 +170,7 @@ test -f "$REPO_KERNEL_IRQ/internals.h" && echo "    internals.h OK" || echo "   
 echo "[*] build msm_drm (doze patched)"
 make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
     M="$DISPLAY_ROOT" DISPLAY_ROOT="$DISPLAY_ROOT" OUT="$OUT" \
-    KBUILD_EXTRA_SYMBOLS="$SYNC/Module.symvers $HW/Module.symvers $EXT/Module.symvers $MM/mmrm-driver/Module.symvers $SECURE/Module.symvers" \
+    KBUILD_EXTRA_SYMBOLS="$SYNC/Module.symvers $HW/Module.symvers $EXT/Module.symvers $MMRM_SYM/Module.symvers $SECURE/Module.symvers" \
     CONFIG_DRM_MSM=y CONFIG_DRM_MSM_SDE=y CONFIG_SYNC_FILE=y CONFIG_DRM_MSM_DSI=y \
     CONFIG_DRM_MSM_DP=y CONFIG_DRM_MSM_DP_MST=y CONFIG_DSI_PARSER=y CONFIG_QCOM_MDSS_PLL=y \
     CONFIG_DRM_SDE_RSC=y CONFIG_DRM_SDE_WB=y CONFIG_DRM_MSM_REGISTER_LOGGING=y CONFIG_MSM_MMRM=y \
@@ -192,7 +193,7 @@ if [[ -d "$OUT/lib/modules/$KVER" ]]; then
 fi
 
 # 2) companion modules
-for ko in "$SYNC"/*.ko "$HW"/*.ko "$EXT"/*.ko "$MMRM"/*.ko "$SECURE"/*.ko; do
+for ko in "$SYNC"/*.ko "$HW"/*.ko "$EXT"/*.ko "$MMRM"/*.ko "$MMRM_SYM"/*.ko "$SECURE"/*.ko; do
   [[ -f "$ko" ]] && cp "$ko" "$MODDIR/"
 done
 
