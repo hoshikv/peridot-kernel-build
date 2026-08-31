@@ -10,26 +10,20 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
-      - name: Checkout (no submodules)
+      - name: Checkout (with submodules)
         uses: actions/checkout@v4
         with:
-          submodules: 'false'
+          submodules: recursive
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
 
-      - name: Init submodules manually (kernel + display-drivers)
-        env:
-          GH_AUTH: ${{ secrets.GH_TOKEN }}
-          REPO_URL_KERNEL: https://github.com/crdroidandroid/android_kernel_xiaomi_sm8635.git
-          REPO_URL_DD: https://github.com/hoshikv/mi_disp_driver2_peridot.git
+      - name: Verify submodules
         run: |
-          git -c http.extraheader="Authorization: token ${GH_AUTH}" \
-            submodule update --init --recursive --depth 1
           echo "=== kernel ==="
           test -f kernel/Makefile && echo "kernel OK ($(git -C kernel rev-parse --short HEAD))" || echo "kernel MISSING"
           echo "=== display ==="
           test -f display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Kbuild && echo "display OK" || echo "display MISSING"
-          echo "=== internals.h reachable ==="
+          echo "=== internals.h ==="
           test -f "$PWD/kernel/kernel/irq/internals.h" && echo "internals.h OK" || echo "internals.h MISSING"
 
       - name: Restore build dir
