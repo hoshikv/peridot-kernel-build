@@ -1,6 +1,2 @@
-[1] apt deps
-[2] submodules kernel + display-drivers
-Submodule 'display-drivers' (https://github.com/hoshikv/mi_disp_driver2_peridot.git) registered for path 'display-drivers'
-Submodule 'kernel' (https://github.com/crdroidandroid/android_kernel_xiaomi_sm8635.git) registered for path 'kernel'
-Cloning into '/home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers'...
-__RAW__ 2026-08-31T08:47:15Z run=33370180538
+READY run=33392803257 2026-08-31T12:39:08Z
+__DONE__
