@@ -144,7 +144,7 @@ make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
   SYNC_FENCE_ROOT="$MMD/" MSM_HW_FENCE_ROOT="$MMD/" MMRM_ROOT="$MM/mmrm-driver" \
   KBUILD_EXTRA_SYMBOLS="$SYNC/Module.symvers $HW/Module.symvers $EXT/Module.symvers" \
   CONFIG_MSM_MMRM=m CONFIG_DRM_MSM=y CONFIG_DRM_MSM_SDE=y \
-  M="$MMRM_SYM" modules 2>&1 | tail -5
+  M="$MMRM_SYM" modules >"$OUT/mmrm.log" 2>&1 || { echo "ERROR: mmrm build failed"; tail -60 "$OUT/mmrm.log"; exit 1; }
 
 echo "    mmrm Module.symvers: $MMRM_SYM/Module.symvers"
 grep -c "mmrm_client" "$MMRM_SYM/Module.symvers" 2>/dev/null | xargs echo "    mmrm_client exports in symvers:" || true
