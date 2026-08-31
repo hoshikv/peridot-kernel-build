@@ -140,7 +140,12 @@ make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
   M="$EXT" modules 2>&1 | tail -3
 
 echo "[*] build mmrm"
-make -C "$KERNEL_DIR" O="$OUT" -j1 ARCH=$ARCH \
+# force CONFIG_MSM_MMRM as a C define so the kernel header linux/soc/qcom/msm_mmrm.h
+# takes the REAL-prototype branch (not the static-inline stubs), letting msm_mmrm.c
+# provide the implementation without a "redefinition" error.
+grep -q "^ccflags-y += -DCONFIG_MSM_MMRM=1" "$MMRM_SYM/Kbuild" || \
+  sed -i 's/^ifdef CONFIG_MSM_MMRM$/ifdef CONFIG_MSM_MMRM\nccflags-y += -DCONFIG_MSM_MMRM=1 -DCONFIG_MSM_MMRM_MODULE/' "$MMRM_SYM/Kbuild"
+make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
   SYNC_FENCE_ROOT="$MMD/" MSM_HW_FENCE_ROOT="$MMD/" MMRM_ROOT="$MM/mmrm-driver" \
   KBUILD_EXTRA_SYMBOLS="$SYNC/Module.symvers $HW/Module.symvers $EXT/Module.symvers" \
   CONFIG_MSM_MMRM=m CONFIG_DRM_MSM=y CONFIG_DRM_MSM_SDE=y \
