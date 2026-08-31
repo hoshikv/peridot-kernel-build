@@ -33,6 +33,7 @@ jobs:
           path: out
           key: peridot-full-v2-${{ hashFiles('display-drivers/**') }}-${{ github.sha }}
           restore-keys: peridot-full-v2-
+          save-always: true
 
       - name: Install build deps
         run: |

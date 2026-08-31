@@ -143,9 +143,11 @@ echo "[*] build mmrm"
 make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
   SYNC_FENCE_ROOT="$MMD/" MSM_HW_FENCE_ROOT="$MMD/" MMRM_ROOT="$MM/mmrm-driver" \
   KBUILD_EXTRA_SYMBOLS="$SYNC/Module.symvers $HW/Module.symvers $EXT/Module.symvers" \
-  M="$MMRM_SYM" modules 2>&1 | tail -3
+  CONFIG_MSM_MMRM=m CONFIG_DRM_MSM=y CONFIG_DRM_MSM_SDE=y \
+  M="$MMRM_SYM" modules 2>&1 | tail -5
 
 echo "    mmrm Module.symvers: $MMRM_SYM/Module.symvers"
+grep -c "mmrm_client" "$MMRM_SYM/Module.symvers" 2>/dev/null | xargs echo "    mmrm_client exports in symvers:" || true
 
 echo "[*] build securemsm (hdcp + smcinvoke + tz_log)"
 make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
