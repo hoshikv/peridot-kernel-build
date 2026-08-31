@@ -1,2 +1,6 @@
-READY run=33370180538 2026-08-31T07:51:08Z
-__DONE__
+gh ok: yes
+/tmp/outbox/run.sh: line 7: cd: /home/runner/work/peridot-kernel-build/peridot-kernel-build/display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm: No such file or directory
+https://github.com/hoshikv/peridot-kernel-build/releases/tag/doze-ko
+no matches found for `msm_drm.ko`
+__DONE__ rc=0
+__RAW__ 2026-08-31T07:51:14Z run=33370180538
