@@ -82,6 +82,14 @@ fi
 if [[ ! -f "$OUT/.config" ]]; then
   echo "[*] configure using merged defconfig"
   cp "$MERGED_DEFCONFIG" "$OUT/.config"
+else
+  # compare: re-copy if merged defconfig changed
+  if ! cmp -s "$MERGED_DEFCONFIG" "$OUT/.config"; then
+    echo "[*] merged defconfig changed, reconfiguring"
+    cp "$MERGED_DEFCONFIG" "$OUT/.config"
+    # config changed => invalidate vmlinux/module rebuild guard minimally
+    rm -f "$OUT/Module.symvers"
+  fi
 fi
 "$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d WERROR
 "$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d DEBUG_INFO_BTF
