@@ -1,4 +1,4 @@
 [submodule "kernel"]
 	path = kernel
-	url = https://github.com/crdroidandroid/android_kernel_xiaomi_sm8635.git
-	branch = 16.0
+	url = https://github.com/hoshikv/kernel_xiaomi_sm8635.git
+	branch = main
