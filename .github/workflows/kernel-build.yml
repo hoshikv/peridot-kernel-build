@@ -1,0 +1,135 @@
+name: Build Kernel (hybridswap + AnyKernel zip)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/kernel-build.yml'
+      - 'optimize.config'
+      - '.gitmodules'
+      - 'anykernel/**'
+
+concurrency:
+  group: kernel-zip-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - name: Checkout (with kernel submodule)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Verify kernel submodule
+        run: |
+          test -f kernel/Makefile && echo "kernel OK ($(git -C kernel rev-parse --short HEAD))" || { echo "kernel submodule MISSING"; exit 1; }
+          git -C kernel describe --tags 2>/dev/null | head -1 || true
+
+      - name: Free disk & setup swap
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost
+          sudo swapoff -a || true
+          sudo fallocate -l 24G /swapfile && sudo chmod 600 /swapfile
+          sudo mkswap /swapfile && sudo swapon /swapfile
+          df -h / && free -h
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git make gcc libssl-dev bc bison flex ccache \
+            cpio zip xz-utils zstd lz4 p7zip-full libelf-dev dwarves python3 perl \
+            gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
+          ccache --max-size=2G
+
+      - name: Setup clang toolchain
+        run: |
+          mkdir -p ../toolchain
+          if [ ! -d "../toolchain/clang" ]; then
+            git clone --depth=1 https://gitlab.com/kei-space/clang/r547379 ../toolchain/clang
+          fi
+          ../toolchain/clang/bin/clang --version
+
+      - name: Build kernel
+        id: build
+        env:
+          KBUILD_BUILD_USER: "Chidori"
+          KBUILD_BUILD_HOST: "GitHubActions"
+        run: |
+          set -e
+          export PATH="$PWD/../toolchain/clang/bin:$PATH"
+          export ARCH=arm64
+          export SUBARCH=arm64
+          cd kernel
+          # merge gki + vendor fragments + safe optimizations (keeps vermagic, drops debug bloat)
+          ./scripts/kconfig/merge_config.sh -m -r \
+            arch/arm64/configs/gki_defconfig \
+            arch/arm64/configs/vendor/pineapple_GKI.config \
+            arch/arm64/configs/vendor/peridot_GKI.config \
+            ../optimize.config 2>&1 | tee defconfig.log
+          make O=out ARCH=arm64 olddefconfig CC=clang 2>&1 | tee -a defconfig.log
+          echo "Kernel release: $(cat out/include/config/kernel.release)"
+          make -j$(($(nproc)-2)) O=out \
+            CC=clang LLVM=1 LLVM_IAS=1 LD=ld.lld AR=llvm-ar NM=llvm-nm \
+            OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip \
+            CCACHE=1 2>&1 | tee ../build.log
+          make -j$(($(nproc)-2)) O=out \
+            CC=clang LLVM=1 LLVM_IAS=1 LD=ld.lld AR=llvm-ar NM=llvm-nm \
+            OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip \
+            Image dtbs 2>&1 | tee -a ../build.log
+          cd ..
+          echo "VERMAGIC=$(cat kernel/out/include/config/kernel.release)" >> "$GITHUB_OUTPUT"
+          ls -lh kernel/out/arch/arm64/boot/Image kernel/out/arch/arm64/boot/Image.gz 2>/dev/null || true
+
+      - name: Verify hybridswap compiled
+        run: |
+          echo "=== hybridswap_zram objects ==="
+          grep -E "mm/oplus_mm" build.log | grep -E "CC |LD " | head || true
+          if ! grep -q "CONFIG_HYBRIDSWAP_ZRAM=y" kernel/out/.config; then
+            echo "::error::CONFIG_HYBRIDSWAP_ZRAM not enabled in .config"
+            grep -E "HYBRIDSWAP|ZRAM|ZSMALLOC" kernel/out/.config || true
+            exit 1
+          fi
+          echo "OK: CONFIG_HYBRIDSWAP_ZRAM=y"
+          grep -E "HYBRIDSWAP|ZRAM_DEF_COMP|ZSMALLOC" kernel/out/.config | head
+
+      - name: Package AnyKernel zip
+        run: |
+          set -e
+          ZIMAGE=kernel/out/arch/arm64/boot
+          mkdir -p tmp
+          if [ -f "$ZIMAGE/Image.gz" ]; then
+            cp -fp "$ZIMAGE/Image.gz" tmp/
+          elif [ -f "$ZIMAGE/Image" ]; then
+            gzip -9 -f -k "$ZIMAGE/Image" && cp -fp "$ZIMAGE/Image.gz" tmp/
+          else
+            echo "::error::no kernel image found"; exit 1
+          fi
+          cp -rp ./anykernel/* tmp/
+          cd tmp
+          7za a -mx9 ../Chidori-Kernel-peridot.zip *
+          cd ..
+          echo "=== zip contents ==="
+          7za l Chidori-Kernel-peridot.zip | grep -E "Image|anykernel.sh" || true
+          ls -lh Chidori-Kernel-peridot.zip
+
+      - name: Show vermagic
+        run: |
+          echo "Kernel release: ${{ steps.build.outputs.VERMAGIC }}"
+          grep -E "CONFIG_LOCALVERSION" kernel/out/.config || true
+
+      - name: Upload AnyKernel zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: Chidori-Kernel-peridot
+          path: |
+            Chidori-Kernel-peridot.zip
+            build.log
+            defconfig.log
+            kernel/out/include/config/kernel.release
+          if-no-files-found: error
+          retention-days: 7
