@@ -65,6 +65,9 @@ jobs:
           export PATH="$PWD/../toolchain/clang/bin:$PATH"
           export ARCH=arm64
           export SUBARCH=arm64
+          # export LOCALVERSION empty so setlocalversion does NOT append a dirty '+'
+          # to the vermagic (would break matching the stock KMI vermagic)
+          export LOCALVERSION=
           cd kernel
           # merge gki + vendor fragments + safe optimizations (keeps vermagic, drops debug bloat)
           # -O out => write .config directly into the O= build dir, keeping source tree clean
