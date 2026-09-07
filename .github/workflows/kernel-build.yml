@@ -61,6 +61,7 @@ jobs:
           KBUILD_BUILD_HOST: "GitHubActions"
         run: |
           set -e
+          set -o pipefail
           export PATH="$PWD/../toolchain/clang/bin:$PATH"
           export ARCH=arm64
           export SUBARCH=arm64
