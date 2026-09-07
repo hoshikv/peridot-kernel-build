@@ -75,6 +75,18 @@ jobs:
             arch/arm64/configs/vendor/pineapple_GKI.config \
             arch/arm64/configs/vendor/peridot_GKI.config \
             ../optimize.config 2>&1 | tee defconfig.log
+          # Tune config (same as proven kernelxc build): WERROR off, and disable
+          # MODULE_SIG* so STOCK (unsigned) vendor_dlkm modules still load at boot.
+          CFG=./scripts/config
+          $CFG --file out/.config -d WERROR
+          $CFG --file out/.config -d DEBUG_INFO_BTF
+          $CFG --file out/.config -d DEBUG_INFO_DWARF5
+          $CFG --file out/.config -d MODULE_SIG
+          $CFG --file out/.config -d MODULE_SIG_FORCE
+          $CFG --file out/.config -d MODULE_SIG_PROTECT
+          $CFG --file out/.config -d MODULE_SIG_ALL
+          $CFG --file out/.config -d MODULE_SIG_SHA256
+          $CFG --file out/.config --set-str MODULE_SIG_HASH "sha1"
           make O=out ARCH=arm64 olddefconfig CC=clang 2>&1 | tee -a defconfig.log
           echo "Kernel release: $(cat out/include/config/kernel.release)"
           JOBS=$(( $(nproc) - 2 )); [ "$JOBS" -lt 1 ] && JOBS=1
@@ -82,11 +94,7 @@ jobs:
           make -j"$JOBS" O=out \
             CC=clang LLVM=1 LLVM_IAS=1 LD=ld.lld AR=llvm-ar NM=llvm-nm \
             OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip \
-            CCACHE=1 2>&1 | tee ../build.log
-          make -j"$JOBS" O=out \
-            CC=clang LLVM=1 LLVM_IAS=1 LD=ld.lld AR=llvm-ar NM=llvm-nm \
-            OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip \
-            Image dtbs 2>&1 | tee -a ../build.log
+            CCACHE=1 Image dtbs 2>&1 | tee ../build.log
           cd ..
           echo "VERMAGIC=$(cat kernel/out/include/config/kernel.release)" >> "$GITHUB_OUTPUT"
           ls -lh kernel/out/arch/arm64/boot/Image kernel/out/arch/arm64/boot/Image.gz 2>/dev/null || true
