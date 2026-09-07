@@ -66,18 +66,21 @@ jobs:
           export SUBARCH=arm64
           cd kernel
           # merge gki + vendor fragments + safe optimizations (keeps vermagic, drops debug bloat)
-          ./scripts/kconfig/merge_config.sh -m -r \
+          # -O out => write .config directly into the O= build dir, keeping source tree clean
+          ./scripts/kconfig/merge_config.sh -m -r -O out \
             arch/arm64/configs/gki_defconfig \
             arch/arm64/configs/vendor/pineapple_GKI.config \
             arch/arm64/configs/vendor/peridot_GKI.config \
             ../optimize.config 2>&1 | tee defconfig.log
           make O=out ARCH=arm64 olddefconfig CC=clang 2>&1 | tee -a defconfig.log
           echo "Kernel release: $(cat out/include/config/kernel.release)"
-          make -j$(($(nproc)-2)) O=out \
+          JOBS=$(( $(nproc) - 2 )); [ "$JOBS" -lt 1 ] && JOBS=1
+          echo "JOBS=$JOBS"
+          make -j"$JOBS" O=out \
             CC=clang LLVM=1 LLVM_IAS=1 LD=ld.lld AR=llvm-ar NM=llvm-nm \
             OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip \
             CCACHE=1 2>&1 | tee ../build.log
-          make -j$(($(nproc)-2)) O=out \
+          make -j"$JOBS" O=out \
             CC=clang LLVM=1 LLVM_IAS=1 LD=ld.lld AR=llvm-ar NM=llvm-nm \
             OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip \
             Image dtbs 2>&1 | tee -a ../build.log
