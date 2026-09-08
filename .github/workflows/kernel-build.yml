@@ -102,7 +102,7 @@ jobs:
           make -j"$JOBS" O=out \
             CC=clang LLVM=1 LLVM_IAS=1 LD=ld.lld AR=llvm-ar NM=llvm-nm \
             OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip \
-            CCACHE=1 Image dtbs 2>&1 | tee ../build.log
+            CCACHE=1 Image dtbs modules 2>&1 | tee ../build.log
           cd ..
           echo "VERMAGIC=$(cat kernel/out/include/config/kernel.release)" >> "$GITHUB_OUTPUT"
           ls -lh kernel/out/arch/arm64/boot/Image kernel/out/arch/arm64/boot/Image.gz 2>/dev/null || true
@@ -116,6 +116,19 @@ jobs:
           echo ""
           echo "=== vermagic in Image ==="
           strings kernel/out/arch/arm64/boot/Image | grep -m1 "vermagic=" || true
+
+      - name: Collect module ko files
+        run: |
+          set -e
+          mkdir -p modules
+          cp -fp kernel/out/drivers/power/supply/qti_battery_charger.ko modules/ 2>/dev/null || echo "WARN: qti_battery_charger.ko not built"
+          cp -fp kernel/out/drivers/soc/qcom/pmic_glink.ko modules/ 2>/dev/null || echo "WARN: pmic_glink.ko not built"
+          ls -lh modules/ || true
+          for m in modules/*.ko; do
+            [ -e "$m" ] || continue
+            modinfo "$m" | grep -E "vermagic|filename|name" | head -5
+            echo "---"
+          done
 
       - name: Package AnyKernel zip
         run: |
@@ -152,4 +165,12 @@ jobs:
             defconfig.log
             kernel/out/include/config/kernel.release
           if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload module ko files
+        uses: actions/upload-artifact@v4
+        with:
+          name: qti-battery-ko
+          path: modules/
+          if-no-files-found: warn
           retention-days: 7
