@@ -2,11 +2,17 @@ name: Build Kernel (hybridswap + AnyKernel zip)
 
 on:
   workflow_dispatch:
+    inputs:
+      no_hybridswap:
+        description: 'Build kernel WITHOUT hybridswap (isolate bootloop cause)'
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths:
       - '.github/workflows/kernel-build.yml'
       - 'optimize.config'
+      - 'nohybridswap.config'
       - '.gitmodules'
       - 'anykernel/**'
 
@@ -73,11 +79,17 @@ jobs:
           # -O out => write .config directly into the O= build dir, keeping source tree clean
           # NOTE: -O requires the directory to already exist (merge_config.sh exits otherwise)
           mkdir -p out
-          ./scripts/kconfig/merge_config.sh -m -r -O out \
-            arch/arm64/configs/gki_defconfig \
-            arch/arm64/configs/vendor/pineapple_GKI.config \
-            arch/arm64/configs/vendor/peridot_GKI.config \
-            ../optimize.config 2>&1 | tee defconfig.log
+          MERGE_LIST=(
+            arch/arm64/configs/gki_defconfig
+            arch/arm64/configs/vendor/pineapple_GKI.config
+            arch/arm64/configs/vendor/peridot_GKI.config
+            ../optimize.config
+          )
+          if [ "${{ github.event.inputs.no_hybridswap || 'false' }}" = "true" ]; then
+            MERGE_LIST+=(../nohybridswap.config)
+            echo ">> NO-HYBRIDSWAP build (isolation test)"
+          fi
+          ./scripts/kconfig/merge_config.sh -m -r -O out "${MERGE_LIST[@]}" 2>&1 | tee defconfig.log
           # Tune config (same as proven kernelxc build): WERROR off, and disable
           # MODULE_SIG* so STOCK (unsigned) vendor_dlkm modules still load at boot.
           CFG=./scripts/config
