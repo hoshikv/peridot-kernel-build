@@ -1,18 +1,12 @@
-name: Build Kernel (hybridswap + AnyKernel zip)
+name: Build Kernel (GuidixX vanilla + AnyKernel zip)
 
 on:
   workflow_dispatch:
-    inputs:
-      no_hybridswap:
-        description: 'Build kernel WITHOUT hybridswap (isolate bootloop cause)'
-        type: boolean
-        default: false
   push:
     branches: [main]
     paths:
-      - '.github/workflows/kernel-build.yml'
+      - '.github/workflows/**'
       - 'optimize.config'
-      - 'nohybridswap.config'
       - '.gitmodules'
       - 'anykernel/**'
 
@@ -34,7 +28,8 @@ jobs:
       - name: Verify kernel submodule
         run: |
           test -f kernel/Makefile && echo "kernel OK ($(git -C kernel rev-parse --short HEAD))" || { echo "kernel submodule MISSING"; exit 1; }
-          git -C kernel describe --tags 2>/dev/null | head -1 || true
+          grep -E "^(VERSION|PATCHLEVEL|SUBLEVEL) = " kernel/Makefile | paste -sd. -
+          grep "^CONFIG_LOCALVERSION" kernel/arch/arm64/configs/gki_defconfig
 
       - name: Free disk & setup swap
         run: |
@@ -75,20 +70,18 @@ jobs:
           # to the vermagic (would break matching the stock KMI vermagic)
           export LOCALVERSION=
           cd kernel
-          # merge gki + vendor fragments + safe optimizations (keeps vermagic, drops debug bloat)
-          # -O out => write .config directly into the O= build dir, keeping source tree clean
-          # NOTE: -O requires the directory to already exist (merge_config.sh exits otherwise)
+          # bump GuidixX 6.1.174 -> 6.1.175 and force KMI-stock LOCALVERSION at build
+          # time (mirrors the proven kernelxc builder; repo history stays at b1e751ce)
+          sed -i 's/^SUBLEVEL = 174$/SUBLEVEL = 175/' Makefile
+          sed -i 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION="-android14-11-ga3b9c44908dd-ab13320413"/' arch/arm64/configs/gki_defconfig
           mkdir -p out
+          # merge gki + vendor fragments + safe optimizations (drops debug bloat, KMI unchanged)
           MERGE_LIST=(
             arch/arm64/configs/gki_defconfig
             arch/arm64/configs/vendor/pineapple_GKI.config
             arch/arm64/configs/vendor/peridot_GKI.config
             ../optimize.config
           )
-          if [ "${{ github.event.inputs.no_hybridswap || 'false' }}" = "true" ]; then
-            MERGE_LIST+=(../nohybridswap.config)
-            echo ">> NO-HYBRIDSWAP build (isolation test)"
-          fi
           ./scripts/kconfig/merge_config.sh -m -r -O out "${MERGE_LIST[@]}" 2>&1 | tee defconfig.log
           # Tune config (same as proven kernelxc build): WERROR off, and disable
           # MODULE_SIG* so STOCK (unsigned) vendor_dlkm modules still load at boot.
@@ -114,27 +107,15 @@ jobs:
           echo "VERMAGIC=$(cat kernel/out/include/config/kernel.release)" >> "$GITHUB_OUTPUT"
           ls -lh kernel/out/arch/arm64/boot/Image kernel/out/arch/arm64/boot/Image.gz 2>/dev/null || true
 
-      - name: Verify hybridswap compiled
+      - name: Verify release
         run: |
-          echo "=== hybridswap objects (if compiled) ==="
-          grep -E "mm/oplus_mm" build.log | grep -E "CC |LD " | head || true
-          NOHYB="${{ github.event.inputs.no_hybridswap || 'false' }}"
-          if [ "$NOHYB" = "true" ]; then
-            echo "NOHYBRIDSWAP BUILD: expecting hybridswap DISABLED"
-            if grep -q "CONFIG_HYBRIDSWAP_ZRAM=y" kernel/out/.config; then
-              echo "::error::HYBRIDSWAP_ZRAM still y in no_hybridswap build"
-              exit 1
-            fi
-            echo "OK: no-hybridswap build (CONFIG_HYBRIDSWAP_ZRAM not set)"
-          else
-            if ! grep -q "CONFIG_HYBRIDSWAP_ZRAM=y" kernel/out/.config; then
-              echo "::error::CONFIG_HYBRIDSWAP_ZRAM not enabled in .config"
-              grep -E "HYBRIDSWAP|ZRAM|ZSMALLOC" kernel/out/.config || true
-              exit 1
-            fi
-            echo "OK: CONFIG_HYBRIDSWAP_ZRAM=y"
-            grep -E "HYBRIDSWAP|ZRAM_DEF_COMP|ZSMALLOC" kernel/out/.config | head
-          fi
+          echo "=== .config highlights ==="
+          grep -E "CONFIG_LOCALVERSION|CONFIG_HYBRIDSWAP|CONFIG_DRM_MSM|CONFIG_QCOM_PANEL_EVENT_NOTIFIER" kernel/out/.config || true
+          echo "=== kernel.release ==="
+          cat kernel/out/include/config/kernel.release
+          echo ""
+          echo "=== vermagic in Image ==="
+          strings kernel/out/arch/arm64/boot/Image | grep -m1 "vermagic=" || true
 
       - name: Package AnyKernel zip
         run: |
