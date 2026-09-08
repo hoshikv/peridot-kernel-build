@@ -116,15 +116,25 @@ jobs:
 
       - name: Verify hybridswap compiled
         run: |
-          echo "=== hybridswap_zram objects ==="
+          echo "=== hybridswap objects (if compiled) ==="
           grep -E "mm/oplus_mm" build.log | grep -E "CC |LD " | head || true
-          if ! grep -q "CONFIG_HYBRIDSWAP_ZRAM=y" kernel/out/.config; then
-            echo "::error::CONFIG_HYBRIDSWAP_ZRAM not enabled in .config"
-            grep -E "HYBRIDSWAP|ZRAM|ZSMALLOC" kernel/out/.config || true
-            exit 1
+          NOHYB="${{ github.event.inputs.no_hybridswap || 'false' }}"
+          if [ "$NOHYB" = "true" ]; then
+            echo "NOHYBRIDSWAP BUILD: expecting hybridswap DISABLED"
+            if grep -q "CONFIG_HYBRIDSWAP_ZRAM=y" kernel/out/.config; then
+              echo "::error::HYBRIDSWAP_ZRAM still y in no_hybridswap build"
+              exit 1
+            fi
+            echo "OK: no-hybridswap build (CONFIG_HYBRIDSWAP_ZRAM not set)"
+          else
+            if ! grep -q "CONFIG_HYBRIDSWAP_ZRAM=y" kernel/out/.config; then
+              echo "::error::CONFIG_HYBRIDSWAP_ZRAM not enabled in .config"
+              grep -E "HYBRIDSWAP|ZRAM|ZSMALLOC" kernel/out/.config || true
+              exit 1
+            fi
+            echo "OK: CONFIG_HYBRIDSWAP_ZRAM=y"
+            grep -E "HYBRIDSWAP|ZRAM_DEF_COMP|ZSMALLOC" kernel/out/.config | head
           fi
-          echo "OK: CONFIG_HYBRIDSWAP_ZRAM=y"
-          grep -E "HYBRIDSWAP|ZRAM_DEF_COMP|ZSMALLOC" kernel/out/.config | head
 
       - name: Package AnyKernel zip
         run: |
