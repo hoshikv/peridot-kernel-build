@@ -21,8 +21,8 @@ jobs:
         run: |
           echo "=== kernel ==="
           test -f kernel/Makefile && echo "kernel OK ($(git -C kernel rev-parse --short HEAD))" || echo "kernel MISSING"
-          echo "=== display ==="
-          test -f display-drivers/vendor_opensource_display-drivers-peridot-u-oss/msm/Kbuild && echo "display OK" || echo "display MISSING"
+          echo "=== port-doze2 display driver (in kernel tree) ==="
+          test -f kernel/qcom/opensource/display-drivers/msm/Kbuild && echo "display OK" || echo "display MISSING"
           echo "=== internals.h ==="
           test -f "$PWD/kernel/kernel/irq/internals.h" && echo "internals.h OK" || echo "internals.h MISSING"
 
@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: out
-          key: peridot-full-v2-${{ hashFiles('display-drivers/**') }}-${{ github.sha }}
+          key: peridot-full-v2-${{ hashFiles('kernel/qcom/opensource/display-drivers/**') }}-${{ github.sha }}
           restore-keys: peridot-full-v2-
           save-always: true
 

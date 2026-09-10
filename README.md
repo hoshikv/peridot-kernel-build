@@ -4,10 +4,10 @@ Builds the Xiaomi `msm_drm.ko` display driver out-of-tree against the Lineage GK
 
 ## Structure
 
-- `kernel/` — submodule: crdroidandroid/android_kernel_xiaomi_sm8635 (branch 16.0, GKI 6.1)
-- `display-drivers/` — submodule: source display driver peridot-u-oss (your repo)
-- `build.sh` — build script (runs on the GitHub Actions runner)
-- `.github/workflows/build.yml` — workflow: checkout + download clang prebuilt + build + upload artifact
+- `kernel/` — submodule: hoshikv/kernel_xiaomi_sm8635 (branch `port-doze2`, GKI 6.1) — carries BOTH the kernel and the doze2-ported display driver at `qcom/opensource/display-drivers`
+- `build.sh` — build script (runs on the GitHub Actions runner): kernel Image + in-tree modules + `msm_drm.ko` (doze2 port from the kernel tree) + `vendor_dlkm.img`
+- `.github/workflows/build.yml` — workflow: checkout + download clang prebuilt + build + upload artifacts
+- `.github/workflows/kernel-build.yml` — workflow: builds the raw kernel Image + AnyKernel zip
 
 ## KMI match
 

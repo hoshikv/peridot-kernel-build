@@ -11,12 +11,16 @@ JOBS="${JOBS:-$(nproc --ignore=2)}"
 VENDOR_DLKM="$OUT/vendor_dlkm"
 MODDIR="$VENDOR_DLKM/lib/modules"
 
-DISPLAY_ROOT="$DD_DIR/vendor_opensource_display-drivers-peridot-u-oss"
+# display driver source = the doze2-ported tree living INSIDE the kernel repo
+# (kernel_xiaomi_sm8635, branch port-doze2 -> qcom/opensource/display-drivers).
+# No separate copy is kept in this build repo anymore.
+DISPLAY_ROOT="${DD_DIR:-$KERNEL_DIR/qcom/opensource/display-drivers}"
+if [[ "$DISPLAY_ROOT" == "$ROOT/display-drivers"* ]]; then DISPLAY_ROOT="$KERNEL_DIR/qcom/opensource/display-drivers"; fi
 MM="$MODULES_DIR/qcom/opensource"
 MMD="$MM/mm-drivers"
 VENDOR_CFG="$KERNEL_DIR/arch/$ARCH/configs/vendor"
 MERGED_DEFCONFIG="$OUT/merged_defconfig"
-MODULES_URL="${MODULES_URL:-https://github.com/crdroidandroid/android_kernel_xiaomi_sm8635-modules.git}"
+MODULES_URL="${MODULES_URL:-https://github.com/GuidixX/kernel_xiaomi_sm8635-modules.git}"
 
 if [[ -n "${CLANG_DIR:-}" ]]; then
   export CC="$CLANG_DIR/bin/clang"
