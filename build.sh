@@ -306,6 +306,6 @@ fi
 
 echo ""
 echo "========== BUILD COMPLETE =========="
-ls -la "$OUT/Image" "$OUT/Image.gz" "$OUT/msm_drm.ko" "$OUT/vendor_dlkm.img" 2>/dev/null
+ls -la "$OUT/Image" "$OUT/Image.gz" "$OUT/msm_drm.ko" "$OUT/vendor_dlkm.img" 2>/dev/null || true
 ls -la "$OUT/qti_battery_charger.ko" "$OUT/touch_modules/"*.ko 2>/dev/null || true
 echo "vermagic: $(strings "$OUT/msm_drm.ko" | grep -m1 'vermagic=')"
