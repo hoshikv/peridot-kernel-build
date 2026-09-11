@@ -5,10 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/**'
-      - 'optimize.config'
-      - '.gitmodules'
-      - 'anykernel/**'
+      - '.github/workflows/kernel-build.yml'
 
 concurrency:
   group: kernel-zip-build

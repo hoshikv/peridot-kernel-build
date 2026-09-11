@@ -1,0 +1,194 @@
+name: Build kernel + display + touch drivers
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - name: Checkout build repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Checkout kernel submodule
+        uses: actions/checkout@v4
+        with:
+          repository: hoshikv/kernel_xiaomi_sm8635
+          ref: port-doze2
+          path: kernel
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Checkout display driver
+        uses: actions/checkout@v4
+        with:
+          repository: hoshikv/vendor_opensource_display-drivers-peridot
+          ref: main
+          path: display-drivers
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Checkout touch driver
+        uses: actions/checkout@v4
+        with:
+          repository: hoshikv/vendor_opensource_touch-drivers-peridot
+          ref: main
+          path: touch-drivers
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Verify sources
+        run: |
+          echo "=== kernel ==="
+          test -f kernel/Makefile && echo "kernel OK ($(git -C kernel rev-parse --short HEAD))" || { echo "kernel MISSING"; exit 1; }
+          echo "=== display ==="
+          test -f display-drivers/msm/Kbuild && echo "display OK ($(git -C display-drivers rev-parse --short HEAD))" || { echo "display MISSING"; exit 1; }
+          echo "=== touch ==="
+          test -f touch-drivers/Kbuild && echo "touch OK ($(git -C touch-drivers rev-parse --short HEAD))" || { echo "touch MISSING"; exit 1; }
+          echo "=== internals.h ==="
+          test -f kernel/kernel/irq/internals.h && echo "internals.h OK" || echo "internals.h MISSING"
+
+      - name: Collect source SHAs
+        id: shas
+        run: |
+          echo "KERNEL_SHA=$(git -C kernel rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "DISPLAY_SHA=$(git -C display-drivers rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "TOUCH_SHA=$(git -C touch-drivers rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "kernel=$KERNEL_SHA display=$DISPLAY_SHA touch=$TOUCH_SHA"
+
+      - name: Restore build dir
+        id: cache-out
+        uses: actions/cache@v4
+        with:
+          path: out
+          key: peridot-kdt-v1-${{ env.KERNEL_SHA }}-${{ env.DISPLAY_SHA }}-${{ env.TOUCH_SHA }}-${{ github.run_id }}
+          restore-keys: |
+            peridot-kdt-v1-${{ env.KERNEL_SHA }}-${{ env.DISPLAY_SHA }}-${{ env.TOUCH_SHA }}-
+            peridot-kdt-v1-
+          save-always: true
+
+      - name: Install build deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            git bc bison flex libssl-dev libelf-dev python3 \
+            ca-certificates wget file unzip gzip
+          df -h / | tail -1
+
+      - name: Download Android clang prebuilt
+        id: clang
+        uses: actions/cache@v4
+        with:
+          path: toolchain/clang-r530567
+          key: clang-r530567
+
+      - name: Fetch clang if not cached
+        if: steps.clang.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p toolchain
+          curl -L --fail -o toolchain/clang.tar.gz \
+            "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r530567.tar.gz"
+          mkdir -p toolchain/clang-r530567
+          tar -xzf toolchain/clang.tar.gz -C toolchain/clang-r530567
+          rm toolchain/clang.tar.gz
+          toolchain/clang-r530567/bin/clang --version | head -1
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ runner.os }}-kernel
+          max-size: 4G
+
+      - name: Build kernel + display + touch + battery modules
+        env:
+          KERNEL_DIR: ${{ github.workspace }}/kernel
+          DD_DIR: ${{ github.workspace }}/display-drivers
+          TD_DIR: ${{ github.workspace }}/touch-drivers
+          CLANG_DIR: ${{ github.workspace }}/toolchain/clang-r530567
+          JOBS: 4
+          CCACHE_DIR: ${{ github.workspace }}/.ccache
+        run: |
+          df -h / | tail -1
+          chmod +x build.sh
+          ./build.sh
+          df -h / | tail -1
+
+      - name: Summary
+        run: |
+          echo "=== Build artifacts ==="
+          ls -lh out/Image out/Image.gz out/msm_drm.ko out/vendor_dlkm.img 2>/dev/null
+          echo "=== touch modules ==="
+          ls -lh out/touch_modules/ 2>/dev/null || true
+          echo "=== qti battery ==="
+          ls -lh out/qti_battery_charger.ko out/qti_battery_debug.ko 2>/dev/null || true
+          echo "=== vermagic ==="
+          strings out/msm_drm.ko 2>/dev/null | grep -m1 "vermagic=" || true
+
+      - name: Upload kernel Image
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-Image
+          path: |
+            out/Image
+            out/Image.gz
+          if-no-files-found: error
+
+      - name: Upload msm_drm.ko
+        uses: actions/upload-artifact@v4
+        with:
+          name: msm_drm
+          path: out/msm_drm.ko
+          if-no-files-found: error
+
+      - name: Upload touch modules
+        uses: actions/upload-artifact@v4
+        with:
+          name: touch-modules
+          path: out/touch_modules/
+          if-no-files-found: warn
+
+      - name: Upload qti battery modules
+        uses: actions/upload-artifact@v4
+        with:
+          name: qti-battery
+          path: |
+            out/qti_battery_charger.ko
+            out/qti_battery_debug.ko
+          if-no-files-found: warn
+
+      - name: Upload vendor_dlkm.img
+        uses: actions/upload-artifact@v4
+        with:
+          name: vendor_dlkm
+          path: out/vendor_dlkm.img
+          if-no-files-found: warn
+
+      - name: Upload mmrm.log (debug)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mmrm-log
+          path: out/mmrm.log
+          if-no-files-found: ignore
+
+      - name: Release
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          set -e
+          TAG="build-$(date -u +%Y%m%d-%H%M)"
+          FILES=(out/Image out/Image.gz out/msm_drm.ko out/qti_battery_charger.ko out/qti_battery_debug.ko)
+          FILES+=($(ls out/touch_modules/*.ko 2>/dev/null || true))
+          gh release create "$TAG" \
+            --repo "${{ github.repository }}" \
+            --title "kernel + display + touch drivers $TAG" \
+            --notes "auto build: Image + msm_drm.ko (doze patched) + xiaomi/goodix/fts touch + qti battery" \
+            "${FILES[@]}" \
+            --clobber 2>&1 || echo "release failed (non-fatal)"

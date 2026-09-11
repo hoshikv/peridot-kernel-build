@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KERNEL_DIR="${KERNEL_DIR:-$ROOT/kernel}"
 DD_DIR="${DD_DIR:-$ROOT/display-drivers}"
+TD_DIR="${TD_DIR:-$ROOT/touch-drivers}"
 MODULES_DIR="${MODULES_DIR:-$ROOT/modules}"
 OUT="$ROOT/out"
 ARCH=arm64
@@ -11,16 +12,19 @@ JOBS="${JOBS:-$(nproc --ignore=2)}"
 VENDOR_DLKM="$OUT/vendor_dlkm"
 MODDIR="$VENDOR_DLKM/lib/modules"
 
-# display driver source = the doze2-ported tree living INSIDE the kernel repo
-# (kernel_xiaomi_sm8635, branch port-doze2 -> qcom/opensource/display-drivers).
-# No separate copy is kept in this build repo anymore.
-DISPLAY_ROOT="${DD_DIR:-$KERNEL_DIR/qcom/opensource/display-drivers}"
-if [[ "$DISPLAY_ROOT" == "$ROOT/display-drivers"* ]]; then DISPLAY_ROOT="$KERNEL_DIR/qcom/opensource/display-drivers"; fi
+# display driver = standalone repo (hoshikv/vendor_opensource_display-drivers-peridot),
+# cloned by the workflow into $DD_DIR (msm/ at repo root).
+DISPLAY_ROOT="$DD_DIR"
+# touch driver = standalone repo (hoshikv/vendor_opensource_touch-drivers-peridot),
+# cloned by the workflow into $TD_DIR (xiaomi/ goodix_berlin_driver/ focaltech_3683g/ at repo root).
+TOUCH_ROOT="$TD_DIR"
 MM="$MODULES_DIR/qcom/opensource"
 MMD="$MM/mm-drivers"
 VENDOR_CFG="$KERNEL_DIR/arch/$ARCH/configs/vendor"
 MERGED_DEFCONFIG="$OUT/merged_defconfig"
 MODULES_URL="${MODULES_URL:-https://github.com/GuidixX/kernel_xiaomi_sm8635-modules.git}"
+DISPLAY_URL="${DISPLAY_URL:-https://github.com/hoshikv/vendor_opensource_display-drivers-peridot.git}"
+TOUCH_URL="${TOUCH_URL:-https://github.com/hoshikv/vendor_opensource_touch-drivers-peridot.git}"
 
 if [[ -n "${CLANG_DIR:-}" ]]; then
   export CC="$CLANG_DIR/bin/clang"
@@ -43,7 +47,8 @@ mkdir -p "$OUT" "$MODDIR"
 mkdir -p "$DISPLAY_ROOT/msm"
 
 [[ -f "$KERNEL_DIR/Makefile" ]] || { echo "kernel tree missing"; exit 1; }
-[[ -f "$DISPLAY_ROOT/msm/Kbuild" ]] || { echo "display source missing"; exit 1; }
+[[ -f "$DISPLAY_ROOT/msm/Kbuild" ]] || { echo "display source missing at $DISPLAY_ROOT/msm"; exit 1; }
+[[ -f "$TOUCH_ROOT/Kbuild" ]] || { echo "touch source missing at $TOUCH_ROOT"; exit 1; }
 
 # fix: key_pass undeclared
 python3 - "$KERNEL_DIR/certs/extract-cert.c" <<'EOF'
@@ -189,6 +194,7 @@ test -f "$REPO_KERNEL_IRQ/internals.h" && echo "    internals.h OK" || echo "   
 echo "[*] build msm_drm (doze patched)"
 make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
     M="$DISPLAY_ROOT" DISPLAY_ROOT="$DISPLAY_ROOT" OUT="$OUT" \
+    KERNEL_SRC="$KERNEL_DIR" KERNEL_ROOT="$KERNEL_DIR" \
     KBUILD_EXTRA_SYMBOLS="$SYNC/Module.symvers $HW/Module.symvers $EXT/Module.symvers $MMRM_SYM/Module.symvers $SECURE/Module.symvers" \
     CONFIG_DRM_MSM=y CONFIG_DRM_MSM_SDE=y CONFIG_SYNC_FILE=y CONFIG_DRM_MSM_DSI=y \
     CONFIG_DRM_MSM_DP=y CONFIG_DRM_MSM_DP_MST=y CONFIG_DSI_PARSER=y CONFIG_QCOM_MDSS_PLL=y \
@@ -199,6 +205,43 @@ make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
 
 find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec cp {} "$OUT/" \; 2>/dev/null || true
 ls -la "$OUT/msm_drm.ko" 2>/dev/null || { echo "ERROR: msm_drm.ko not produced"; exit 1; }
+
+# ---------- touch drivers out-of-tree (grewal xiaomi + goodix + focaltech) ----------
+echo "[*] build touch drivers ($TOUCH_ROOT)"
+mkdir -p "$OUT/touch_modules"
+make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
+    M="$TOUCH_ROOT" TOUCH_ROOT="$TOUCH_ROOT" \
+    KERNEL_SRC="$KERNEL_DIR" KERNEL_ROOT="$KERNEL_DIR" \
+    KBUILD_EXTRA_SYMBOLS="$SYNC/Module.symvers $HW/Module.symvers $EXT/Module.symvers $MMRM_SYM/Module.symvers $SECURE/Module.symvers" \
+    CONFIG_ARCH_PINEAPPLE=y CONFIG_MSM_TOUCH=m \
+    CONFIG_TOUCHSCREEN_GOODIX_BRL=y \
+    CONFIG_TOUCHSCREEN_FOCALTECH_3683G=y \
+    CONFIG_TOUCHSCREEN_XIAOMI_TOUCHFEATURE=y \
+    CONFIG_TOUCHSCREEN_NT36XXX_I2C=n CONFIG_TOUCHSCREEN_ATMEL_MXT=n \
+    CONFIG_TOUCHSCREEN_DUMMY=n CONFIG_TOUCHSCREEN_SYNAPTICS_TCM=n \
+    CONFIG_QTS_ENABLE=n CONFIG_TOUCH_FOCALTECH=n \
+    CONFIG_TOUCHSCREEN_PARADE=n CONFIG_TOUCHSCREEN_RAIDYUM=n \
+    MODNAME=touch_dlkm \
+    modules 2>&1 | tee "$OUT/touch.log" || {
+      echo "ERROR: touch build failed"
+      grep -nE "error:|fatal|undefined|no member|undeclared|cannot|No rule|No such" "$OUT/touch.log" | head -40 || true
+      exit 1
+    }
+find "$TOUCH_ROOT" -name '*.ko' -print -exec cp {} "$OUT/touch_modules/" \;
+echo "    touch modules: $(ls "$OUT/touch_modules" 2>/dev/null | tr '\n' ' ')"
+
+# ---------- qti battery ko (in-tree, from kernel source) ----------
+echo "[*] collect qti battery modules"
+for b in \
+  "$OUT/drivers/power/supply/qti_battery_charger.ko" \
+  "$OUT/drivers/soc/qcom/qti_battery_debug.ko"; do
+  if [[ -f "$b" ]]; then
+    cp -f "$b" "$OUT/"
+    echo "    OK: $(basename "$b")"
+  else
+    echo "    WARN: $(basename "$b") not built"
+  fi
+done
 
 # ---------- collect all .ko into vendor_dlkm ----------
 echo "[*] collect all .ko into vendor_dlkm"
@@ -264,4 +307,5 @@ fi
 echo ""
 echo "========== BUILD COMPLETE =========="
 ls -la "$OUT/Image" "$OUT/Image.gz" "$OUT/msm_drm.ko" "$OUT/vendor_dlkm.img" 2>/dev/null
+ls -la "$OUT/qti_battery_charger.ko" "$OUT/touch_modules/"*.ko 2>/dev/null || true
 echo "vermagic: $(strings "$OUT/msm_drm.ko" | grep -m1 'vermagic=')"
