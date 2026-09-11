@@ -76,6 +76,29 @@ if [[ ! -d "$MODULES_DIR/.git" ]]; then
 fi
 ln -sfn "$MODULES_DIR" "$ROOT/sm8635-modules"
 
+# ---- match kernelxc build (the kernel that currently BOOTS on the device) ----
+# so that msm_drm.ko / touch verbsmagic + modversions (CRC) equal the flashed
+# kernel (identical to peridot-msm-drm-build).
+# 1) bump SUBLEVEL 174 -> 175 (GuidixX 16.2 Makefile) to 6.1.175
+if grep -qE '^SUBLEVEL = 174$' "$KERNEL_DIR/Makefile"; then
+  sed -i 's/^SUBLEVEL = 174$/SUBLEVEL = 175/' "$KERNEL_DIR/Makefile"
+  echo "[*] Makefile SUBLEVEL bumped to 175 (match kernelxc boot)"
+else
+  echo "[*] Makefile SUBLEVEL already not 174; leave as-is: $(grep -E '^SUBLEVEL = ' "$KERNEL_DIR/Makefile")"
+fi
+# 2) KMI-compatible LOCALVERSION (same as Theettam/kernelxc) -> stock vendor_dlkm loads
+sed -i 's/^CONFIG_LOCALVERSION=.*/CONFIG_LOCALVERSION="-android14-11-ga3b9c44908dd-ab13320413"/' \
+  "$KERNEL_DIR/arch/$ARCH/configs/gki_defconfig"
+grep '^CONFIG_LOCALVERSION=' "$KERNEL_DIR/arch/$ARCH/configs/gki_defconfig" | head -1
+# 3) keep git tree clean (drops the dirty '+' from setlocalversion)
+( cd "$KERNEL_DIR" \
+  && git config user.email "actions@users.noreply.github.com" \
+  && git config user.name "github-actions" \
+  && git add Makefile arch/$ARCH/configs/gki_defconfig \
+  && git commit -m "bump to 6.1.175 + KMI LOCALVERSION" 2>&1 | tail -1 || true )
+# 4) ensure LOCALVERSION env is set (even empty) so no trailing '+' (same as kernelxc)
+export LOCALVERSION=
+
 # ---------- defconfig ----------
 if [[ ! -f "$MERGED_DEFCONFIG" ]]; then
   echo "[*] merge config"
