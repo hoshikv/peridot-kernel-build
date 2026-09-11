@@ -101,7 +101,22 @@ else
   fi
 fi
 "$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d WERROR
+# hoshikv-shrink (match peridot-msm-drm-build): drop DWARF debug info from the
+# whole build. Debug info is the reason msm_drm.ko was ~45MB instead of the stock
+# ~5MB. Does NOT touch modversions (CRC) / vermagic, so modules still load.
+"$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d DEBUG_INFO
 "$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d DEBUG_INFO_BTF
+"$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d DEBUG_INFO_DWARF5
+"$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d DEBUG_INFO_DWARF4
+"$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT
+# Use STOCK (unsigned) vendor_dlkm modules -> disable module-signature enforcement
+# so the .ko can be loaded on the flashed kernel.
+"$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d MODULE_SIG
+"$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d MODULE_SIG_FORCE
+"$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d MODULE_SIG_PROTECT
+"$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d MODULE_SIG_ALL
+"$KERNEL_DIR/scripts/config" --file "$OUT/.config" -d MODULE_SIG_SHA256
+"$KERNEL_DIR/scripts/config" --file "$OUT/.config" --set-str MODULE_SIG_HASH "sha1"
 
 echo "[*] olddefconfig + modules_prepare"
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH olddefconfig
@@ -203,6 +218,7 @@ make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
     CONFIG_QCOM_SPEC_SYNC=y CONFIG_QCOM_WCD939X_I2C=y MI_DISPLAY_MODIFY=y \
     modules 2>&1 | tee "$OUT/build.log"
 
+find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec llvm-strip --strip-debug {} \; 2>/dev/null || true
 find "$DISPLAY_ROOT" -name 'msm_drm.ko' -exec cp {} "$OUT/" \; 2>/dev/null || true
 ls -la "$OUT/msm_drm.ko" 2>/dev/null || { echo "ERROR: msm_drm.ko not produced"; exit 1; }
 
@@ -228,6 +244,7 @@ make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
       exit 1
     }
 find "$TOUCH_ROOT" -name '*.ko' -print -exec cp {} "$OUT/touch_modules/" \;
+for ko in "$OUT/touch_modules"/*.ko; do llvm-strip --strip-debug "$ko" 2>/dev/null || true; done
 echo "    touch modules: $(ls "$OUT/touch_modules" 2>/dev/null | tr '\n' ' ')"
 
 # ---------- qti battery ko (in-tree, from kernel source) ----------
