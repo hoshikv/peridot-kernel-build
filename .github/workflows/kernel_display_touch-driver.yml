@@ -122,7 +122,7 @@ jobs:
       - name: Summary
         run: |
           echo "=== Build artifacts ==="
-          ls -lh out/Image out/Image.gz out/msm_drm.ko out/vendor_dlkm.img 2>/dev/null
+          ls -lh out/Image out/Image.gz out/msm_drm.ko 2>/dev/null || true
           echo "=== touch modules ==="
           ls -lh out/touch_modules/ 2>/dev/null || true
           echo "=== qti battery ==="
@@ -160,13 +160,6 @@ jobs:
           path: |
             out/qti_battery_charger.ko
             out/qti_battery_debug.ko
-          if-no-files-found: warn
-
-      - name: Upload vendor_dlkm.img
-        uses: actions/upload-artifact@v4
-        with:
-          name: vendor_dlkm
-          path: out/vendor_dlkm.img
           if-no-files-found: warn
 
       - name: Upload mmrm.log (debug)

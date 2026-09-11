@@ -278,31 +278,9 @@ for ko in "$MODDIR"/*.ko; do
   echo "$bn:" >> "$MODDIR/modules.dep"
 done
 
-# ---------- package vendor_dlkm.img ----------
-echo "[*] package vendor_dlkm.img"
-KVERDIR="$VENDOR_DLKM/lib/modules/$KVER"
-if [[ -d "$KVERDIR" ]]; then
-  # move modules.load etc into versioned dir
-  mv "$MODDIR/modules.load" "$KVERDIR/modules.load" 2>/dev/null || true
-  mv "$MODDIR/modules.dep" "$KVERDIR/modules.dep" 2>/dev/null || true
-  # move .ko from flat MODDIR into versioned dir
-  find "$MODDIR" -maxdepth 1 -name '*.ko' -exec mv {} "$KVERDIR/" \; 2>/dev/null || true
-  # symlink
-  ln -sfn "$KVER" "$VENDOR_DLKM/lib/modules/latest" 2>/dev/null || true
-fi
-
-MKFS="$ROOT/../../tmp/opencode/erofs-install/bin/mkfs.erofs"
-if [[ ! -x "$MKFS" ]]; then
-  MKFS=$(command -v mkfs.erofs 2>/dev/null || echo "")
-fi
-if [[ -n "$MKFS" ]]; then
-  "$MKFS" -z lz4 -b 4096 --all-root -T 0 \
-    "$OUT/vendor_dlkm.img" "$VENDOR_DLKM" 2>&1 | tail -5
-  ls -la "$OUT/vendor_dlkm.img"
-else
-  echo "    WARNING: mkfs.erofs not found, skipping vendor_dlkm.img packaging"
-  echo "    vendor_dlkm contents at: $VENDOR_DLKM"
-fi
+# ---------- package vendor_dlkm.img (SKIPPED: not needed, keep .ko + dir) ----------
+echo "[*] vendor_dlkm.img packaging SKIPPED (only kernel Image + .ko modules deployed)"
+echo "    vendor_dlkm contents at: $VENDOR_DLKM"
 
 echo ""
 echo "========== BUILD COMPLETE =========="
