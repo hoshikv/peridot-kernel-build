@@ -32,30 +32,39 @@ jobs:
           git config --global user.name "hoshikv"
           git config --global user.email "hoshikv@users.noreply.github.com"
 
-      - name: Clone source repo (full history, no checkout)
+      - name: Install git-filter-repo
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq git-filter-repo 2>/dev/null || pip3 install --break-system-packages git-filter-repo 2>/dev/null || true
+          git filter-repo --version || git-filter-repo --version
+
+      - name: Clone source repo (full history)
         run: |
           rm -rf src
-          gh repo clone "$SRC_REPO" src -- --single-branch --branch "$SRC_BRANCH" --no-checkout
+          gh repo clone "$SRC_REPO" src -- --single-branch --branch "$SRC_BRANCH"
           cd src
           echo "=== tip of $SRC_BRANCH ==="
           git log --oneline -5
           echo "=== audio-kernel subtree present ==="
           git ls-tree --name-only "$SRC_BRANCH" "$SRC_PATH" | head
 
-      - name: Split audio-kernel subtree with full history
+      - name: Extract audio-kernel subtree with full history
         run: |
           cd src
-          git subtree split -P "$SRC_PATH" -b audio-kernel
+          git filter-repo \
+            --path "$SRC_PATH" \
+            --subdirectory-filter "$SRC_PATH" \
+            --force
           echo "=== audio-kernel history tip ==="
-          git log --oneline -8 audio-kernel
+          git log --oneline -8
           echo "=== sanity: aw882xx + fs19xx fix commits present ==="
-          git log --oneline audio-kernel | grep -Ei 'aw882xx|fs19xx|receiver' | head
+          git log --oneline | grep -Ei 'aw882xx|fs19xx|receiver' | head
 
       - name: Push to destination repo (main, force)
         run: |
           cd src
           git remote add dst "https://github.com/${DST_REPO}.git"
-          git push --force dst audio-kernel:"$DST_BRANCH"
+          git push --force dst HEAD:"$DST_BRANCH"
 
       - name: Verify pushed history
         env:
