@@ -1,0 +1,68 @@
+name: Sync audio-kernel subtree -> vendor_opensource-audio-drivers-sm8635
+
+on:
+  workflow_dispatch: {}
+
+concurrency:
+  group: audio-drivers-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      SRC_REPO: hoshikv/kernel_xiaomi_sm8635_modules
+      SRC_BRANCH: 16.2
+      SRC_PATH: qcom/opensource/audio-kernel
+      DST_REPO: hoshikv/vendor_opensource-audio-drivers-sm8635
+      DST_BRANCH: main
+    steps:
+      - name: Checkout self (for context only)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Configure git auth
+        run: |
+          command -v gh || sudo apt-get update -qq && sudo apt-get install -y -qq gh
+          gh auth setup-git
+          git config --global user.name "hoshikv"
+          git config --global user.email "hoshikv@users.noreply.github.com"
+
+      - name: Clone source repo (full history, no checkout)
+        run: |
+          rm -rf src
+          gh repo clone "$SRC_REPO" src -- --single-branch --branch "$SRC_BRANCH" --no-checkout
+          cd src
+          echo "=== tip of $SRC_BRANCH ==="
+          git log --oneline -5
+          echo "=== audio-kernel subtree present ==="
+          git ls-tree --name-only "$SRC_BRANCH" "$SRC_PATH" | head
+
+      - name: Split audio-kernel subtree with full history
+        run: |
+          cd src
+          git subtree split -P "$SRC_PATH" -b audio-kernel
+          echo "=== audio-kernel history tip ==="
+          git log --oneline -8 audio-kernel
+          echo "=== sanity: aw882xx + fs19xx fix commits present ==="
+          git log --oneline audio-kernel | grep -Ei 'aw882xx|fs19xx|receiver' | head
+
+      - name: Push to destination repo (main, force)
+        run: |
+          cd src
+          git remote add dst "https://github.com/${DST_REPO}.git"
+          git push --force dst audio-kernel:"$DST_BRANCH"
+
+      - name: Verify pushed history
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          echo "=== destination $DST_REPO/$DST_BRANCH tip ==="
+          gh api "repos/$DST_REPO/commits?sha=$DST_BRANCH&per_page=8" \
+            --jq '.[] | (.sha[0:8] + "  " + (.commit.message | split("\n")[0]))'
+          echo "=== tree head ==="
+          gh api "repos/$DST_REPO/contents/?ref=$DST_BRANCH" --jq '.[] | .name' | head -20
