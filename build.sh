@@ -345,17 +345,21 @@ FB_DIR_SRC="$FB_STAGE/oplus_cpu"   # relative dirs below are under this
 fb_inject() { # $1=rel dir  $2=defines (prefer Kbuild; others have plain Makefile)
   local f="$FB_DIR_SRC/$1/Kbuild"
   [[ -f "$f" ]] || f="$FB_DIR_SRC/$1/Makefile"
+  grep -q 'ccflags-y += -I$(src)' "$f" || echo 'ccflags-y += -I$(src)' >> "$f"
   for d in $2; do
     grep -qF -- "$d" "$f" || echo "ccflags-y += -D$d=1" >> "$f"
   done
 }
-fb_inject sched/sched_tune   "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_SCHED_TUNE"
-fb_inject sched/eas_opt      "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_EAS_OPT CONFIG_OPLUS_FEATURE_VT_CAP CONFIG_OPLUS_CPUFREQ_IOWAIT_PROTECT"
-fb_inject sched/sched_assist "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_SCHED_ASSIST"
-fb_inject sched/frame_boost  "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_FRAME_BOOST"
-fb_inject sched/qos_sched    "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_QOS_SCHED"
-fb_inject uad                "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_CPU_FREQ_GOV_UAG CONFIG_UA_KERNEL_CPU_IOCTL CONFIG_OPLUS_FEATURE_FRAME_BOOST"
-fb_inject hans               "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_HANS"
+# sched feature set — kept IDENTICAL across all frameboost modules so the shared
+# OPLUS headers (sa_common.h ...) build with the same struct/layout guards.
+FB_SCHED_FEAT="CONFIG_OPLUS_FEATURE_SCHED_DDL CONFIG_OPLUS_SCHED_GROUP_OPT CONFIG_OPLUS_CPU_AUDIO_PERF CONFIG_OPLUS_FEATURE_LOADBALANCE CONFIG_OPLUS_FEATURE_PIPELINE CONFIG_BLOCKIO_UX_OPT"
+fb_inject sched/sched_tune   "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_SCHED_TUNE $FB_SCHED_FEAT"
+fb_inject sched/eas_opt      "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_EAS_OPT CONFIG_OPLUS_FEATURE_VT_CAP CONFIG_OPLUS_CPUFREQ_IOWAIT_PROTECT $FB_SCHED_FEAT"
+fb_inject sched/sched_assist "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_SCHED_ASSIST $FB_SCHED_FEAT"
+fb_inject sched/frame_boost  "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_FRAME_BOOST $FB_SCHED_FEAT"
+fb_inject sched/qos_sched    "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_QOS_SCHED $FB_SCHED_FEAT"
+fb_inject uad                "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_CPU_FREQ_GOV_UAG CONFIG_UA_KERNEL_CPU_IOCTL CONFIG_OPLUS_FEATURE_FRAME_BOOST $FB_SCHED_FEAT"
+fb_inject hans               "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_HANS $FB_SCHED_FEAT"
 
 fb_license() { # $1=rel dir
   local d="$FB_DIR_SRC/$1" f of var
@@ -420,7 +424,10 @@ fb_mbuild sched/eas_opt "" \
 fb_cache sched/eas_opt
 echo "[*] build frameboost sched_assist"
 fb_mbuild sched/sched_assist "$OUT/msym/sched_tune.symvers" \
-  CONFIG_OPLUS_FEATURE_SCHED_ASSIST=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
+  CONFIG_OPLUS_FEATURE_SCHED_ASSIST=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y \
+  CONFIG_OPLUS_FEATURE_SCHED_DDL=y CONFIG_OPLUS_SCHED_GROUP_OPT=y \
+  CONFIG_OPLUS_CPU_AUDIO_PERF=y CONFIG_OPLUS_FEATURE_LOADBALANCE=y \
+  CONFIG_OPLUS_FEATURE_PIPELINE=y CONFIG_BLOCKIO_UX_OPT=y
 fb_cache sched/sched_assist
 echo "[*] build frameboost frame_boost"
 fb_mbuild sched/frame_boost "$OUT/msym/sched_assist.symvers" \
