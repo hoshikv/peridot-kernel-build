@@ -347,7 +347,7 @@ fb_inject() { # $1=rel dir  $2=defines (prefer Kbuild; others have plain Makefil
   [[ -f "$f" ]] || f="$FB_DIR_SRC/$1/Makefile"
   grep -q 'ccflags-y += -I$(src)' "$f" || echo 'ccflags-y += -I$(src)' >> "$f"
   for d in $2; do
-    grep -qF -- "$d" "$f" || echo "ccflags-y += -D$d=1" >> "$f"
+    grep -qF -- "ccflags-y += -D$d=1" "$f" || echo "ccflags-y += -D$d=1" >> "$f"
   done
 }
 # sched feature set — kept IDENTICAL across all frameboost modules so the shared
