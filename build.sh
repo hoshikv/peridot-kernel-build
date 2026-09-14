@@ -162,6 +162,13 @@ if [[ ! -f "$OUT/Module.symvers" ]]; then
   [[ $rc -ne 0 ]] && { echo "ERROR: modules build failed (rc=$rc)"; tail -50 "$OUT/modules.log"; exit 1; }
 fi
 
+# filtered walt exports for OOT consumers: walt's fixup.o re-exports core GKI
+# symbols that already live in vmlinux.symvers -> modpost would flag those as
+# 'exported twice' if passed verbatim. Dedup against vmlinux.symvers.
+awk 'NR==FNR{k[$2]=1;next}!k[$2]' \
+  "$OUT/vmlinux.symvers" "$OUT/kernel/sched/walt/Module.symvers" \
+  > "$OUT/walt-extra.symvers" 2>/dev/null || true
+
 echo "[*] build kernel Image"
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH -j"$JOBS" Image dtbs
 cp -f "$OUT/arch/arm64/boot/Image" "$OUT/Image" 2>/dev/null || true
@@ -341,7 +348,7 @@ fb_mbuild() { # $1=rel dir  $2=extra Module.symvers  rest=CONFIG args
   local EXTRA="$1"; shift
   make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
     KERNEL_SRC="$KERNEL_DIR" KERNEL_ROOT="$KERNEL_DIR" \
-    KBUILD_EXTRA_SYMBOLS="$OUT/Module.symvers $OUT/kernel/sched/walt/Module.symvers $EXTRA" \
+    KBUILD_EXTRA_SYMBOLS="$OUT/walt-extra.symvers $EXTRA" \
     CONFIG_ARCH_PINEAPPLE=y \
     M="$FB_DIR/kernel/oplus_cpu/$M" "$@" modules 2>&1 | tee -a "$OUT/frameboost.log" || {
       echo "ERROR: frameboost module $M failed"
