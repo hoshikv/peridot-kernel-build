@@ -348,8 +348,17 @@ fb_license() { # $1=rel dir  $2=CONFIG var for the obj line
   if ! grep -raq 'MODULE_LICENSE' "$d" --include='*.c'; then
     echo -e '#include <linux/module.h>\nMODULE_LICENSE("GPL");' > "$d/license.c"
     local f="$d/Kbuild"; [[ -f "$f" ]] || f="$d/Makefile"
-    grep -q 'license.o' "$f" || echo "obj-\$($v) += license.o" >> "$f"
-    echo "  + license.c (missing MODULE_LICENSE) in $1"
+    # merge into the existing composite module list (<mod>-y += ...), NOT via a
+    # second obj-$(CONFIG) line: that would create a stray separate module.
+    local of var
+    of=$(grep -oE '^obj-\$\([A-Za-z0-9_]+\)[[:space:]]+\+=[[:space:]]+[A-Za-z0-9_]+\.o' "$f" | head -1 | awk '{print $3}')
+    var="${of%.o}-y"
+    if [[ -n "$of" && -n "$var" ]]; then
+      grep -q 'license.o' "$f" || echo "$var += license.o" >> "$f"
+      echo "  + license.c (missing MODULE_LICENSE) in $1 [$var]"
+    else
+      echo "  ! license.c created but no obj line found to extend in $1"
+    fi
   fi
 }
 fb_license sched/sched_tune CONFIG_OPLUS_SCHED_TUNE
