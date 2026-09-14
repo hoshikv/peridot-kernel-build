@@ -61,6 +61,15 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
 
+      - name: Checkout hybridswap driver
+        uses: actions/checkout@v4
+        with:
+          repository: hoshikv/vendor_oplus-hybridswap-driver
+          ref: main
+          path: hybridswap-driver
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+
       - name: Verify sources
         run: |
           echo "=== kernel ==="
@@ -72,7 +81,9 @@ jobs:
           echo "=== audio ==="
           test -f audio-drivers/Kbuild && echo "audio OK ($(git -C audio-drivers rev-parse --short HEAD))" || { echo "audio MISSING"; exit 1; }
           echo "=== frameboost ==="
-          test -f frameboost-drivers/kernel/oplus_cpu/sched/sched_assist/Makefile && echo "frameboost OK ($(git -C frameboost-drivers rev-parse --short HEAD))" || { echo "frameboost MISSING"; exit 1; }
+          test -f frameboost-drivers/sched_assist/Makefile && echo "frameboost OK ($(git -C frameboost-drivers rev-parse --short HEAD))" || { echo "frameboost MISSING"; exit 1; }
+          echo "=== hybridswap ==="
+          test -f hybridswap-driver/hybridswap_zram/Makefile && echo "hybridswap OK ($(git -C hybridswap-driver rev-parse --short HEAD))" || { echo "hybridswap MISSING"; exit 1; }
           echo "=== internals.h ==="
           test -f kernel/kernel/irq/internals.h && echo "internals.h OK" || echo "internals.h MISSING"
 
@@ -84,16 +95,17 @@ jobs:
           echo "TOUCH_SHA=$(git -C touch-drivers rev-parse HEAD)" >> "$GITHUB_ENV"
           echo "AUDIO_SHA=$(git -C audio-drivers rev-parse HEAD)" >> "$GITHUB_ENV"
           echo "FB_SHA=$(git -C frameboost-drivers rev-parse HEAD)" >> "$GITHUB_ENV"
-          echo "kernel=$KERNEL_SHA display=$DISPLAY_SHA touch=$TOUCH_SHA audio=$AUDIO_SHA"
+          echo "HS_SHA=$(git -C hybridswap-driver rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "kernel=$KERNEL_SHA display=$DISPLAY_SHA touch=$TOUCH_SHA audio=$AUDIO_SHA fb=$FB_SHA hs=$HS_SHA"
 
       - name: Restore build dir
         id: cache-out
         uses: actions/cache@v4
         with:
           path: out
-          key: peridot-kdta-v1-${{ env.KERNEL_SHA }}-${{ env.DISPLAY_SHA }}-${{ env.TOUCH_SHA }}-${{ env.AUDIO_SHA }}-${{ env.FB_SHA }}-${{ github.run_id }}
+          key: peridot-kdta-v1-${{ env.KERNEL_SHA }}-${{ env.DISPLAY_SHA }}-${{ env.TOUCH_SHA }}-${{ env.AUDIO_SHA }}-${{ env.FB_SHA }}-${{ env.HS_SHA }}-${{ github.run_id }}
           restore-keys: |
-            peridot-kdta-v1-${{ env.KERNEL_SHA }}-${{ env.DISPLAY_SHA }}-${{ env.TOUCH_SHA }}-${{ env.AUDIO_SHA }}-${{ env.FB_SHA }}-
+            peridot-kdta-v1-${{ env.KERNEL_SHA }}-${{ env.DISPLAY_SHA }}-${{ env.TOUCH_SHA }}-${{ env.AUDIO_SHA }}-${{ env.FB_SHA }}-${{ env.HS_SHA }}-
             peridot-kdta-v1-
           save-always: true
 
@@ -129,13 +141,14 @@ jobs:
           key: ${{ runner.os }}-kernel
           max-size: 4G
 
-      - name: Build kernel + display + touch + audio + battery modules
+      - name: Build kernel + display + touch + audio + battery + OPLUS DLKM modules
         env:
           KERNEL_DIR: ${{ github.workspace }}/kernel
           DD_DIR: ${{ github.workspace }}/display-drivers
           TD_DIR: ${{ github.workspace }}/touch-drivers
           AD_DIR: ${{ github.workspace }}/audio-drivers
           FB_DIR: ${{ github.workspace }}/frameboost-drivers
+          HS_DIR: ${{ github.workspace }}/hybridswap-driver
           CLANG_DIR: ${{ github.workspace }}/toolchain/clang-r530567
           JOBS: 4
           CCACHE_DIR: ${{ github.workspace }}/.ccache
@@ -157,6 +170,8 @@ jobs:
           ls -lh out/qti_battery_charger.ko out/qti_battery_debug.ko 2>/dev/null || true
           echo "=== frameboost modules ==="
           ls -lh out/frameboost_modules/ 2>/dev/null || true
+          echo "=== hybridswap modules ==="
+          ls -lh out/hybridswap_modules/ 2>/dev/null || true
           echo "=== vermagic ==="
           strings out/msm_drm.ko 2>/dev/null | grep -m1 "vermagic=" || true
 
@@ -207,6 +222,14 @@ jobs:
             out/frameboost_modules/
           if-no-files-found: warn
 
+      - name: Upload hybridswap modules
+        uses: actions/upload-artifact@v4
+        with:
+          name: hybridswap-modules
+          path: |
+            out/hybridswap_modules/
+          if-no-files-found: warn
+
       - name: Upload mmrm.log (debug)
         if: always()
         uses: actions/upload-artifact@v4
@@ -234,9 +257,10 @@ jobs:
           FILES+=($(ls out/touch_modules/*.ko 2>/dev/null || true))
           FILES+=($(ls out/audio_modules/*.ko 2>/dev/null || true))
           FILES+=($(ls out/frameboost_modules/*.ko 2>/dev/null || true))
+          FILES+=($(ls out/hybridswap_modules/*.ko 2>/dev/null || true))
           gh release create "$TAG" \
             --repo "${{ github.repository }}" \
             --title "kernel + display + touch + audio drivers $TAG" \
-            --notes "auto build: Image + msm_drm.ko (doze patched) + xiaomi/goodix/fts touch + qti battery + audio (aw882xx/fs19xx receiver fix) + OPLUS frameboost (sched_assist/AFS/uag/hans)" \
+            --notes "auto build: Image + msm_drm.ko (doze patched) + xiaomi/goodix/fts touch + qti battery + audio (aw882xx/fs19xx receiver fix) + OPLUS frameboost (sched_assist/AFS/eas_opt/uag/hans) + OPLUS hybridswap_zram (zstdn/lz4k/hybridswap)" \
             "${FILES[@]}" \
             --clobber 2>&1 || echo "release failed (non-fatal)"

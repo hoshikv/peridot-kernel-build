@@ -318,39 +318,50 @@ for b in \
 done
 
 # ---------- OPLUS frameboost DLKM modules (out-of-tree) ----------
+# The module repos are FLAT (one folder per module). We stage a symlink farm
+# that mirrors the OPLUS kernel/oplus_cpu layout, then mount it into the kernel
+# tree so the OPLUS `#include <../kernel/oplus_cpu/...>` / `<../kernel/sched/...>`
+# / `"../sched/..."` relative include paths resolve during builds.
+STAGE="$OUT/oplus-stage"
+FB_STAGE="$STAGE/fb/kernel"
 FB_DIR="${FB_DIR:-$ROOT/frameboost-drivers}"
 FB_URL="${FB_URL:-https://github.com/hoshikv/vendor_frameboost-drivers}"
 echo "[*] frameboost drivers ($FB_DIR)"
 if [[ ! -d "$FB_DIR/.git" ]]; then
   git clone --depth 1 "$FB_URL" "$FB_DIR"
 fi
-test -f "$FB_DIR/kernel/oplus_cpu/sched/sched_assist/Makefile" || { echo "frameboost source missing"; exit 1; }
-# mount the OPLUS include tree (kernel/oplus_cpu) into the kernel source so the
-# OPLUS `#include <../kernel/oplus_cpu/...>` / `"../sched/..."` paths resolve.
-ln -sfn "$FB_DIR/kernel/oplus_cpu" "$KERNEL_DIR/oplus_cpu"
+test -f "$FB_DIR/sched_assist/Makefile" || { echo "frameboost source missing (sched_assist)"; exit 1; }
+mkdir -p "$FB_STAGE/oplus_cpu/sched"
+for pair in "sched_assist:sched_assist" "frame_boost:frame_boost" "qos_sched:qos_sched" \
+            "sched_tune:sched_tune" "eas_opt:eas_opt"; do
+  ln -sfn "$FB_DIR/${pair%%:*}" "$FB_STAGE/oplus_cpu/sched/${pair##*:}"
+done
+ln -sfn "$FB_DIR/uad"  "$FB_STAGE/oplus_cpu/uad"
+ln -sfn "$FB_DIR/hans" "$FB_STAGE/oplus_cpu/hans"
+ln -sfn "$FB_STAGE/oplus_cpu" "$KERNEL_DIR/oplus_cpu"
 
-fb_inject() { # $1=rel dir ($FB_DIR/kernel/oplus_cpu/$1)  $2=defines (prefer Kbuild; hans has wrapper Makefile)
-  local f="$FB_DIR/kernel/oplus_cpu/$1/Kbuild"
-  [[ -f "$f" ]] || f="$FB_DIR/kernel/oplus_cpu/$1/Makefile"
+FB_DIR_SRC="$FB_STAGE/oplus_cpu"   # relative dirs below are under this
+
+fb_inject() { # $1=rel dir  $2=defines (prefer Kbuild; others have plain Makefile)
+  local f="$FB_DIR_SRC/$1/Kbuild"
+  [[ -f "$f" ]] || f="$FB_DIR_SRC/$1/Makefile"
   for d in $2; do
     grep -qF -- "$d" "$f" || echo "ccflags-y += -D$d=1" >> "$f"
   done
 }
 fb_inject sched/sched_tune   "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_SCHED_TUNE"
+fb_inject sched/eas_opt      "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_EAS_OPT CONFIG_OPLUS_FEATURE_VT_CAP CONFIG_OPLUS_CPUFREQ_IOWAIT_PROTECT"
 fb_inject sched/sched_assist "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_SCHED_ASSIST"
 fb_inject sched/frame_boost  "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_FRAME_BOOST"
 fb_inject sched/qos_sched    "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_QOS_SCHED"
 fb_inject uad                "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_CPU_FREQ_GOV_UAG CONFIG_UA_KERNEL_CPU_IOCTL CONFIG_OPLUS_FEATURE_FRAME_BOOST"
 fb_inject hans               "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_HANS"
 
-fb_license() { # $1=rel dir  $2=CONFIG var for the obj line
-  local d="$FB_DIR/kernel/oplus_cpu/$1" v="$2"
+fb_license() { # $1=rel dir
+  local d="$FB_DIR_SRC/$1" f of var
   if ! grep -raq 'MODULE_LICENSE' "$d" --include='*.c'; then
     echo -e '#include <linux/module.h>\nMODULE_LICENSE("GPL");' > "$d/license.c"
-    local f="$d/Kbuild"; [[ -f "$f" ]] || f="$d/Makefile"
-    # merge into the existing composite module list (<mod>-y += ...), NOT via a
-    # second obj-$(CONFIG) line: that would create a stray separate module.
-    local of var
+    f="$d/Kbuild"; [[ -f "$f" ]] || f="$d/Makefile"
     of=$(grep -oE '^obj-\$\([A-Za-z0-9_]+\)[[:space:]]+\+=[[:space:]]+[A-Za-z0-9_]+\.o' "$f" | head -1 | awk '{print $3}')
     var="${of%.o}-y"
     if [[ -n "$of" && -n "$var" ]]; then
@@ -361,8 +372,28 @@ fb_license() { # $1=rel dir  $2=CONFIG var for the obj line
     fi
   fi
 }
-fb_license sched/sched_tune CONFIG_OPLUS_SCHED_TUNE
-fb_license hans               CONFIG_OPLUS_FEATURE_HANS
+fb_license sched/sched_tune
+fb_license hans
+
+fb_msym() { # $1=rel dir -> print existing Module.symvers (source or out) if any
+  local cand
+  for cand in "$FB_DIR_SRC/$1/Module.symvers" \
+              "$OUT/$1/Module.symvers" \
+              "$OUT/oplus_stage/$(basename "$1")/Module.symvers"; do
+    [[ -f "$cand" ]] && { echo "$cand"; return 0; }
+  done
+  return 1
+}
+fb_cache() { # $1=rel dir : snapshot the module symvers for later consumers
+  local p=$(fb_msym "$1") n=${1//\//_}
+  if [[ -f "$p" ]]; then
+    cp -f "$p" "$OUT/msym/$n.symvers"
+  else
+    : > "$OUT/msym/$n.symvers"
+  fi
+  echo "  cached symvers $OUT/msym/$n.symvers"
+}
+mkdir -p "$OUT/msym"
 
 fb_mbuild() { # $1=rel dir  $2=extra Module.symvers  rest=CONFIG args
   local M="$1"; shift
@@ -371,7 +402,7 @@ fb_mbuild() { # $1=rel dir  $2=extra Module.symvers  rest=CONFIG args
     KERNEL_SRC="$KERNEL_DIR" KERNEL_ROOT="$KERNEL_DIR" \
     KBUILD_EXTRA_SYMBOLS="$OUT/walt-extra.symvers $EXTRA" \
     CONFIG_ARCH_PINEAPPLE=y \
-    M="$FB_DIR/kernel/oplus_cpu/$M" "$@" modules 2>&1 | tee -a "$OUT/frameboost.log" || {
+    M="$FB_DIR_SRC/$M" "$@" modules 2>&1 | tee -a "$OUT/frameboost.log" || {
       echo "ERROR: frameboost module $M failed"
       grep -nE "error:|fatal|undefined|no member|undeclared|cannot|No rule|No such" "$OUT/frameboost.log" | head -40 || true
       exit 1
@@ -379,29 +410,94 @@ fb_mbuild() { # $1=rel dir  $2=extra Module.symvers  rest=CONFIG args
 }
 
 echo "[*] build frameboost sched_tune"
-fb_mbuild sched/sched_tune "" CONFIG_OPLUS_SCHED_TUNE=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
+fb_mbuild sched/sched_tune "" \
+  CONFIG_OPLUS_SCHED_TUNE=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
+fb_cache sched/sched_tune
+echo "[*] build frameboost eas_opt"
+fb_mbuild sched/eas_opt "" \
+  CONFIG_OPLUS_FEATURE_EAS_OPT=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y \
+  CONFIG_OPLUS_FEATURE_VT_CAP=y CONFIG_OPLUS_CPUFREQ_IOWAIT_PROTECT=y
+fb_cache sched/eas_opt
 echo "[*] build frameboost sched_assist"
-fb_mbuild sched/sched_assist "$FB_DIR/kernel/oplus_cpu/sched/sched_tune/Module.symvers" \
+fb_mbuild sched/sched_assist "$OUT/msym/sched_tune.symvers" \
   CONFIG_OPLUS_FEATURE_SCHED_ASSIST=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
+fb_cache sched/sched_assist
 echo "[*] build frameboost frame_boost"
-fb_mbuild sched/frame_boost "$FB_DIR/kernel/oplus_cpu/sched/sched_assist/Module.symvers" \
+fb_mbuild sched/frame_boost "$OUT/msym/sched_assist.symvers" \
   CONFIG_OPLUS_FEATURE_FRAME_BOOST=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
+fb_cache sched/frame_boost
 echo "[*] build frameboost qos_sched"
-fb_mbuild sched/qos_sched "$FB_DIR/kernel/oplus_cpu/sched/sched_assist/Module.symvers $FB_DIR/kernel/oplus_cpu/sched/frame_boost/Module.symvers" \
+fb_mbuild sched/qos_sched "$OUT/msym/sched_assist.symvers $OUT/msym/frame_boost.symvers" \
   CONFIG_OPLUS_FEATURE_QOS_SCHED=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
+fb_cache sched/qos_sched
 echo "[*] build frameboost uad (uag governor + ua_ioctl)"
-fb_mbuild uad "$FB_DIR/kernel/oplus_cpu/sched/frame_boost/Module.symvers" \
+fb_mbuild uad "$OUT/msym/eas_opt.symvers $OUT/msym/frame_boost.symvers" \
   CONFIG_OPLUS_CPU_FREQ_GOV_UAG=m CONFIG_UA_KERNEL_CPU_IOCTL=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
+fb_cache uad
 echo "[*] build frameboost hans"
 fb_mbuild hans "" CONFIG_OPLUS_FEATURE_HANS=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
 
 echo "[*] collect frameboost modules"
 mkdir -p "$OUT/frameboost_modules"
-for ko in "$FB_DIR"/kernel/oplus_cpu/{sched/sched_tune,sched/sched_assist,sched/frame_boost,sched/qos_sched,uad,hans}/*.ko; do
+while IFS= read -r ko; do
   [[ -f "$ko" ]] && cp "$ko" "$OUT/frameboost_modules/"
-done
+done < <(find "$FB_DIR" -name '*.ko')
 for ko in "$OUT/frameboost_modules"/*.ko; do llvm-strip --strip-debug "$ko" 2>/dev/null || true; done
 echo "    frameboost modules: $(ls "$OUT/frameboost_modules" 2>/dev/null | tr '\n' ' ')"
+
+# ---------- OPLUS hybridswap DLKM modules (out-of-tree) ----------
+HS_STAGE="$STAGE/hs/kernel"
+HS_DIR="${HS_DIR:-$ROOT/hybridswap-driver}"
+HS_URL="${HS_URL:-https://github.com/hoshikv/vendor_oplus-hybridswap-driver}"
+echo "[*] hybridswap drivers ($HS_DIR)"
+if [[ ! -d "$HS_DIR/.git" ]]; then
+  git clone --depth 1 "$HS_URL" "$HS_DIR"
+fi
+test -f "$HS_DIR/hybridswap_zram/Makefile" || { echo "hybridswap source missing"; exit 1; }
+mkdir -p "$HS_STAGE/oplus_mm" "$HS_STAGE/oplus_cpu/sched/sched_assist"
+ln -sfn "$HS_DIR/hybridswap_zram" "$HS_STAGE/oplus_mm/hybridswap_zram"
+ln -sfn "$HS_DIR/mm_osvelte"       "$HS_STAGE/oplus_mm/mm_osvelte"
+ln -sfn "$HS_DIR/sa_common.h"      "$HS_STAGE/oplus_cpu/sched/sched_assist/sa_common.h"
+ln -sfn "$HS_STAGE/oplus_mm"       "$KERNEL_DIR/mm/oplus_mm"
+ln -sfn "$HS_STAGE/oplus_cpu"      "$KERNEL_DIR/oplus_cpu"
+
+hs_inject() { # $1=tree-relative (under hybridswap_zram)  $2=defines
+  local f="$KERNEL_DIR/mm/oplus_mm/$1/Makefile"
+  [[ -f "$f" ]] || f="$KERNEL_DIR/mm/oplus_mm/$1/Kbuild"
+  for d in $2; do
+    grep -qF -- "$d" "$f" || echo "ccflags-y += -D$d=1" >> "$f"
+  done
+}
+hs_inject . "CONFIG_HYBRIDSWAP CONFIG_HYBRIDSWAP_SWAPD CONFIG_HYBRIDSWAP_CORE"
+
+hs_mbuild() { # $1=M dir (tree-relative)  rest=CONFIG args
+  local M="$1"; shift
+  make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
+    KERNEL_SRC="$KERNEL_DIR" KERNEL_ROOT="$KERNEL_DIR" \
+    CONFIG_ARCH_PINEAPPLE=y \
+    M="$KERNEL_DIR/mm/oplus_mm/$M" "$@" modules 2>&1 | tee -a "$OUT/hybridswap.log" || {
+      echo "ERROR: hybridswap module $M failed"
+      grep -nE "error:|fatal|undefined|no member|undeclared|cannot|No rule|No such" "$OUT/hybridswap.log" | head -40 || true
+      exit 1
+    }
+}
+
+echo "[*] build hybridswap lz4k"
+hs_mbuild hybridswap_zram/lz4k CONFIG_CRYPTO_LZ4K=m
+echo "[*] build hybridswap zstd (zstdn)"
+hs_mbuild hybridswap_zram/zstd CONFIG_CRYPTO_ZSTDN=m
+echo "[*] build hybridswap zram root"
+hs_mbuild hybridswap_zram \
+  CONFIG_HYBRIDSWAP_ZRAM=m CONFIG_HYBRIDSWAP=y \
+  CONFIG_HYBRIDSWAP_SWAPD=y CONFIG_HYBRIDSWAP_CORE=y
+
+echo "[*] collect hybridswap modules"
+mkdir -p "$OUT/hybridswap_modules"
+while IFS= read -r ko; do
+  [[ -f "$ko" ]] && cp "$ko" "$OUT/hybridswap_modules/"
+done < <(find "$HS_DIR/hybridswap_zram" -name '*.ko')
+for ko in "$OUT/hybridswap_modules"/*.ko; do llvm-strip --strip-debug "$ko" 2>/dev/null || true; done
+echo "    hybridswap modules: $(ls "$OUT/hybridswap_modules" 2>/dev/null | tr '\n' ' ')"
 
 # ---------- collect all .ko into vendor_dlkm ----------
 echo "[*] collect all .ko into vendor_dlkm"
@@ -427,6 +523,15 @@ done
 for ko in "$OUT/frameboost_modules"/*.ko; do
   [[ -f "$ko" ]] && cp "$ko" "$MODDIR/"
 done
+# 2d) hybridswap drivers
+for ko in "$OUT/hybridswap_modules"/*.ko; do
+  [[ -f "$ko" ]] && cp "$ko" "$MODDIR/"
+done
+# the OPLUS hybridswap zram replaces the stock GKI zram.ko (same "zram" major).
+if ls "$MODDIR"/oplus_bsp_hybridswap_zram.ko >/dev/null 2>&1; then
+  rm -f "$MODDIR/zram.ko"
+  echo "    (stock zram.ko removed — OPLUS hybridswap zram takes over)"
+fi
 
 
 # 3) msm_drm
@@ -435,9 +540,27 @@ cp -f "$OUT/msm_drm.ko" "$MODDIR/"
 echo "    total .ko: $(find "$MODDIR" -name '*.ko' | wc -l)"
 
 # ---------- generate modules.load ----------
+# frameboost/hybridswap modules must load in dependency order
+FB_ORDER="sched-walt oplus_bsp_schedtune oplus_bsp_eas_opt oplus_bsp_sched_assist oplus_bsp_frame_boost oplus_bsp_qos_sched cpufreq_uag ua_cpu_ioctl oplus_hans"
+HS_ORDER="crypto_zstdn oplus_bsp_lz4k oplus_bsp_hybridswap_zram"
 echo "[*] generate modules.load"
-find "$MODDIR" -name '*.ko' -printf '%f\n' | sort > "$MODDIR/modules.load"
+{
+  for b in $FB_ORDER; do
+    [[ -f "$MODDIR/$b.ko" ]] && echo "$b.ko"
+  done
+  for b in $HS_ORDER; do
+    [[ -f "$MODDIR/$b.ko" ]] && echo "$b.ko"
+  done
+  {
+    printf '%s\n' $FB_ORDER | sed 's/$/.ko/'
+    printf '%s\n' $HS_ORDER | sed 's/$/.ko/'
+  } > "$MODDIR/.ordered"
+  find "$MODDIR" -maxdepth 1 -name '*.ko' -printf '%f\n' | sort | \
+    grep -vxFf "$MODDIR/.ordered"
+  rm -f "$MODDIR/.ordered"
+} > "$MODDIR/modules.load"
 echo "    modules.load: $(wc -l < "$MODDIR/modules.load") entries"
+head -20 "$MODDIR/modules.load" | tail -16
 
 # ---------- generate modules.dep ----------
 echo "[*] generate modules.dep"
