@@ -343,6 +343,18 @@ fb_inject sched/qos_sched    "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATU
 fb_inject uad                "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_CPU_FREQ_GOV_UAG CONFIG_UA_KERNEL_CPU_IOCTL CONFIG_OPLUS_FEATURE_FRAME_BOOST"
 fb_inject hans               "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_HANS"
 
+fb_license() { # $1=rel dir  $2=CONFIG var for the obj line
+  local d="$FB_DIR/kernel/oplus_cpu/$1" v="$2"
+  if ! grep -raq 'MODULE_LICENSE' "$d" --include='*.c'; then
+    echo 'MODULE_LICENSE("GPL");' > "$d/license.c"
+    local f="$d/Kbuild"; [[ -f "$f" ]] || f="$d/Makefile"
+    grep -q 'license.o' "$f" || echo "obj-\$($v) += license.o" >> "$f"
+    echo "  + license.c (missing MODULE_LICENSE) in $1"
+  fi
+}
+fb_license sched/sched_tune CONFIG_OPLUS_SCHED_TUNE
+fb_license hans               CONFIG_OPLUS_FEATURE_HANS
+
 fb_mbuild() { # $1=rel dir  $2=extra Module.symvers  rest=CONFIG args
   local M="$1"; shift
   local EXTRA="$1"; shift
