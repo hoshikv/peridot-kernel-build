@@ -417,28 +417,28 @@ echo "[*] build frameboost sched_tune"
 fb_mbuild sched/sched_tune "" \
   CONFIG_OPLUS_SCHED_TUNE=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
 fb_cache sched/sched_tune
-echo "[*] build frameboost eas_opt"
-fb_mbuild sched/eas_opt "" \
-  CONFIG_OPLUS_FEATURE_EAS_OPT=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y \
-  CONFIG_OPLUS_FEATURE_VT_CAP=y CONFIG_OPLUS_CPUFREQ_IOWAIT_PROTECT=y
-fb_cache sched/eas_opt
-echo "[*] build frameboost sched_assist"
+echo "[*] build frameboost sched_assist (EXPORTS fg_task/bg_task/ta_task/rootcg_task via sa_group)"
 fb_mbuild sched/sched_assist "$OUT/msym/sched_tune.symvers" \
   CONFIG_OPLUS_FEATURE_SCHED_ASSIST=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y \
   CONFIG_OPLUS_FEATURE_SCHED_DDL=y CONFIG_OPLUS_SCHED_GROUP_OPT=y \
   CONFIG_OPLUS_CPU_AUDIO_PERF=y CONFIG_OPLUS_FEATURE_LOADBALANCE=y \
   CONFIG_OPLUS_FEATURE_PIPELINE=y CONFIG_BLOCKIO_UX_OPT=y
 fb_cache sched/sched_assist
+echo "[*] build frameboost eas_opt (uses sched_assist exports)"
+fb_mbuild sched/eas_opt "$OUT/msym/sched_assist.symvers" \
+  CONFIG_OPLUS_FEATURE_EAS_OPT=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y \
+  CONFIG_OPLUS_FEATURE_VT_CAP=y CONFIG_OPLUS_CPUFREQ_IOWAIT_PROTECT=y
+fb_cache sched/eas_opt
 echo "[*] build frameboost frame_boost"
-fb_mbuild sched/frame_boost "$OUT/msym/sched_assist.symvers" \
+fb_mbuild sched/frame_boost "$OUT/msym/sched_assist.symvers $OUT/msym/eas_opt.symvers" \
   CONFIG_OPLUS_FEATURE_FRAME_BOOST=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
 fb_cache sched/frame_boost
 echo "[*] build frameboost qos_sched"
-fb_mbuild sched/qos_sched "$OUT/msym/sched_assist.symvers $OUT/msym/frame_boost.symvers" \
+fb_mbuild sched/qos_sched "$OUT/msym/sched_assist.symvers $OUT/msym/frame_boost.symvers $OUT/msym/eas_opt.symvers" \
   CONFIG_OPLUS_FEATURE_QOS_SCHED=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
 fb_cache sched/qos_sched
 echo "[*] build frameboost uad (uag governor + ua_ioctl)"
-fb_mbuild uad "$OUT/msym/eas_opt.symvers $OUT/msym/frame_boost.symvers" \
+fb_mbuild uad "$OUT/msym/sched_assist.symvers $OUT/msym/eas_opt.symvers $OUT/msym/frame_boost.symvers" \
   CONFIG_OPLUS_CPU_FREQ_GOV_UAG=m CONFIG_UA_KERNEL_CPU_IOCTL=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
 fb_cache uad
 echo "[*] build frameboost hans"
@@ -548,7 +548,7 @@ echo "    total .ko: $(find "$MODDIR" -name '*.ko' | wc -l)"
 
 # ---------- generate modules.load ----------
 # frameboost/hybridswap modules must load in dependency order
-FB_ORDER="sched-walt oplus_bsp_schedtune oplus_bsp_eas_opt oplus_bsp_sched_assist oplus_bsp_frame_boost oplus_bsp_qos_sched cpufreq_uag ua_cpu_ioctl oplus_hans"
+FB_ORDER="sched-walt oplus_bsp_schedtune oplus_bsp_sched_assist oplus_bsp_eas_opt oplus_bsp_frame_boost oplus_bsp_qos_sched cpufreq_uag ua_cpu_ioctl oplus_hans"
 HS_ORDER="crypto_zstdn oplus_bsp_lz4k oplus_bsp_hybridswap_zram"
 echo "[*] generate modules.load"
 {
