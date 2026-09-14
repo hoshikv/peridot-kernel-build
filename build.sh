@@ -389,7 +389,7 @@ fb_msym() { # $1=rel dir -> print existing Module.symvers (source or out) if any
   return 1
 }
 fb_cache() { # $1=rel dir : snapshot the module symvers for later consumers
-  local p=$(fb_msym "$1") n=${1//\//_}
+  local p=$(fb_msym "$1") n=$(basename "$1")
   if [[ -f "$p" ]]; then
     cp -f "$p" "$OUT/msym/$n.symvers"
   else
