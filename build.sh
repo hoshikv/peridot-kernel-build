@@ -346,7 +346,7 @@ fb_inject hans               "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATU
 fb_license() { # $1=rel dir  $2=CONFIG var for the obj line
   local d="$FB_DIR/kernel/oplus_cpu/$1" v="$2"
   if ! grep -raq 'MODULE_LICENSE' "$d" --include='*.c'; then
-    echo 'MODULE_LICENSE("GPL");' > "$d/license.c"
+    echo -e '#include <linux/module.h>\nMODULE_LICENSE("GPL");' > "$d/license.c"
     local f="$d/Kbuild"; [[ -f "$f" ]] || f="$d/Makefile"
     grep -q 'license.o' "$f" || echo "obj-\$($v) += license.o" >> "$f"
     echo "  + license.c (missing MODULE_LICENSE) in $1"
