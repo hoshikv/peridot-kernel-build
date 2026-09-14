@@ -345,6 +345,7 @@ FB_DIR_SRC="$FB_STAGE/oplus_cpu"   # relative dirs below are under this
 fb_inject() { # $1=rel dir  $2=defines (prefer Kbuild; others have plain Makefile)
   local f="$FB_DIR_SRC/$1/Kbuild"
   [[ -f "$f" ]] || f="$FB_DIR_SRC/$1/Makefile"
+  [[ -s "$f" ]] && [[ -n "$(tail -c1 "$f")" ]] && echo >> "$f"
   grep -q 'ccflags-y += -I$(src)' "$f" || echo 'ccflags-y += -I$(src)' >> "$f"
   for d in $2; do
     grep -qF -- "ccflags-y += -D$d=1" "$f" || echo "ccflags-y += -D$d=1" >> "$f"
@@ -369,6 +370,7 @@ fb_license() { # $1=rel dir
     of=$(grep -oE '^obj-\$\([A-Za-z0-9_]+\)[[:space:]]+\+=[[:space:]]+[A-Za-z0-9_]+\.o' "$f" | head -1 | awk '{print $3}')
     var="${of%.o}-y"
     if [[ -n "$of" && -n "$var" ]]; then
+      [[ -s "$f" ]] && [[ -n "$(tail -c1 "$f")" ]] && echo >> "$f"
       grep -q 'license.o' "$f" || echo "$var += license.o" >> "$f"
       echo "  + license.c (missing MODULE_LICENSE) in $1 [$var]"
     else
