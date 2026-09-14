@@ -310,6 +310,71 @@ for b in \
   fi
 done
 
+# ---------- OPLUS frameboost DLKM modules (out-of-tree) ----------
+FB_DIR="${FB_DIR:-$ROOT/frameboost-drivers}"
+FB_URL="${FB_URL:-https://github.com/hoshikv/vendor_frameboost-drivers}"
+echo "[*] frameboost drivers ($FB_DIR)"
+if [[ ! -d "$FB_DIR/.git" ]]; then
+  git clone --depth 1 "$FB_URL" "$FB_DIR"
+fi
+test -f "$FB_DIR/kernel/oplus_cpu/sched/sched_assist/Makefile" || { echo "frameboost source missing"; exit 1; }
+# mount the OPLUS include tree (kernel/oplus_cpu) into the kernel source so the
+# OPLUS `#include <../kernel/oplus_cpu/...>` / `"../sched/..."` paths resolve.
+ln -sfn "$FB_DIR/kernel/oplus_cpu" "$KERNEL_DIR/oplus_cpu"
+
+fb_inject() { # $1=rel dir ($FB_DIR/kernel/oplus_cpu/$1)  $2=defines (prefer Kbuild; hans has wrapper Makefile)
+  local f="$FB_DIR/kernel/oplus_cpu/$1/Kbuild"
+  [[ -f "$f" ]] || f="$FB_DIR/kernel/oplus_cpu/$1/Makefile"
+  for d in $2; do
+    grep -qF -- "$d" "$f" || echo "ccflags-y += -D$d=1" >> "$f"
+  done
+}
+fb_inject sched/sched_tune   "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_SCHED_TUNE"
+fb_inject sched/sched_assist "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_SCHED_ASSIST"
+fb_inject sched/frame_boost  "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_FRAME_BOOST"
+fb_inject sched/qos_sched    "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_QOS_SCHED"
+fb_inject uad                "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_CPU_FREQ_GOV_UAG CONFIG_UA_KERNEL_CPU_IOCTL CONFIG_OPLUS_FEATURE_FRAME_BOOST"
+fb_inject hans               "CONFIG_OPLUS_SYSTEM_KERNEL_QCOM CONFIG_OPLUS_FEATURE_HANS"
+
+fb_mbuild() { # $1=rel dir  $2=extra Module.symvers  rest=CONFIG args
+  local M="$1"; shift
+  local EXTRA="$1"; shift
+  make -C "$KERNEL_DIR" O="$OUT" -j"$JOBS" ARCH=$ARCH \
+    KERNEL_SRC="$KERNEL_DIR" KERNEL_ROOT="$KERNEL_DIR" \
+    KBUILD_EXTRA_SYMBOLS="$OUT/Module.symvers $OUT/kernel/sched/walt/Module.symvers $EXTRA" \
+    CONFIG_ARCH_PINEAPPLE=y \
+    M="$FB_DIR/kernel/oplus_cpu/$M" "$@" modules 2>&1 | tee -a "$OUT/frameboost.log" || {
+      echo "ERROR: frameboost module $M failed"
+      grep -nE "error:|fatal|undefined|no member|undeclared|cannot|No rule|No such" "$OUT/frameboost.log" | head -40 || true
+      exit 1
+    }
+}
+
+echo "[*] build frameboost sched_tune"
+fb_mbuild sched/sched_tune "" CONFIG_OPLUS_SCHED_TUNE=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
+echo "[*] build frameboost sched_assist"
+fb_mbuild sched/sched_assist "$FB_DIR/kernel/oplus_cpu/sched/sched_tune/Module.symvers" \
+  CONFIG_OPLUS_FEATURE_SCHED_ASSIST=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
+echo "[*] build frameboost frame_boost"
+fb_mbuild sched/frame_boost "$FB_DIR/kernel/oplus_cpu/sched/sched_assist/Module.symvers" \
+  CONFIG_OPLUS_FEATURE_FRAME_BOOST=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
+echo "[*] build frameboost qos_sched"
+fb_mbuild sched/qos_sched "$FB_DIR/kernel/oplus_cpu/sched/sched_assist/Module.symvers $FB_DIR/kernel/oplus_cpu/sched/frame_boost/Module.symvers" \
+  CONFIG_OPLUS_FEATURE_QOS_SCHED=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
+echo "[*] build frameboost uad (uag governor + ua_ioctl)"
+fb_mbuild uad "$FB_DIR/kernel/oplus_cpu/sched/frame_boost/Module.symvers" \
+  CONFIG_OPLUS_CPU_FREQ_GOV_UAG=m CONFIG_UA_KERNEL_CPU_IOCTL=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
+echo "[*] build frameboost hans"
+fb_mbuild hans "" CONFIG_OPLUS_FEATURE_HANS=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
+
+echo "[*] collect frameboost modules"
+mkdir -p "$OUT/frameboost_modules"
+for ko in "$FB_DIR"/kernel/oplus_cpu/{sched/sched_tune,sched/sched_assist,sched/frame_boost,sched/qos_sched,uad,hans}/*.ko; do
+  [[ -f "$ko" ]] && cp "$ko" "$OUT/frameboost_modules/"
+done
+for ko in "$OUT/frameboost_modules"/*.ko; do llvm-strip --strip-debug "$ko" 2>/dev/null || true; done
+echo "    frameboost modules: $(ls "$OUT/frameboost_modules" 2>/dev/null | tr '\n' ' ')"
+
 # ---------- collect all .ko into vendor_dlkm ----------
 echo "[*] collect all .ko into vendor_dlkm"
 KVER=$(ls -d "$OUT/lib/modules/"*/ 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo "unknown")
@@ -330,6 +395,11 @@ done
 for ko in "$OUT/audio_modules"/*.ko; do
   [[ -f "$ko" ]] && cp "$ko" "$MODDIR/"
 done
+# 2c) frameboost drivers
+for ko in "$OUT/frameboost_modules"/*.ko; do
+  [[ -f "$ko" ]] && cp "$ko" "$MODDIR/"
+done
+
 
 # 3) msm_drm
 cp -f "$OUT/msm_drm.ko" "$MODDIR/"
