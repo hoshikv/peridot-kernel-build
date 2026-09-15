@@ -151,6 +151,17 @@ echo "[*] olddefconfig + modules_prepare"
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH olddefconfig
 make -C "$KERNEL_DIR" O="$OUT" ARCH=$ARCH modules_prepare
 
+# kernel source change (keyed off the workflow's checked-out SHA) invalidates
+# the vmlinux/module rebuild guard even when the restored out/ cache survives;
+# otherwise a restored Module.symvers would skip the rebuild and OOT consumers
+# would miss newly exported symbols.
+KERNEL_SHA_NOW="$(git -C "$KERNEL_DIR" rev-parse HEAD 2>/dev/null || echo unknown)"
+if [[ "$KERNEL_SHA_NOW" != "$(cat "$OUT/kernel-sha" 2>/dev/null || echo unknown)" ]]; then
+  echo "[*] kernel source changed ($(cat "$OUT/kernel-sha" 2>/dev/null || echo none) -> $KERNEL_SHA_NOW), invalidating vmlinux/module build"
+  rm -f "$OUT/Module.symvers"
+fi
+echo "$KERNEL_SHA_NOW" > "$OUT/kernel-sha"
+
 # ---------- kernel + in-tree modules ----------
 echo "[*] build vmlinux + in-tree modules"
 if [[ ! -f "$OUT/Module.symvers" ]]; then
@@ -441,7 +452,9 @@ fb_mbuild sched/qos_sched "$OUT/msym/sched_assist.symvers $OUT/msym/frame_boost.
 fb_cache sched/qos_sched
 echo "[*] build frameboost uad (uag governor + ua_ioctl)"
 fb_mbuild uad "$OUT/msym/sched_assist.symvers $OUT/msym/eas_opt.symvers $OUT/msym/frame_boost.symvers" \
-  CONFIG_OPLUS_CPU_FREQ_GOV_UAG=m CONFIG_UA_KERNEL_CPU_IOCTL=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
+  CONFIG_OPLUS_CPU_FREQ_GOV_UAG=m CONFIG_UA_KERNEL_CPU_IOCTL=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y \
+  CONFIG_UAG_NONLINEAR_FREQ_CTL=y CONFIG_OPLUS_UAG_USE_TL=y CONFIG_OPLUS_MULTI_LV_TL=y \
+  CONFIG_OPLUS_FEATURE_VT_CAP=y
 fb_cache uad
 echo "[*] build frameboost hans"
 fb_mbuild hans "" CONFIG_OPLUS_FEATURE_HANS=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
