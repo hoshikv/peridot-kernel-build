@@ -487,7 +487,7 @@ hs_inject() { # $1=tree-relative (under hybridswap_zram)  $2=defines
   local f="$KERNEL_DIR/mm/oplus_mm/$1/Makefile"
   [[ -f "$f" ]] || f="$KERNEL_DIR/mm/oplus_mm/$1/Kbuild"
   for d in $2; do
-    grep -qF -- "$d" "$f" || echo "ccflags-y += -D$d=1" >> "$f"
+    grep -qF -- "-D$d=1" "$f" || echo "ccflags-y += -D$d=1" >> "$f"
   done
 }
 hs_inject hybridswap_zram "CONFIG_HYBRIDSWAP CONFIG_HYBRIDSWAP_SWAPD CONFIG_HYBRIDSWAP_CORE"
