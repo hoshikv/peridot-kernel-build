@@ -490,7 +490,7 @@ hs_inject() { # $1=tree-relative (under hybridswap_zram)  $2=defines
     grep -qF -- "$d" "$f" || echo "ccflags-y += -D$d=1" >> "$f"
   done
 }
-hs_inject . "CONFIG_HYBRIDSWAP CONFIG_HYBRIDSWAP_SWAPD CONFIG_HYBRIDSWAP_CORE"
+hs_inject hybridswap_zram "CONFIG_HYBRIDSWAP CONFIG_HYBRIDSWAP_SWAPD CONFIG_HYBRIDSWAP_CORE"
 
 hs_mbuild() { # $1=M dir (tree-relative)  rest=CONFIG args
   local M="$1"; shift
