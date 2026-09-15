@@ -454,7 +454,7 @@ echo "[*] build frameboost uad (uag governor + ua_ioctl)"
 fb_mbuild uad "$OUT/msym/sched_assist.symvers $OUT/msym/eas_opt.symvers $OUT/msym/frame_boost.symvers" \
   CONFIG_OPLUS_CPU_FREQ_GOV_UAG=m CONFIG_UA_KERNEL_CPU_IOCTL=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y \
   CONFIG_UAG_NONLINEAR_FREQ_CTL=y CONFIG_OPLUS_UAG_USE_TL=y CONFIG_OPLUS_MULTI_LV_TL=y \
-  CONFIG_OPLUS_FEATURE_VT_CAP=y
+  CONFIG_OPLUS_FEATURE_VT_CAP=y CONFIG_OPLUS_FEATURE_FRAME_BOOST=y
 fb_cache uad
 echo "[*] build frameboost hans"
 fb_mbuild hans "" CONFIG_OPLUS_FEATURE_HANS=m CONFIG_OPLUS_SYSTEM_KERNEL_QCOM=y
